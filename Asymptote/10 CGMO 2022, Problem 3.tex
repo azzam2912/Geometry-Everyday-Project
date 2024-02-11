@@ -1,0 +1,59 @@
+\begin{center}
+    \begin{asy}
+        import olympiad;
+        import geometry;
+        size(350);
+
+        pair A, B, C;
+        A = dir(60);
+        B = dir(-27);
+        C = dir(-153);
+        draw(A--B--C--A);
+        dot("$A$", A, NE);
+        dot("$B$", B, SE);
+        dot("$C$", C, SW);
+
+        pair I = incenter(triangle(A,B,C));
+        dot("$I$", I, NE);
+
+        pair M = (B+C)/2;
+        dot("$M$", M, SW);
+        draw(A--M);
+
+        pair D = foot(I, B, C);
+        pair L = intersectionpoint(line(A,M),line(D,I));
+        pair J = rotate(180, A)*I;
+        dot("$D$", D, SE);
+        dot("$L$", L, NW);
+        dot("$J$", J, NW);
+        draw(D--L);
+        draw(B--I);
+        draw(C--I);
+
+        pair T = intersectionpoint(line(A,I), perpendicular(M, line(B,C)));
+        dot("$T$", T, SE);
+        draw(M--T);
+
+        pair Ia = rotate(180, T)*I;
+        dot("$I_A$", Ia, NW);
+        draw(J--A--I--Ia);
+
+        pair N = intersectionpoint(line(A,C),perpendicular(I,line(C,I)));
+        dot("$N$", N, NW);
+        draw(I--N, blue);
+        draw(rightanglemark(C,I,N,2), blue);
+        draw(rightanglemark(T,M,B,2));
+        draw(rightanglemark(I,D,B,2));
+
+        pair K = foot(Ia, C, B);
+        dot("$K$", K, SW);
+        draw(Ia--K);
+        draw(C--K, red);
+        draw(B--D, red);
+        draw(rightanglemark(Ia,K,B,2));
+        
+        draw(B--J--A--B, blue);
+        draw(B--I--N--B, blue);
+        draw(C--Ia, blue);
+    \end{asy}
+\end{center}

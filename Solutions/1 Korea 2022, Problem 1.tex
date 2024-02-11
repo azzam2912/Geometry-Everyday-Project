@@ -1,0 +1,26 @@
+\textbf{\textit{Soal. }}\input{Problems/1 Korea 2022, Problem 1.tex}
+
+\begin{proof}[\textbf{Solusi.} (Sunday, 9 October 2022) ] 
+Misalkan $M$ adalah titik tengah $BC$. Misalkan pula $H$ adalah titik tinggi $\triangle ABC$. 
+
+\begin{lemma}
+    $\triangle ARE \sim \triangle ADB$ dan $O,R,A$ segaris
+    \begin{proof}
+        Karena $\dangle AER = \dangle AEF = \dangle CEF = \dangle CBF = \dangle DBA$ dan $\dangle ARE = \dangle BDA = 90^\circ$, maka $\triangle ARE \sim \triangle ADB$ sehingga $\dangle RAE = \dangle BAD$. Namun, karena \textit{well-known} bahwa $\dangle CAO = 90^\circ - \dangle B = \dangle DAB$, maka kita punya $\dangle RAE = \dangle OAC$ yang menyebabkan $O,R,A$ segaris 
+    \end{proof}
+\end{lemma}
+\begin{lemma}
+    $OAQP$ jajargenjang
+    \begin{proof}
+        Jelas bahwa $O,M,P$ segaris dan $OP \perp BC$. Tetapi, karena $AQ \perp BC$ juga, maka $OP \parallel AQ$. Lalu, karena $O,R,A$ segaris, maka $OA \perp FE$. Namun, karena $QP \perp FE$ juga, maka $OA \parallel QP$. Dari sini didapatkan bahwa $OAQP$ jajargenjang.
+    \end{proof}
+\end{lemma}
+
+Dikarenakan $OAQP$ jajargenjang, maka $OP=OB$. Lalu, $OB=OA$ yang merupakan jari-jari lingkaran luar $(ABC)$. Selanjutnya, karena $\triangle ARE \sim \triangle ADB$ dan karena jelas bahwa $\triangle OBM \sim \triangle OPB$, maka 
+\begin{align*}
+    \dfrac{AR}{AD} = \dfrac{AE}{AB} = \cos \angle A = \dfrac{OM}{OB} = \dfrac{OB}{OP} = \dfrac{OA}{AQ}
+\end{align*}
+karena $\dangle RAD = \dangle OAQ$ juga, maka ditemukan bahwa $\triangle RAD \sim \triangle OAQ$. Ini berarti $\dangle RDA = \dangle OQA \implies DR \parallel OQ$. Terbukti.
+
+\input{Asymptote/1 Korea 2022, Problem 1.tex}
+\end{proof}

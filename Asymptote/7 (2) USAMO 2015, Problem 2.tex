@@ -1,0 +1,63 @@
+\begin{center}
+    \begin{asy}
+        import olympiad;
+        import geometry;
+        size(350);
+        
+        pair A,B,P,Q;
+        A = dir(90); 
+        B = dir(-90);
+        P = dir(148);
+        Q = dir(32);
+        draw(A--P--B--Q--A);
+        draw(A--B);
+        draw(P--Q);
+        dot("$A$",A,N); 
+        dot("$B$",B,S);
+        dot("$Q$",Q,E);
+        dot("$P$",P,W);
+        
+        circle c = circumcircle (triangle(A, B, P));
+        draw (c , blue);
+        pair O = circumcenter(A,B,P);
+        dot("$O$", O, E);
+        pair S,T,X;
+        S = dir(-130);
+        X = intersectionpoint(line(A,S),line(P,Q));
+        line xt = perpendicular(X, line(A,S));
+        pair xtp[] = intersectionpoints(c, xt);
+        T = xtp[0];
+        draw(X--T, red);
+        draw(A--S--T--A, green);
+        dot("$S$", S, SW);
+        dot("$T$", T, SE);
+        dot("$X$", X, NW);
+        draw(rightanglemark(S,X,T,2));
+
+        pair Y,C,M;
+        C = (A+S)/2;
+        M = (S+T)/2; 
+        dot("$C$",C,NW);
+        dot("$M$",M,SE); 
+
+        draw(circumcircle(X,C,M), gray);
+        pair N = circumcenter(X,C,M);
+        dot("$N$", N, NE);
+
+        draw(circumcircle(P,Q,M), dashed+red);
+        pair K = (A+O)/2;
+        dot("$K$", K, SW);
+
+        pair G = intersectionpoint(line(N,O),line(A,M));
+        dot("$G$", G, SE);
+
+        pair J = (2/3)*A+(1/3)*O;
+        dot("$J$", J, SW);
+
+        draw(A--M);
+        draw(N--O);
+        draw(A--N, blue);
+        draw(K--M, blue);
+        draw(J--G, blue);
+    \end{asy}
+\end{center}  

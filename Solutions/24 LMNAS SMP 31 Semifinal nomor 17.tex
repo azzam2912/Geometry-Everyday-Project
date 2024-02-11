@@ -1,0 +1,28 @@
+\textbf{\textit{Soal. }}\input{Problems/24 LMNAS SMP 31 Semifinal nomor 17}
+\begin{proof}[\textbf{Solusi. }] (Senin, 13 November 2023) Misalkan $G$ dan $H$ berturut-turut adalah perpotongan $EM$ dengan $AC$ dan $MF$ dengan $CB$. 
+\input{Asymptote/24 LMNAS SMP 31 Semifinal nomor 17}
+Perhatikan karena $\triangle MHB \sim \triangle MBF$ dan $\triangle MGA \sim \triangle MAE$ maka $\dfrac{MG}{MA} = \dfrac{MA}{ME}$ dan $\dfrac{MH}{MB}=\dfrac{MB}{MF}$ sehingga
+\begin{align*}
+    MG \cdot ME = MA^2 = MB^2 = MH \cdot MF
+\end{align*}
+yang menunjukkan bahwa $EGHF$ siklis.  Di sisi lain, karena $\dangle CGM = \dangle CHM = 90^\circ$ maka $CGMH$ siklis juga. Oleh karena itu, kita punya
+\begin{align*}
+    \dangle GED = \dangle GEF = \dangle GHF = \dangle GHM = \dangle GCM = \dangle GCD
+\end{align*}
+sehingga $EGDC$ siklis yang langsung mengakibatkan $\dangle EDM = \dangle EDC = \dangle EGC = 90^\circ$. Ini berarti $\dangle EDM = \dangle EAM$ dan $\dangle MDF = \dangle MBF$ yang menyebabkan $EDMA$ dan $MBFD$ semuanya siklis. Dari fakta tersebut akan didapat
+\begin{align*}
+    \dangle MED = \dangle MAD \text{ dan } \dangle MAD = \dangle DFB = \dangle DMB
+\end{align*}
+yang menunjukkan $\triangle EFM \sim \triangle ADB$. Oleh karena itu
+\begin{align*}
+    \dfrac{AB}{EF} = \dfrac{DB}{MF} \implies AB = EF\cdot\dfrac{DB}{MF}\dfrac{64}{3}\cdot\dfrac{12}{16}= 16 \implies AM= MB = \dfrac{1}{2}AB=8
+\end{align*}
+dan
+\begin{align*}
+    BF=\sqrt{MF^2-MB^2}=\sqrt{16^2-8^2}=8\sqrt{3}
+\end{align*}
+sehingga
+\begin{align*}
+    [AMF] = \dfrac{1}{2}\cdot AM \cdot BF = \dfrac{1}{2} \cdot 8 \cdot 8\sqrt{3} = 32\sqrt{3} \implies a+b = 32 + 3 = \boxed{35}
+\end{align*}
+\end{proof}

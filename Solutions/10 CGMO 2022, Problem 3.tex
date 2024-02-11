@@ -1,0 +1,37 @@
+\textbf{\textit{Soal. }}\input{Problems/10 CGMO 2022, Problem 3}
+
+\begin{proof}[\textbf{Solusi. }] (Sunday, 30 October 2022) Misalkan $N$ adalah proyeksi $I$ pada garis $AC$, $I_A$ adalah titik pusat $A-$excircle $\triangle ABC$, $K$ adalah proyeksi $I_A$ pada $BC$, dan $T$ adalah titik pada garis $II_A$ sedemikian sehingga $TM \perp BC$. 
+
+Perhatikan karena $\angle NIA = \angle CIA - \angle CIN = (90^\circ+\frac{\angle B}{2})-90^\circ=\frac{\angle B}{2} = \angle IBA$ dan $\angle NAI = \angle IAB$ maka didapat $\triangle BIN \sim \triangle BAJ$.
+
+Selanjutnya, observasi bahwa
+$$\angle NIB = 360^\circ - \angle BIC - \angle CIN
+            = 360^\circ - \left(90^\circ + \dfrac{\angle A}{2}\right) - 90^\circ
+            = 180^\circ - \dfrac{1}{2}\angle IAB
+            = \angle JAB.$$
+Karena $\triangle BIN \sim \triangle BAJ$ maka $\dfrac{NI}{AJ}=\dfrac{NI}{IA}=\dfrac{IB}{AB}$. Hal ini menyebabkan $\triangle BIN \sim \triangle BAJ$ yang secara langsung menunjukkan bahwa $\angle JBA = \angle NBI$. Oleh karena itu, untuk membuktikan $\angle JBA = \angle LBI$ cukup dibuktikan $N,L,B$ segaris.
+\input{Asymptote/10 CGMO 2022, Problem 3.tex}
+Sekarang perhatikan bahwa $\angle INA = 180^\circ - \angle CNI = 90^\circ + \angle ICN = \angle I_ACI + \angle ICN = \angle I_ACA$ yang mengakibatkan $NI \parallel CI_A$. Diperoleh $\dfrac{II_A}{IA}=\dfrac{CN}{AN}$.
+
+Di lain pihak, dengan properti terkenal, kita punya $CK=DB$ dan $KM=MD$. Hal ini menyebabkan $II_A = 2 IT$. Lalu, karena $MT, LI \perp BC$ maka $MT \parallel LI$ sehingga $\dfrac{IT}{IA}=\dfrac{ML}{AL}$. Dari sini kita peroleh
+\begin{align*}
+    \dfrac{CN}{AN} = \dfrac{II_A}{IA} = \dfrac{2IT}{IA} = \dfrac{2ML}{AL}
+\end{align*}
+yang mengakibatkan
+\begin{align*}
+    \dfrac{AB}{AN} \cdot \dfrac{CN}{CB} = \dfrac{AB}{AL} \cdot \dfrac{ML}{\frac{1}{2}CB} = \dfrac{AB}{AL} \cdot \dfrac{ML}{MB}.
+\end{align*}
+Padahal dengan dalil sinus pada $\triangle ABN$ dan $\triangle NBC$ serta $\triangle ABL$ dan $\triangle LBM$, akan didapat
+\begin{align*}
+    \dfrac{AB}{AN}\cdot\dfrac{CN}{CB} = \dfrac{\sin \angle BNA}{\sin \angle ABN} \cdot \dfrac{\sin \angle NBC}{\sin \angle CNB} = \dfrac{\sin \angle NBC}{\sin \angle ABN}
+\end{align*}
+dan
+\begin{align*}
+    \dfrac{AB}{AL}\cdot\dfrac{ML}{MB} = \dfrac{\sin \angle BLA}{\sin \angle ABL} \cdot \dfrac{\sin \angle LBM}{\sin \angle MLB} = \dfrac{\sin \angle LBM}{\sin \angle ABL}
+\end{align*}
+sehingga sekarang kita punya
+\begin{align*}
+    \dfrac{\sin \angle NBC}{\sin \angle ABN} = \dfrac{\sin \angle LBM}{\sin \angle ABL}.
+\end{align*}
+Namun, kita mengetahui bahwa $\angle ABN + \angle NBC = \angle ABL + \angle LBC = \angle ABC < 180^\circ$. Hal ini memaksa $\angle ABN = \angle ABL$ dan $\angle NBC = \angle LBC$ atau setara dengan titik-titik $N,L,B$ segaris, seperti yang ingin dibuktikan.
+\end{proof}

@@ -1,0 +1,18 @@
+    \begin{center}
+        \begin{asy}
+            import olympiad;
+            import geometry;
+            size(250);
+
+            pair A,B,C,D;
+            B = (0,0);
+            A = dir(135);
+            C = dir(0);
+            D = rotate(-105, C)*B;
+            dot("$A$", A, NW);
+            dot("$B$", B, SW);
+            dot("$C$", C, SE);
+            dot("$D$", D, NE);
+            draw(A--B--C--D--A);
+        \end{asy}
+    \end{center}

@@ -1,0 +1,68 @@
+\begin{center}
+    \begin{asy}
+        import olympiad;
+        import geometry;
+        size(350);
+    
+        pair A, B, C;
+        A = dir(105);
+        B = dir(-150);
+        C = dir(-30);
+        dot("$A$", A, NE);
+        dot("$B$", B, SW);
+        dot("$C$", C, SE);
+        draw(A--B--C--A);
+            
+        triangle t = triangle(A,B,C);
+        point Ia = excenter(t.BC);
+        pair D = foot(Ia, B, C);
+        dot("$D$", D, SW);
+    
+        circle abc = circumcircle(t);
+        pair xx[] = intersectionpoints(line(A,D),abc);
+        pair X = xx[0];
+        dot("$X$", X, SW);
+        draw(A--X);
+        draw(B--X);
+        draw(C--X);
+        draw(abc);
+
+        triangle tbxd = triangle(B,X,D);
+        circle bxd = circumcircle(tbxd);
+        pair Ib = incenter(tbxd);
+        pair xIb[] = intersectionpoints(line(X,Ib),bxd);
+        pair E = xIb[1];
+        draw(bxd, blue);
+        dot("$E$", E, N);
+        draw(X--E, blue);
+
+        triangle tcxd = triangle(C,X,D);
+        circle cxd = circumcircle(tcxd);
+        pair Ic = incenter(tcxd);
+        pair xIc[] = intersectionpoints(line(X,Ic),cxd);
+        pair F = xIc[1];
+        draw(cxd, blue);
+        dot("$F$", F, N);
+        draw(X--F, blue);
+
+        draw(E--F, green);
+
+        pair I = incenter(t);
+        pair N = foot(I, B ,C);
+        dot("$I$", I, NW);
+        dot("$N$", N, SW);
+        draw(I--N, orange);
+
+        draw(B--I, red);
+        draw(C--I, orange);
+        draw(D--E, orange);
+        draw(D--F, red);
+
+        pair E1 = foot(E, B, C);
+        pair F1 = foot(F, B, C);
+        dot("$E_1$", E1, SW);
+        dot("$F_1$", F1, SE);
+        draw(E--E1, orange);
+        draw(F--F1, red);
+    \end{asy}
+\end{center}

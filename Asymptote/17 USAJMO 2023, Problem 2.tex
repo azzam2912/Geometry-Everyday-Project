@@ -1,0 +1,36 @@
+\begin{center}
+    \begin{asy}
+        import olympiad;
+        import geometry;
+        size(250);
+        pair A,B,C,M,P,Q,N,D;
+        A=dir(75);
+        B=dir(210);
+        C=dir(-30);
+        M=(B+C)/2;
+        P=foot(C,A,M);
+        circle c = circumcircle(triangle(A,B,P));
+        pair BQ[] = intersectionpoints(c, line(B,C));
+        Q = BQ[1];
+        N = (A+Q)/2;
+        D = foot(A,B,C);
+        dot("$A$",A, A);
+        dot("$B$",B, SW);
+        dot("$C$",C, SW);
+        dot("$M$",M, S);
+        dot("$P$",P, NW);
+        dot("$Q$",Q, SW);
+        dot("$N$",N, NW);
+        dot("$D$",D, SE);
+        draw(A--B--C--A--M);
+        draw(B--N--C--P);
+        draw(c, dashed+red);
+        draw(B--Q);
+        draw(Q--A, blue);
+        draw(A--D, blue);
+        draw(M--N, blue);
+        draw(rightanglemark(A,D,C,2), green);
+        draw(rightanglemark(A,P,C,2), green);
+        draw(circumcircle(triangle(C,P,D)), dashed);
+    \end{asy}
+\end{center}

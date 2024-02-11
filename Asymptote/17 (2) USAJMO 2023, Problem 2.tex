@@ -1,0 +1,39 @@
+\begin{center}
+    \begin{asy}
+        import olympiad;
+        import geometry;
+        size(250);
+        pair A,B,C,M,P,Q,N,A1;
+        A=dir(75);
+        B=dir(210);
+        C=dir(-30);
+        M=(B+C)/2;
+        P=foot(C,A,M);
+        A1 = M+(-1)*(A-M);
+        circle c = circumcircle(triangle(A,B,P));
+        circle d = circumcircle(triangle(A1,C,P));
+        pair BQ[] = intersectionpoints(c, line(B,C));
+        Q = BQ[1];
+        N = (A+Q)/2;
+        dot("$A$",A, NE);
+        dot("$B$",B, SW);
+        dot("$C$",C, E);
+        dot("$M$",M, SE);
+        dot("$P$",P, NW);
+        dot("$Q$",Q, SW);
+        dot("$N$",N, NW);
+        dot("$A'$",A1, SE);
+        draw(A--B--C--A--M--A1);
+        draw(B--A1--C);
+        draw(B--N--C--P);
+        draw(c);
+        draw(d, dashed+orange);
+        draw(B--Q);
+        draw(Q--A, blue);
+        draw(A--A1, blue);
+        draw(A1--Q, red);
+        draw(N--M, red);
+        draw(rightanglemark(A,D,C,3), green);
+        draw(rightanglemark(A,P,C,2), green);
+    \end{asy}
+\end{center}

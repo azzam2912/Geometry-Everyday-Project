@@ -1,0 +1,28 @@
+\textbf{\textit{Soal. }}\input{Problems/3 IMO 2014, Problem 4}
+
+\begin{proof}[\textbf{Solusi. }(Tuesday, 11 October 2022) ]
+Misalkan $T$ adalah perpotongan $BM$ dengan lingkaran luar $(ABC)$.
+\input{Asymptote/3 IMO 2014, Problem 4.tex}
+Karena $\dangle BAP = \dangle ACQ$ dan $\dangle QAC = \dangle PBA$ maka $\triangle AQC \sim \triangle BPA$. Dari sini didapat $\dangle APQ = \dangle PQA$ yang mengakibatkan $AP=AQ \implies PM=AP=AQ=QN$. Lebih jauh, kita punya 
+\begin{align*}
+    \dfrac{AP}{BP} = \dfrac{QC}{AQ} \implies \dfrac{PM}{BP} = \dfrac{QC}{QN}
+\end{align*}
+
+Selanjutnya, kita punya $\dangle MTC = \dangle BTC = \dangle BAC = \dangle BCA + \dangle ABC = \dangle PAB + \dangle ABC = \dangle APB = \dangle MPC$ sehingga didapat $M,T,P,C$ konsiklis. Oleh karena itu, kita punya $\dangle BMP = \dangle TMP = \dangle TCP = \dangle TCB$. Namun, karena $\dangle TBC = \dangle MBP$, maka didapat $\triangle TBC \sim \triangle PBM$ sehingga
+\begin{align*}
+    \dfrac{CT}{TB} = \dfrac{PM}{BP}
+\end{align*}
+
+Dengan cara serupa, jika dimisalkan $T'$ adalah perpotongan $CN$  dengan lingkaran luar $(ABC)$,  akan didapat juga
+\begin{align*}
+    \dfrac{CT'}{T'B} = \dfrac{QC}{QN}
+\end{align*}
+
+Oleh karena itu, kita punya 
+\begin{align*}
+    \dfrac{CT}{TB} = \dfrac{CT'}{T'B}.
+\end{align*}
+Tetapi, ingat bahwa $C \neq T \neq B$ dan $C \neq T' \neq B$. Berarti haruslah $T=T'$. Ini menandakan $T$ adalah perpotongan antara $CN$ dan $BM$ yang terletak di lingkaran $(ABC)$. Terbukti.
+
+
+\end{proof}

@@ -1,0 +1,20 @@
+\textbf{\textit{Soal. }}\input{Problems/12 Philippine 2022, Problem 6}
+
+\begin{proof}[\textbf{Solusi.  }] Misalkan $I$ adalah titik bagi $\triangle ABC$ dengan $N$ adalah titik singgung lingkaran dalam $\triangle ABC$ dengan $BC$. Definisikan $E \neq X$ dan $F \neq X$ berturut-turut sebagai perpotongan garis bagi dalam $\angle DXB$ dengan lingkaran $(DXB)$ dan perpotongan garis bagi dalam $\angle CXD$ dengan lingkaran $(DXC)$. Misalkan pula $E_1$ dan $F_1$ berturut-turut sebagai proyeksi $E$ dan $F$ ke $BC$.
+\input{Asymptote/12 Philippine 2022, Problem 6.tex}
+Jika $s$ adalah setengah keliling $\triangle ABC$, maka $AC+CD=AB+BD=s$ sehingga $CD = s-AC=BN$ atau dengan kata lain, $D$ adalah titik singgung $A-$excircle dengan $BC$ dengan $BD=NC$ dan $BN=CD$.
+Lalu, perhatikan karena $XE$ garis bagi $\angle DXB$ sehingga $ED=EB$ yang secara langsung menyebabkan $E_1D=E_1B=\frac{1}{2}BD$. Dengan cara serupa didapat $DF_1=\frac{1}{2}CD$. 
+Selanjutnya, kita punya
+\begin{align*}
+    \angle EDE_1 = \angle EDB = \angle EXB = \frac{1}{2}\angle AXB = \frac{1}{2}\angle ACB = \angle ICN 
+\end{align*}
+yang menyebabkan $ED \parallel IC$. Karena $IN \perp BC$ dan $EE_1 \perp BC$ maka $IN \parallel EE_1$. Fakta-fakta tersebut mengimplikasikan bahwa $\triangle ICN \sim \triangle EDE_1$. Dengan cara serupa akan didapat juga $\triangle IBN \sim \triangle FDF_1$.
+Oleh karena itu,
+\begin{align*}
+    \dfrac{EE_1}{IN} = \dfrac{E_1D}{NC} = \dfrac{\frac{1}{2}BD}{BD}=\dfrac{1}{2}=\dfrac{\frac{1}{2}CD}{CD}= \dfrac{DF_1}{BN} = \dfrac{FF_1}{IN}
+\end{align*}
+atau $EE_1=FF_1$. Karena $EE_1 \parallel IN \parallel FF_11$ dan $EE_1=FF_1$, maka $EE_1F_1F$ adalah sebuah persegi panjang dengan $EF \parallel E_1F_1$.
+
+Sekarang akan dibuktikan bahwa $E_1F_1$ memang adalah garis singgung lingkaran $(BXD)$ dan $(CXD)$. Perhatikan bahwa dengan Tangent-Secant Theorem, $\angle DEF=\angle EDB=\angle EBD$ mengimplikasikan $EF$ menyinggung $(BXD)$ di $E$. Dengan cara serupa $EF$ menyinggung $(CXD)$ di $F$. Terbukti bahwa salah satu garis singgung persekutuan $(BXD)$ dan $(CXD)$ sejajar dengan $EF$.
+
+\end{proof}

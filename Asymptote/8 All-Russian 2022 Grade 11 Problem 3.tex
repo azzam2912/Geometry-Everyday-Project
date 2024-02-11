@@ -1,0 +1,76 @@
+\begin{center}
+    \begin{asy}
+        import olympiad;
+        import geometry;
+        size(350);
+        
+        pair A, B, C;
+        A = dir(125);
+        B = dir(-150);
+        C = dir(-30);
+        dot("$A$", A, NW);
+        dot("$B$", B, SW);
+        dot("$C$", C, SE);
+        draw(A--B--C--A);
+        circle c = circumcircle(triangle(A,B,C));
+        draw(c);
+        
+        pair O, P, Q;
+        O = circumcenter(triangle(A,B,C));
+        P = dir(187);
+        Q = rotate(180, O)*P;
+        dot("$O$", O, NW);
+        dot("$P$", P, W);
+        dot("$Q$", Q, E);
+        draw(P--Q);
+
+        pair X, Y, Z;
+        X = foot(P, A, B);
+        Y = foot(Q, A, C);
+        Z = foot(A, P, Q);
+        dot("$X$", X, SE);
+        dot("$Y$", Y, N);
+        dot("$Z$", Z, S);
+        draw(P--X, blue);
+        draw(Q--Y, blue);
+        draw(A--Z, blue);
+        draw(X--Y--Z--X, red);
+        draw(circumcircle(triangle(X,Y,Z)), blue);
+        pair O1 = circumcenter(X,Y,Z);
+        dot("$O_1$", O1, S);
+        
+        pair K,L,M,N, Op, Oq;
+        K = (X+Z)/2;
+        L = (Z+Y)/2;
+        M = intersectionpoint(line(O1, K), line(A,B));
+        Op = intersectionpoint(line(O1, K), line(A,P));
+        N = intersectionpoint(line(O1, L), line(A,C));
+        Oq = intersectionpoint(line(O1, L), line(A,Q));
+        dot("$K$", K, NW);
+        dot("$L$", L, NE);
+        dot("$M$", M, NW);
+        dot("$N$", N, NE);
+        dot("$O_P$", Op, NW);
+        dot("$O_Q$", Oq, NE);
+        
+        draw(O1--Op, green);
+        draw(O1--Oq, green);
+        draw(O1--X, green);
+        draw(O1--Y, green);
+        draw(O1--Z, green);
+        draw(A--P, blue);
+        draw(A--Q, blue);
+        draw(P--B, green);
+        draw(Q--C, green);
+        draw(circumcircle(triangle(K,L,O1)), purple);
+        draw(circumcircle(triangle(M,N,O1)), dashed+red);
+        draw(circumcircle(triangle(P,X,Z)), purple);
+        draw(circumcircle(triangle(Q,Y,Z)), purple);
+
+        draw(rightanglemark(A, Z, Q, 2));
+        draw(rightanglemark(P, X, B, 2));
+        draw(rightanglemark(Q, Y, C, 2));
+        draw(rightanglemark(Op, K, X, 2));
+        draw(rightanglemark(Oq, L, Y, 2));
+    \end{asy}
+\end{center}

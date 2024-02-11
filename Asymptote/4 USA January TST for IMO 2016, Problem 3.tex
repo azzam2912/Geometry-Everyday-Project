@@ -1,0 +1,56 @@
+Thanks TheUltimate123 for the asymptote and slice of hint from your solution!
+\begin{center}
+    \begin{asy}
+        size(12cm);
+        defaultpen(fontsize(10pt));
+        
+        pen pri=black;
+        pen sec=orange;
+        pen tri=fuchsia;
+        pen ter=blue;
+        pen fil=invisible;
+        pen sfil=invisible;
+        pen tfil=invisible;
+        
+        pair A, B, C, P, A1, B1, C1, T, Q, R, H, M;
+        A=dir(140);
+        B=dir(210);
+        C=dir(330);
+        P=incenter(A, B, C);
+        A1=foot(P, B, C);
+        B1=foot(P, C, A);
+        C1=foot(P, A, B);
+        T=extension(B, C, B1, C1);
+        Q=extension(B, P, B1, C1);
+        R=extension(C, P, B1, C1);
+        H=extension(B, R, C, Q);
+        M=(B+C)/2;
+        
+        filldraw(A -- B -- C -- cycle, fil, pri+linewidth(1.2));
+        draw(C -- H -- B -- T -- Q, sec);
+        fill(H -- B -- C -- cycle, sfil);
+        draw(H -- A1, sec);
+        draw(A -- P, sec);
+        draw(B -- Q, sec); 
+        draw(C -- R, sec);
+        draw(A1 -- P, ter);
+        draw(B1 -- P -- C1, ter);
+        filldraw(circumcircle(B, C, R), tfil, tri);
+        clip((B+(-100, -.2)) -- (B+(100, -.2)) -- (B+(100, 100)) -- (B+(-100, 100)) -- cycle);
+        filldraw(circumcircle(B, R, P), tfil, tri);
+        filldraw(T -- P -- H -- cycle, fil, tri+linewidth(1.2));
+        
+        dot("$A$", A, N);
+        dot("$B$", B, SW);
+        dot("$C$", C, SE);
+        dot("$P$", P, dir(25));
+        dot("$A_1$", A1, dir(260));
+        dot("$B_1$", B1, N);
+        dot("$C_1$", C1, NW);
+        dot("$T$", T, SW);
+        dot("$Q$", Q, N);
+        dot("$R$", R, dir(120));
+        dot("$H$", H, N);
+        dot("$M$", M, dir(260));
+    \end{asy}
+\end{center}

@@ -1,0 +1,23 @@
+\begin{asy}
+import olympiad;
+size(200);
+pair A,B,C,D,E;
+A=(0,0);
+B=(200,0);
+C=(200,150);
+D=(0,150);
+E=(200,85);
+draw(A--B--C--D--cycle);
+label("A",A,(-1,0));
+label("D",B,(0,-1));
+label("C",C,(1,0));
+label("B",D,(0,1));
+label("E",E,(1,0));
+dot(E);
+draw(A--E--D);
+markscalefactor=3;
+draw(anglemark(E,D,C));
+draw(anglemark(D,E,A));
+label("\small$30^\circ$",shift(35*dir(-7))*D);
+label("\small$80^\circ$",shift(35*dir(180))*E);
+\end{asy}

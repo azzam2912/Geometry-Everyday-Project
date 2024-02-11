@@ -1,0 +1,37 @@
+\begin{center}
+    \begin{asy}
+        import olympiad;
+        import geometry;
+        size(200);
+        pair A, B, C, D, E, F;
+        B = (0,8);
+        A = (-9.534, 0);
+        C = (9.534, 0);
+        D = (-3.3111, 2.2649);
+        draw(A--B--C--cycle);
+        draw(A--D--B);
+        draw(D--C);
+        label("$A$", A, SW);
+        label("$B$", B, N);
+        label("$C$", C, SE);
+        label("$D$", D, NW);
+
+        markscalefactor=0.3;
+        draw(anglemark(C,D,B), red);
+        label("$70^\circ$", D+(1.5,0.7), red);
+
+        markscalefactor=0.3;
+        draw(anglemark(B,C,D), blue);
+        label("$x$", C+(-2,0.8), blue);
+
+        markscalefactor=0.1;
+        label("$140^\circ$", D+(-0.5,0.2), blue);
+
+        markscalefactor=0.15;
+        label("$150^\circ$", D+(0.1, -1), orange);
+
+        markscalefactor=0.3;
+        draw(anglemark(D,A,B), blue);
+        label("$20^\circ$", A+(1.5, 1), blue);
+    \end{asy}
+\end{center}

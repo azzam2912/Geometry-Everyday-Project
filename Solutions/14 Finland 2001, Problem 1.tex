@@ -1,0 +1,23 @@
+\textbf{\textit{Soal. }}\input{Problems/14 Finland 2001, Problem 1}
+
+\begin{proof}[\textbf{Solusi. }] Misalkan $\angle CBA = \alpha$ dan $BD=BF=DA=x$. Karena $BD=DA$ kita punya $\angle DAB = \alpha$ dan $\angle CDA = 2\alpha$. Ini berarti $CA = DA \sin \angle CDA = x \sin 2\alpha$. Lalu, karena $CF \perp AB$ maka $\angle BCF = 90^\circ-\alpha$ dan $\angle FCA=\alpha$. Oleh karena itu, $FA = CA \sin \angle FCA = x\sin 2\alpha \sin \alpha$.
+    \input{Asymptote/14 Finland 2001, Problem 1.tex}
+
+Di lain sisi, karena $BD=DA$, kita juga punya $\frac{1}{2}AB = BD \cos \angle DBA = x \cos \alpha$. Berarti kita dapatkan
+\begin{align*}
+    AB &= BF + FA\\
+    2x \cos \alpha &= x + x\sin 2\alpha \sin \alpha\\
+    2 \cos \alpha &= 1 + \sin 2\alpha \sin \alpha\\
+    2 \cos \alpha &= 1 + (2\sin \alpha \cos \alpha \sin \alpha)\\
+    2 \cos \alpha &= 1 + (2\sin^2 \alpha \cos \alpha)\\
+    2 \cos \alpha &= 1 + (2(1 - \cos^2 \alpha) \cos \alpha)\\
+    2 \cos \alpha - (2(1 - \cos^2 \alpha) \cos \alpha) &= 1 \\
+    2( 1 - (1 - \cos^2 \alpha) \cos \alpha) &= 1 \\
+    2\cos^3 \alpha &= 1\\
+    \cos \alpha &= \dfrac{1}{\sqrt[3]{2}}.
+\end{align*}
+Sekarang, perhatikan bahwa $CD = DA \cos \angle CDA = x \cos 2\alpha$. Berarti $BC=BD+DC=x+x\cos2\alpha=x(1+\cos2\alpha)=x(1+2\cos^2\alpha-1)=2x\cos^2\alpha$ sehingga kita punya
+\begin{align*}
+    \dfrac{FB}{BC} = \dfrac{x}{2x\cos^2\alpha}=\dfrac{1}{2\cdot\left(\frac{1}{\sqrt[3]{2}}\right)^2}=\dfrac{1}{\sqrt[3]{2}}.
+\end{align*}
+\end{proof}

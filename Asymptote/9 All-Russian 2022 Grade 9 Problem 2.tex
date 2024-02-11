@@ -1,0 +1,67 @@
+\begin{center}
+    \begin{asy}
+        import olympiad;
+        import geometry;
+        size(350);
+
+        pair A, B, C;
+        A = dir(125);
+        B = dir(-150);
+        C = dir(-30);
+        dot("$A$", A, NW);
+        dot("$B$", B, W);
+        dot("$C$", C, E);
+        draw(A--B--C--A);
+
+        circle g = circumcircle(triangle(A,B,C));
+        draw(g);
+
+        pair I = incenter(triangle(A,B,C));
+        dot("$I$", I, NE);
+        
+        pair intA[] = intersectionpoints(line(A,I), g);
+
+        pair M = intA[0];
+        pair J = rotate(180,M)*I;
+        dot("$M$", M, SE);
+        dot("$J$", J, SE);
+        draw(circumcircle(triangle(B,I,C)), blue);
+
+        draw(A--J);     
+        draw(B--I, blue);
+        draw(C--I, blue);
+
+        line icperp = perpendicular(I, line(I,C));
+        pair Mb = (I+B)/2;
+        line Mbperp = perpendicular(Mb, line(I,B));
+        pair Ob = intersectionpoint(icperp, Mbperp);
+        dot("$M_b$", Mb, NW);
+        dot("$O_b$", Ob, NE);
+        pair Mbb = foot(Ob, I, M);
+        pair Mbbb = rotate(180, Mbb)*I;
+        draw(circumcircle(triangle(I,B,Mbbb)), red);
+        
+        line ibperp = perpendicular(I, line(I,B));
+        pair Mc = (I+C)/2;
+        line Mcperp = perpendicular(Mc, line(I,C));
+        pair Oc = intersectionpoint(ibperp, Mcperp);
+        dot("$M_c$", Mc, NE);
+        dot("$O_c$", Oc, SE);
+        pair Mcc = foot(Oc, I, M);
+        pair Mccc = rotate(180, Mcc)*I;
+        draw(circumcircle(triangle(I,C,Mccc)), red);
+
+        draw(Mb--M, purple);
+        draw(Mc--M, purple);
+        draw(I--Ob--M--Oc--I, green);
+
+        pair K = intersectionpoint(line(I,M),line(Ob,Oc));
+        draw(Ob--Oc, green);
+        dot("$K$", K, SW);
+
+        draw(rightanglemark(Ob, I, C, 3), green);
+        draw(rightanglemark(M, Mc, C, 2));
+        draw(rightanglemark(Oc, I, B, 1.5), red);
+        draw(rightanglemark(M, Mb, B, 2));
+    \end{asy}
+\end{center}

@@ -1,0 +1,54 @@
+\begin{center}
+    \begin{asy}
+import olympiad;
+import geometry;
+unitsize(1cm);
+pair A, B, C, M, D, E, F, G, H, la, lb;
+A = (-3,0);
+B = (3,0);
+la = (-3,5);
+lb = (3, 5);
+M = (A+B)/2;
+C = (-1,5);
+G = foot(M, A, C);
+H = foot(M, B, C);
+E = intersectionpoint(line(A,la), line(M,G));
+F = intersectionpoint(line(B,lb), line(M,H));
+D = intersectionpoint(line(C,M), line(E,F));
+
+draw(A--B--C--cycle);
+draw(E--F--M--cycle, blue);
+draw(G--H);
+draw(A--D--B, red);
+draw(C--M);
+draw(A--la);
+draw(B--lb);
+draw(circumcircle(triangle(E,F,G)), dashed);
+draw(circumcircle(triangle(F,H,D)), dashed+purple);
+draw(circumcircle(triangle(E,G,D)), dashed+purple);
+draw(circumcircle(triangle(A,E,D)), dotted+red);
+draw(circumcircle(triangle(B,F,D)), dotted+red);
+draw(A--F);
+
+label("$A$", A, SW);
+label("$B$", B, SE);
+label("$C$", C, N);
+label("$M$", M, S);
+label("$D$", D, NE);
+label("$E$", E, W);
+label("$F$", F, E);
+label("$G$", G, SE);
+label("$H$", H, E);
+label("$\ell_1$", (A+la)/2, W);
+label("$\ell_2$", (B+lb)/2, NE);
+label("$\frac{64}{3}$", (E+F)/2, NE, blue);
+label("$16$", (M+F)/2, SE, blue);
+label("$12$", (B+D)/2, S, red);
+
+// Clip the picture
+pair lowerLeftCorner = (-9,-1); // adjust as needed
+pair upperRightCorner = (9,6); // adjust as needed
+clip((lowerLeftCorner.x, lowerLeftCorner.y)--(upperRightCorner.x, lowerLeftCorner.y)--(upperRightCorner.x, upperRightCorner.y)--(lowerLeftCorner.x, upperRightCorner.y)--cycle);
+
+\end{asy}
+\end{center}

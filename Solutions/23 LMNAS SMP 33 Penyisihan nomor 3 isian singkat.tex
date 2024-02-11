@@ -1,0 +1,28 @@
+\textbf{\textit{Soal. }}\input{Problems/23 LMNAS SMP 33 Penyisihan nomor 3 isian singkat}
+\begin{proof}[\textbf{Solusi 1. }] (Senin, 13 November 2023) Misalkan titik $E$ berada di dalam $\triangle BDC$ sedemikian sehingga $\triangle ABD \cong \triangle CBE$. 
+\input{Asymptote/23 LMNAS SMP 33 Penyisihan nomor 3 isian singkat}
+Ini berarti $AD=EC$ dan $\angle DAC = \angle BAC - \angle BAD = \angle BCA - \angle BCE = \angle ECA$ sehingga $ADEC$ trapesium sama kaki yang jelas siklis. Lalu, $\angle BAD = \angle DBA = 20^\circ$. 
+
+Sekarang misalkan $\angle DBE = 2x$ maka karena $AB=BC$ didapat $\angle DAC = \angle ECA = 50^\circ - x$. Lalu, karena $BD=BE$ maka $\angle BDE = \angle BED = 90^\circ-x$. Selanjutnya, $\angle EDC = 360^\circ - \angle ADC - \angle ADB - \angle BDE = x-20^\circ$. Oleh karena $ADEC$ siklis dan sama kaki, maka $\angle DEA = \angle EDC = x-20^\circ$.
+
+Dari fakta tersebut didapat $\angle BEA = \angle BED + \angle DEA = 70^\circ = \frac{1}{2}\angle BDA$. Namun, karena $DB=DA$ maka didapat $D$ adalah pusat lingkaran $(ABE)$ sehingga $EB=BD=DE$ yang menyebabkana $\triangle BDE$ sama sisi sehingga $2x = \angle DBE = 60^\circ \implies x = 30^\circ$. 
+
+Oleh karena itu karena $DECA$ siklis didapat $\angle ACD = \angle AED = x-20^\circ = 10^\circ$.
+\end{proof}
+
+\begin{proof}[\textbf{Solusi 2. }] (Senin, 13 November 2023) Perhatikan bahwa $\angle BDC = 360^\circ - \angle BDA - \angle ADC = 70^\circ$. Misalkan $\angle BCD = x$.
+Dengan dalil sinus pada $\triangle BDC$ dan $\triangle ADB$ akan didapat
+\begin{align*}
+    \dfrac{\sin 140^\circ}{\sin 20^\circ} = \dfrac{\sin \angle ADB}{\sin \angle DAB} = \dfrac{AB}{BD} = \dfrac{BC}{BD} = \dfrac{\sin \angle BDC}{\sin \angle BCD} = \dfrac{\sin 70^\circ}{\sin x}
+\end{align*}
+sehingga didapat
+\begin{align*}
+    2\cos 20^\circ = \dfrac{2\sin 20^\circ \cos 20^\circ}{\sin 20^\circ} = \dfrac{\sin 40^\circ}{\sin 20^\circ} = \dfrac{\sin 140^\circ}{\sin 20^\circ} = \dfrac{\sin 70^\circ}{\sin x} = \dfrac{\cos 20^\circ}{\sin x}
+\end{align*}
+yang setara dengan
+\begin{align*}
+    \sin x = \frac{1}{2} \implies \angle DCB = x = 30^\circ \implies \angle DBC = 180^\circ - \angle BDC - \angle DCB = 80^\circ\\ \implies \angle ABC = \angle ABD + \angle DBC = 100^\circ \implies \angle BCA = \frac{1}{2}(180^\circ-\angle ABC) = 40^\circ\\ \implies \angle ACD = \angle BCA - \angle DCB = 10^\circ.
+\end{align*}
+\input{Asymptote/23 (2) LMNAS SMP 33 Penyisihan nomor 3 isian singkat}
+
+\end{proof}

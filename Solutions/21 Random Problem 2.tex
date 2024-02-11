@@ -1,0 +1,24 @@
+\textbf{\textit{Soal. }}\input{Problems/21 Random Problem 2}
+\begin{proof}[\textbf{Solusi. }] (Tuesday, 19 September 2023) Diketahuhi $\angle CAB = 180^\circ - 60^\circ - 100^\circ = 20^\circ$. Oleh karena itu jelas bahwa $\angle EDC = 2\angle CAB = 40^\circ$ dan $\angle BCD = \angle CAB = 20^\circ$. Selain itu $\angle DCA = \angle BCA - \angle BCD = 80^\circ$ sehingga $\angle CDA = 180^\circ - \angle DAC - \angle DCA = 80^\circ$ yang menyebabkan $DA=AC$ dan $\angle CDE = \angle EDA = 40^\circ$.
+    \input{Asymptote/21 Random Problem 2}
+Dari fakta tersebut, dengan Angle Bisector Theorem berlaku $\dfrac{CD}{DA} = \dfrac{CE}{EA}$.
+Selain itu, karena $\angle DBC = \angle CBA$ dan $\angle BAC = \angle BCD$ maka $\triangle BDC \sim \triangle BCA$ sehingga $\dfrac{BC}{AB} = \dfrac{BD}{CB} = \dfrac{CD}{CA}$.
+
+\begin{lemma}
+    $BE$ garis bagi $\angle CBA$
+    \begin{proof}
+        \textbf{Alternatif 1.}\\
+        Oleh karena itu, dengan menggabungkan fakta-fakta sebelumnya dan dengan dalil sinus pada $\triangle CDA$ dan $\triangle BDC$ kita punya
+        \begin{align*}
+            \dfrac{BC}{AB}=\dfrac{BD}{CB} = \dfrac{\sin 20^\circ}{\sin 100^\circ} = \dfrac{\sin 20^\circ}{\sin 80^\circ} = \dfrac{CD}{DA} = \dfrac{CE}{EA}
+        \end{align*}
+        \textbf{Alternatif 2.}\\
+        Kita punya
+        \begin{align*}
+            \dfrac{CE}{EA} = \dfrac{CD}{AD} = \dfrac{CD}{AC}  = \dfrac{BC}{AB}
+        \end{align*}
+        sehingga dari alternatif 1 atau alternatif 2 tersebut, berdasarkan Angle Bisector Theorem menunjukkan bahwa $BE$ adalah garis bagi $\angle CBA$.
+    \end{proof}
+\end{lemma}
+Dari sini, $\angle EBD = \frac{1}{2}\angle CBA = 30^\circ$ sehingga $\angle DEB = 180^\circ - \angle EBD - \angle BDE = 180^\circ - 30^\circ - (100^\circ + 40^\circ) = 10^\circ$.
+\end{proof}

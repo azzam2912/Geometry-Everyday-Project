@@ -1,0 +1,27 @@
+\begin{center}
+    \begin{asy}
+        import olympiad;
+        import geometry;
+        size(150);
+
+        pair A,B,C,D,F,M;
+        C = (0,0);
+        B = (0,4);
+        A = (3.0619678, 0);
+        F = foot(C, A, B);
+        M = (A+B)/2;
+        line l = perpendicular(M, line(B,A));
+        D = intersectionpoint(line(B,C),l);
+        dot("$A$", A, SE);
+        dot("$B$", B, N);
+        dot("$C$", C, SW);
+        dot("$F$", F, NE);
+        dot("$D$", D, W);
+        draw(A--B--C--A);
+        draw(B--D, red);
+        draw(D--A, red);
+        draw(B--F, red);
+        draw(C--F);
+        draw(rightanglemark(C,F,A,4), blue);
+    \end{asy}
+\end{center}

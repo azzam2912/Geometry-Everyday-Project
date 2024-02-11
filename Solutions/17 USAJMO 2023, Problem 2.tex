@@ -1,0 +1,24 @@
+\textbf{\textit{Soal. }}\input{Problems/17 USAJMO 2023, Problem 2}
+
+\begin{proof}[\textbf{Solusi 1.}] (Friday, 21 July 2023) Misalkan $D$ adalah proyeksi $A$ ke $BC$. Berarti kita punya $\dangle CPA = \dangle CDA = 90^\circ$ yang langsung mengakibatkan $CPDA$ siklis. 
+
+\input{Asymptote/17 USAJMO 2023, Problem 2}
+
+Sekarang perhatikan dari \textit{power of a point} pada lingkaran $(ABPQ)$ dan $(CPDA)$ didapat
+\begin{align*}
+    BM \cdot MQ = PM \cdot MA = CM \cdot MD.
+\end{align*}
+Namun, karena $BM = CM$ maka didapatkan $MQ = MD$. Hal ini mengimplikasikan $QM : MD = QN : NA$ sehingga $\triangle MQN \sim \triangle DQA$ yang berakibat $\dangle QMN = \dangle QDA = 90^\circ$. Tentu saja karena $M$ titik tengah $BC$ dan $MN \perp BC$, maka $BN=CN$ seperti yang ingin dibuktikan.
+\end{proof}
+
+\begin{proof}[\textbf{Solusi 2.}] (Friday, 21 July 2023) Misalkan $A'$ adalah titik hasil pencerminan $A$ terhadap $M$. 
+\input{Asymptote/17 (2) USAJMO 2023, Problem 2}
+
+Perhatikan bahwa dengan \textit{power of a point} kita punya
+\begin{align*}
+    MQ \cdot MC = MQ \cdot MB = MP \cdot MA = MP \cdot MA'
+\end{align*}
+yang menunjukkan bahwa $Q,C,A',P$ konsiklis. Oleh karena itu $\dangle CQA' = \dangle CPA' = 90^\circ$ atau $QA' \perp BC$.
+
+Di lain sisi, karena $AN=NQ$ dan $AM=MA'$, maka $NM \parallel QA'$ yang mengakibatkan $NM \perp BC$. Karena $M = \operatorname{BC}$, maka $BN=NC$. Terbukti.
+\end{proof}

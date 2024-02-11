@@ -1,0 +1,33 @@
+\textbf{\textit{Soal. }}\input{Problems/7 USAMO 2015, Problem 2}
+
+\begin{proof}[\textbf{Solusi 1. }] (Saturday, 22 October 2022) Misalkan $L$ pada $ST$ dan $Y$ pada $AT$ sehingga $AL \perp ST$ dan $SY \perp AT$. Sadari bahwa $X,Y,M,N$ konsiklis dan membentuk nine point circle dari $\triangle AST$ sebut sebagai lingkaran $\Gamma_1$. Lalu, karena $SY \perp AT$ dan $TX \perp AS$ maka $X,Y,T,S$ konsiklis, misalkan membentuk lingkaran $\Gamma_2$. Terakhir, misalkan $H$ adalah titik tinggi $\triangle AST$.
+\input{Asymptote/7 USAMO 2015, Problem 2.tex}
+Sekarang, misalkan $PQ \cap AT = Y'$. Kita punya $XY' \perp AB$ dan $ST \perp AL$. Dari well-known property jelas bahwa $\dangle HAY = \dangle SAO$. Oleh karena itu, jelas bahwa $\triangle AXY' \sim \triangle ATS$. Padahal, kita juga tahu bahwa $\triangle AXY \sim \triangle ATS$. Ini berarti $Y=Y'$ yang menunjukkan bahwa $P,X,Y,Q$ segaris.
+
+Sekarang, dengan mengobservasi kuasa titik $Z$ terhadap lingkaran $\omega, \Gamma_1, \Gamma_2$ akan didapat
+\begin{align*}
+    ZP \cdot ZQ = ZT \cdot ZS = ZY \cdot ZX = ZL \cdot ZM
+\end{align*}
+yang menunjukkan bahwa $P,Q,M,L$ konsiklis. Jika dimisalkan $l$ adalah garis sumbu $ML$ maka $l$ memotong titik tengah $AO$ karena $MO \parallel AL \parallel l$. Sadari bahwa pusat dari $(PQLM)$ adalah $K$ yang merupakan titik tengah $AO$ dikarenakan $K$ adalah perpotongan antara garis sumbu $PQ$ (garis $AB$) dan garis $l$ yang memotong $AB$ di titik tengah $AO$. Terbukti bahwa $M$ berada di lingkaran $(PMLQ)$ dengan pusatnya adalah $K$ yang tidak terpengaruh oleh letak titik $X$. Terbukti.
+\end{proof}
+
+
+
+
+\begin{proof}[\textbf{Solusi 2. }] (Saturday, 22 October 2022) Misalkan $C$ adalah titik tengah $AS$. Karena $X$ kaki tinggi dari $T$ ke $AS$, $M$ titik tengah $ST$ dan $C$ adalah titik tengah $AS$, maka $(XCM)$ adalah nine point circle dari $\triangle AST$ dengan $N$ adalah pusat lingkarannya dan $G$ adalah titik berat $\triangle AST$.
+
+\input{Asymptote/7 (2) USAMO 2015, Problem 2.tex}
+
+Perhatikan kuasa titik $A$ terhadap lingkaran $(XCM)$. Karena $AO$ adalah jari-jari $(AST)$, maka panjang jari-jari $(XCM)$ adalah $\frac{1}{2}AO$ sehingga didapat
+\begin{align*}
+    \operatorname{Pow}_{(XCM)} (A) = NA^2 - \left(\dfrac{1}{2}AO\right)^2 = AC \cdot AX = \dfrac{1}{2} \cdot AS \cdot AX = \dfrac{1}{2} AP^2\\
+    \implies NA^2 = \left(\dfrac{1}{2}AO\right)^2 + \dfrac{1}{2} AP^2
+\end{align*}
+Karena $AP$ dan $AO$ tidak bergantung pada $X$, maka $AN$ juga tak bergantung pada $X$. Oleh karena itu dapat dimisalkan sebuah lingkaran $\omega_1$ berpusat di $A$ dan berjari-jari $AN$.
+
+Jelas bahwa $N,G,O$ segaris dan berada pada Euler line dengan $OG:GN=2:1$. Misalkan $K$ sebagai titik tengah $AO$ dan $J$ pada segmen $AO$ sehingga $AJ = \dfrac{1}{3}AO$. 
+
+Maka didapat $OG:GN=OJ:JA$ sehingga $\triangle ONA \sim \triangle OGJ$. Berarti terdapat homothety berpusat di $O$ dengan skala $\frac{2}{3}$ yang mengirim $A \to J$, $N \to G$, dan $\omega_1 \to \omega_2$ dimana $\omega_2$ adalah lingkaran berpusat di $J$ dan berjari-jari $JG$. Karena $AN$ tidak bergantung pada $X$ dan $JG = \frac{2}{3} AN$, maka $KM$ juga tidak bergantung pada $X$
+
+Selanjutnya, karena $AJ:JK=AG:GM=2:1$ maka $\triangle AJG \sim \triangle AKM$. Berarti terdapat homothety berpusat di $A$ dengan skala $\frac{3}{2}$ yang mengirim $J \to K$, $G \to M$, dan $\omega_2 \to \omega_3$ dimana $\omega_3$ adalah lingkaran berpusat di $K$ dan berjari-jari $KM$. Tetapi, karena $JG$ tidak bergantung pada $X$ dan $KM = \frac{3}{2} JG$, maka $KM$ juga tidak bergantung pada $X$. Oleh karena itu $M$ terletak di lingkaran $\omega_3$ yang tidak bergantung dengan $X$. Terbukti.
+\end{proof}

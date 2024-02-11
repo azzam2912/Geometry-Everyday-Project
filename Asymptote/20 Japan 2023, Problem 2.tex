@@ -1,0 +1,34 @@
+\begin{center}
+    \begin{asy}
+        import olympiad;
+        import geometry;
+        size(200);
+        pair A = dir(110);
+        pair B = dir(210);
+        pair C = dir(-30);
+        pair D = (B+C)/2;
+        pair E = (C+A)/2;
+        pair F = (A+B)/2;
+        pair X = foot(D, A, B);
+        pair Y = foot(D, A, C);
+        line F1 = perpendicular(F, line(X,Y));
+        line parXY = perpendicular(F, F1);
+        pair P = intersectionpoint(parXY, line(Y,D));
+        dot("$A$", A, NW);
+        dot("$B$", B, SW);
+        dot("$C$", C, SE);
+        dot("$D$", D, S);
+        dot("$E$", E, SW);
+        dot("$F$", F, NW);
+        dot("$P$", P, E);
+        dot("$X$", X, 2.5*dir(45));
+        dot("$Y$", Y, N);
+        draw(A--B--C--A);
+        draw(E--P, red);
+        draw(X--D--Y--P--A--D, purple);
+        draw(F--D--E--F--P);
+        draw(X--Y);
+        draw(circumcircle(triangle(A,X,Y)));
+        draw(circumcircle(triangle(A,P,D)), dashed+purple);
+    \end{asy}
+\end{center}

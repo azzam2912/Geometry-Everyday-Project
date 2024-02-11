@@ -1,0 +1,31 @@
+\textbf{\textit{Soal. }}\input{Problems/15 Iberoamerican 2022, Problem 5}
+
+\begin{proof}[\textbf{Solusi. }] (Friday, 23 December 2022) Perhatikan untuk kasus $AB=AC$, karena kesimetrian, jelas bahwa $MK=ML$. Oleh karena itu, WLOG $AB < AC$.
+    \input{Asymptote/15 Iberoamerican 2022, Problem 5.tex}
+Misalkan  $T \neq A$ adalah perpotongan garis bagi luar $\angle BAC$ dengan lingkaran $\Gamma$. Lalu, misalkan $N \neq A$ adalah perpotongan garis bagi dalam $\angle BAC$ dengan lingkaran $\Gamma$.
+Dari sifat garis bagi dalam dan luar, $\angle TAN = 90^\circ$ yang menunjukkan juga bahwa $TN$ diameter $\Gamma$. Selain itu, $T$ adalah titik tengah dari busur $BC$ sehingga $TB=TC$. . 
+
+\begin{lemma}
+    $TQCB$ dan $TPBC$ adalah layang-layang yang kongruen
+    \begin{proof}[\textbf{Bukti.}]
+        Karena $QC$ menyinggung $\Gamma$ di $C$, maka $\angle TCQ = \angle TBC = \angle BCT$. Di lain sisi, karena $BC=CQ$ dan $TB=TC \implies \angle TBC = \angle BCT$, maka $TC \perp QB$ sehingga $TQCB$ adalah layang-layang dengan $TB=TQ$. Analogi cara tersebut, didapatkan bahwa $TPBC$ adalah layang-layang juga.
+
+        Selanjutnya, karena $TN$ adalah garis sumbu yang membagi dua sama besar segmen $BC$ dan $TN \perp BC$, serta $BP=CQ$, maka dari kesimetrian kita punya $TQ=TP$ dan $TC=TB$. Hal ini menyebabkan $TQCB \cong TPBC$.    \end{proof}
+\end{lemma}
+
+\begin{lemma}
+    $LQTC$ dan $PKTB$ adalah segiempat siklis.
+    \begin{proof}[\textbf{Bukti.}]
+        Perhatikan bahwa $\angle TLC = \angle CAT$ karena $LC = AC$. Dari sini, karena $TQCB \cong TPBC$ adalah layang-layang dan $TABC$ siklis, maka
+        $$\angle TLC = \angle CAT = \angle CBT = \angle TQC$$
+        yang menunjukkan bahwa $LQTC$ siklis. Dengan cara serupa didapat $PKTB$ siklis.
+    \end{proof}
+\end{lemma}
+
+Karena layang-layang $TQCB$ dan $TPBC$ kongruen, maka $\angle TCQ = \angle PBT$. Berarti akan didapat
+\begin{align*}
+    \angle KLM = 180^\circ - \angle QLT = \angle TCQ = \angle PBT = \angle PKT = \angle MKL
+\end{align*}
+yang membuktikan bahwa $ML=MK$.
+
+\end{proof}

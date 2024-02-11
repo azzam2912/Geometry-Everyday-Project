@@ -1,0 +1,21 @@
+\textbf{\textit{Soal. }}\input{Problems/6 Iran-Ukraine Camp 2021 Exam I P-1}
+
+\begin{proof}[\textbf{Solusi. }] (Thursday, 20 October 2022) WLOG $AB < AC$. Misalkan $T$ adalah perpotongan kedua dari lingkaran $(FPD)$ dan $(EQD)$. Karena $BP$ dan $CQ$ masing-masing adalah garis bagi sudut $B$ dan $C$, maka $FP=PD$ dan $EQ=QD$. Lalu, karena $\dangle FPD = \dangle FTD = \dangle ETD = \dangle EQD$ maka $\triangle EQD$ dan $\triangle FPD$ sebangun. Lebih jauh, $D$ adalah pusat dari spiral similarity yang membawa $\triangle EQD$ ke $\triangle FPD$ sehingga dari well-known property, $T$ adalah perpotongan dari $EF$ dan $QP$. Oleh karena itu, akan dibuktikan bahwa $TD$ adalah garis singgung lingkaran $\omega$ di $D$.
+
+\begin{lemma}
+    $PQ \parallel BC$
+    \begin{proof}[\textbf{Bukti. }]
+        Perhatikan bahwa karena $\angle IKB = 180^\circ - \angle BAK - \angle KBA = 180^\circ - \frac{1}{2}\angle A - \angle B$ maka didapat $\angle PIK = 180^\circ - \angle KBI - \angle IKB =  180^\circ - \frac{1}{2}\angle B - (180^\circ - \frac{1}{2}\angle A - \angle B)= \frac{1}{2}(\angle A + \angle B) = \frac{1}{2}(180^\circ - \angle C) = 90^\circ - \frac{1}{2}\angle C$. Padahal, karena $\angle KDI=90^\circ$ didapat $IK$ adalah diameter $\omega$ sehingga $\angle KPI = 90^\circ$ yang menyebabkan $\angle IQP = \angle IKP = 90^\circ - \angle PIK = \frac{1}{2}\angle C = \angle ICB$ yang mengakibatkan $PQ \parallel BC$. Terbukti.
+    \end{proof}
+\end{lemma}
+
+\input{Asymptote/6 Iran-Ukraine Camp 2021 Exam i P-1.tex}
+
+Karena $PQ \parallel BC$ maka $\angle TDB = \angle DTP = \angle DFP$. Karena $FP=PD$ maka $\angle TDB = \angle PDF$. Ini menyebabkan $\angle PDT = \angle PDF + \angle FDT = \angle TDB + \angle FDT = \angle FDB$.
+
+Di lain sisi, karena $FP=PD$ dan $FB=BD$ maka $BP$ melewati titik pusat lingkaran $(FPD)$. Lalu, karena $IK$ diameter $\omega$, maka $PK \perp BP$. Padahal kita juga punya $FD \perp BP$. Ini berarti $PK \parallel FD$ dan secara khusus $PK$ menyinggung lingkaran $(FPD)$ di $P$. Oleh karena itu, kita punya $\angle PKD = \angle FDB$.
+
+Dari fakta-fakta tersebut, akan didapatkan $\angle PQD = \angle PKD = \angle FDB = \angle PDT$, yang membuktikan bahwa $TD$ menyinggung $\omega$ di $D$, seperti yang ingin dibuktikan.
+
+    
+\end{proof}

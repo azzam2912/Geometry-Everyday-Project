@@ -1,0 +1,23 @@
+Thank you MrOreoJuice on AoPS for the asymptote picture :)
+\begin{center}
+    \begin{asy}
+        size(250);
+        pair A = dir(125), B = dir(-150), C = dir(-30), H = A+B+C, M=(C+B)/2;
+        pair O=origin, D=foot(A,B,C), E=foot(B,C,A), F=foot(C,A,B);
+        pair R=extension(A,O,E,F);
+        pair P= 2*C*B/(C+B);
+        pair Q=A+P-O;
+        pair S=extension(E,F,P,Q);
+        path c1=unitcircle;
+        draw(c1,dotted);
+        draw(A--B--C--A);
+        draw(P--B);
+        draw(P--C);
+        draw(F--S, dashed+grey); draw(Q--S, dashed+grey);
+        draw(A--Q--P--O--A, blue); draw(B--E); draw(C--F);
+        draw(E--F);
+        dot("$A$",A,N); dot("$B$",B,SW);dot("$C$",C,SE); dot("$P$",P,SE);dot("$O$",O);
+        dot("$H$",H); dot("$D$",D,SE); dot("$E$",E,NE);dot("$F$",F,W); dot("$R$",R,W); dot("$Q$",Q,W); dot(S);
+        dot("$M$",M,SE);
+    \end{asy}    
+\end{center}

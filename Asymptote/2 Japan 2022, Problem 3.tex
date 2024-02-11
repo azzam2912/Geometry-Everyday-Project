@@ -1,0 +1,52 @@
+Thanks EulersTurban for the asymptote picture :)
+\begin{center}
+    \begin{asy}
+    /* Geogebra to Asymptote conversion, documentation at artofproblemsolving.com/Wiki go to User:Azjps/geogebra */
+    import graph; size(12cm); 
+    real labelscalefactor = 0.8; /* changes label-to-point distance */
+    pen dps = linewidth(0.7) + fontsize(10); defaultpen(dps); /* default pen style */ 
+    pen dotstyle = black; /* point style */ 
+    real xmin = -16.581447502554504, xmax = 14.190483526605371, ymin = -6.724424998317599, ymax = 11.674458045226984;  /* image dimensions */
+    
+     /* draw figures */
+    draw((0,8.08)--(-3.54,0), linewidth(0.4) + blue); 
+    draw((-3.54,0)--(3.54,0), linewidth(0.4) + blue); 
+    draw((3.54,0)--(0,8.08), linewidth(0.4) + blue); 
+    draw(circle((-4.009081052926384,4.068417484239327), 5.671465874858991), linewidth(0.4) + linetype("4 4")); 
+    draw((1.6578143075369038,4.296062258503339)--(-0.9271496309748504,-0.6925933202094363), linewidth(0.4) + blue); 
+    draw((-0.9271496309748504,-0.6925933202094363)--(-1.4869827036317487,0), linewidth(0.4) + blue); 
+    draw((-3.54,0)--(-0.9271496309748504,-0.6925933202094363), linewidth(0.4) + blue); 
+    draw((-0.9271496309748504,-0.6925933202094363)--(-2.5134913518158757,-1.4022987957026576), linewidth(0.4) + blue); 
+    draw((-2.5134913518158757,-1.4022987957026576)--(1.6578143075369038,4.296062258503339), linewidth(0.4) + blue); 
+    draw((0,8.08)--(-0.9271496309748504,-0.6925933202094363), linewidth(0.4) + blue); 
+    draw((-0.9271496309748504,-0.6925933202094363)--(3.54,0), linewidth(0.4) + blue); 
+    draw((-3.54,0)--(-2.5134913518158757,-1.4022987957026576), linewidth(0.4) + blue); 
+    draw((0,8.08)--(-2.5134913518158757,-1.4022987957026576), linewidth(0.4) + blue); 
+    draw((0,8.08)--(1.026508648184126,1.459133764181308), linewidth(0.4) + blue); 
+    draw((-2.5134913518158757,-1.4022987957026576)--(1.026508648184126,1.459133764181308), linewidth(0.4) + blue); 
+    draw((-1.4869827036317487,0)--(1.026508648184126,1.459133764181308), linewidth(0.4) + blue); 
+    draw((1.026508648184126,1.459133764181308)--(-0.9271496309748504,-0.6925933202094363), linewidth(0.4) + blue); 
+    draw((1.026508648184126,1.459133764181308)--(1.6578143075369038,4.296062258503339), linewidth(0.4) + blue); 
+    draw(circle((1.0265086481841261,1.4591337641813078), 2.9063224386545805), linewidth(0.4) + linetype("4 4") ); 
+    draw((1.026508648184126,1.459133764181308)--(3.54,0), linewidth(0.4) + blue); 
+     /* dots and labels */
+    dot((0,8.08),dotstyle); 
+    label("$A$", (0.0900294910503877,8.279904295926729), NE * labelscalefactor); 
+    dot((-3.54,0),dotstyle); 
+    label("$B$", (-3.465213193128005,0.20528531830126717), NW * labelscalefactor); 
+    dot((3.54,0),linewidth(4pt) + dotstyle); 
+    label("$C$", (3.6251860583690156,0.1651130845817375), E * labelscalefactor); 
+    dot((1.026508648184126,1.459133764181308),dotstyle); 
+    label("$O$", (1.1144214508983992,1.651485732204335), NE * labelscalefactor); 
+    dot((-1.4869827036317487,0),linewidth(4pt) + dotstyle); 
+    label("$D$", (-1.416429273431982,0.1651130845817375), NW * labelscalefactor); 
+    dot((1.6578143075369038,4.296062258503339),linewidth(4pt) + dotstyle); 
+    label("$E$", (1.737091073551112,4.463542092571411), NE * labelscalefactor); 
+    dot((-0.9271496309748504,-0.6925933202094363),linewidth(4pt) + dotstyle); 
+    label("$F$", (-0.854018001358564,-0.5379010055100315), S * 3 * labelscalefactor); 
+    dot((-2.5134913518158757,-1.4022987957026576),linewidth(4pt) + dotstyle); 
+    label("$K$", (-2.4408212332799937,-1.2409150956018005), S * 3* labelscalefactor); 
+    clip((xmin,ymin)--(xmin,ymax)--(xmax,ymax)--(xmax,ymin)--cycle); 
+     /* end of picture */
+\end{asy}
+\end{center}

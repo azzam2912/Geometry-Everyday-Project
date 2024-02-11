@@ -1,0 +1,22 @@
+\begin{center}
+    \begin{asy}
+        import olympiad;
+        import geometry;
+        size(200);
+        pair A, B, C, D, E;
+        B = (0,8);
+        A = (-9.534, 0);
+        C = (9.534, 0);
+        D = (-3.3111, 2.2649);
+        E = (3.3111, 2.2649);
+        draw(A--B--C--cycle);
+        draw(E--B--D--cycle);
+        draw(E--A--D--E--C--D);
+        
+        label("$A$", A, SW);
+        label("$B$", B, N);
+        label("$C$", C, SE);
+        label("$D$", D, NW);
+        label("$E$", E, NE);
+    \end{asy}
+\end{center}

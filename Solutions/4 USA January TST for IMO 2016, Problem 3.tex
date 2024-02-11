@@ -1,0 +1,57 @@
+\textbf{\textit{Soal. }}\input{Problems/4 USA January TST for IMO 2016, Problem 3}
+
+\begin{proof}[\textbf{Solusi. }(Thursday, 13 October 2022)] 
+Klaim bahwa $P \in \{I,O,H\}$ dimana $I,O,H$ berturut-turut adalah titik bagi $\triangle ABC$, titik pusat $(ABC)$, dan titik tinggi $\triangle ABC$. Mudah dibuktikan bahwa $P \in \{I,O,H\}$ memenuhi. Jika $P=I$ maka $\angle PAB + \angle PBC + \angle PCA = \dfrac{1}{2}\angle A + \dfrac{1}{2}\angle B + \dfrac{1}{2}\angle C = 90^{\circ}$. Jika $P=O$, maka $\angle PAB + \angle PBC + \angle PCA = (90^{\circ} - \angle C) + (90^{\circ} - \angle A)+(90^{\circ}-\angle B) = 90^{\circ}$ serta $A_1,B_1,C_1$ masing-masing merupakan titik tengah $BC,CA,AB$. Jika $P=H$, maka $\angle PAB + \angle PBC + \angle PCA = (90^{\circ} - \angle B) + (90^{\circ} - \angle C)+(90^{\circ}-\angle A) = 90^{\circ}$ serta $A,P,A_1$ segaris, $B,P,B_1$ segaris, dan $C,P,C_1$ segaris.
+
+Sekarang, asumsikan bahwa $P \not \in \{O,H\}$. Akan dibuktikan bahwa haruslah $P=I$. Dari asumsi, jelas bahwa $P$ tidak berada di $AA_1, BB_1, CC_1$ serta $A_1$ bukan merupakan titik tengah $BC$ sehingga menurut Ceva, $B_1C_1$ tidak sejajar dengan $BC$.\\
+
+\input{Asymptote/4 USA January TST for IMO 2016, Problem 3.tex}
+
+Misalkan $T=B_1C_1 \cap BC$, $R = CP \cap B_1C1$, $Q = BP \cap B_1C_1$, dan $H = BR \cap CQ$.
+
+\begin{lemma}
+    $(B,C;T,A_1)=-1$
+    \begin{proof}[\textbf{Bukti. }]
+        Perhatikan dengan Ceva pada $\triangle ABC$ kita punya
+        \begin{align*}
+            \dfrac{BC_1}{C_1A} \cdot \dfrac{AB_1}{B_1C} \cdot \dfrac{CA_1}{A_1B} = 1.
+        \end{align*}
+        Lalu, dengan teorema Menelaus pada $\triangle ABC$ dan transversal $B_1C_1$ kita punya
+        \begin{align*}
+            \dfrac{BC_1}{C_1A}\cdot\dfrac{AB_1}{B_1C}\cdot\dfrac{CT}{TB} = -1
+        \end{align*}
+        Oleh karena itu dari kedua persamaan tersebut akan didapat
+        \begin{align*}
+            \dfrac{CA_1}{A_1B} \cdot \dfrac{TB}{CT} = -1
+        \end{align*}
+        atau $(B,C;T,A_1)=-1$. Terbukti.
+    \end{proof}
+\end{lemma}
+
+dari lemma tersebut, jika dimisalkan $A_1' = HP \cap BC$, karena $HA_1', CR, BQ$ konkuren di $P$, maka $BCQR$ adalah complete quadrilateral, oleh karena itu (bisa juga dengan Ceva-Menelaus) kita punya $(B,C;T,A_1')=-1$. Namun, karena $(B,C;T,A_1)=-1$, maka $A_1=A_1'$. Ini berarti $H,P,A_1$ segaris.
+
+\begin{lemma}
+    $BRQC$ siklis.
+    \begin{proof}[\textbf{Solusi.}] 
+        Pertama perhatikan, karena $PA_1 \perp BC$, $PB_1 \perp AC$, $PC_1 \perp AB$ maka jelas bahwa $AB_1PC_1$, $PC_1BA_1$ dan $A_1CB_1P$ siklis. Oleh karena itu
+        \begin{align*}
+            \dangle QBC &= \dangle PBC = 90^\circ - \dangle PAB - \dangle PCA\\
+            &= 90^\circ - \dangle PAC_1 - \dangle PCB_1 \\
+            &= 90^\circ + \dangle C_1B_1P + \dangle B_1CP \\
+            &= \dangle PB_1C + \dangle C_1B_1P + \dangle B_1CP \\
+            &= QRC.
+        \end{align*}
+        Terbukti $BRQC$ siklis.
+    \end{proof}
+\end{lemma}
+
+Dari lemma tersebut, didapatkan bahwa $BCQR$ adalah cyclic complete quadrilateral, sehingga dengan Teorema Brocard, jika $M$ pusat lingkaran $(BCQR)$, maka $M$ merupakan titik tinggi dari $\triangle TPH$. Tetapi, karena $H,P,A_1$ segaris dan $PA_1 \perp BC$, maka $HP \perp TB$ sehingga $TB$ merupakan garis tinggi $\triangle THB$ yang memaksa $M$ harus berada di $BC$. Ini berarti $BC$ adalah diameter $(BCQR)$ dengan $M$ titik tengah $BC$ sehingga $\dangle BRC = \dangle BQC = 90^\circ$. Hal ini mengakibatkan $P$ adalah titik tinggi $\triangle HBC$.
+
+Di lain sisi, karena $\dangle BC_1P = \dangle BRP = \dangle BA_1P = 90^\circ$ maka $B,C_1,R,P,A_1$ konsiklis sehingga akan didapat
+\begin{align*}
+    \dangle PBA = \dangle PBC_1 = \dangle PRC_1 = \dangle CRQ = \dangle CBQ = \dangle CBP.
+\end{align*}
+Dengan cara serupa akan didapat $\dangle ACP = \dangle PCB$. Dari sini dapat disimpulkan bahwa $P$ adalah titik bagi $\triangle ABC$ atau $P=I$. Terbukti.
+
+
+\end{proof}

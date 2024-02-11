@@ -1,0 +1,37 @@
+\begin{center}
+    \begin{asy}
+        import olympiad;
+        import geometry;
+        size(200);
+        pair A, B, C, I, P, Q, R, S;
+        C = (0,0);
+        B = (1,0);
+        A = (0.5, 2);
+        I = incenter(A,B,C);        
+        draw(A--B--C--cycle);
+        circle inc = incircle(triangle(A,B,C));
+        draw(inc); 
+        label("$C$", C, SW);
+        label("$B$", B, SE);
+        label("$A$", A, N);
+        Q = foot(I, B, C);
+        P = foot(I, A, B);
+        pair PR[] = intersectionpoints(line(P,C), inc);
+        R = PR[0];
+        draw(C--P);
+        draw(Q--R);
+        label("$P$", P, SE);
+        label("$Q$", Q, SE);
+        label("$R$", R, N);
+        S = rotate(180, P)*C;
+        label("$S$", S, N);
+        draw(P--S--B);
+        draw(P--Q);
+        label("$4$", (P+Q)/2, SE);
+        label("$8$", (B+S)/2, SE);
+        label("$5$", (P+R)/2, NW);
+        label("$x$", (C+R)/2, NW);
+        label("$x+5$", (P+S)/2, NW);
+        draw(circumcircle(triangle(R,Q,B)), dashed);
+    \end{asy}
+\end{center}

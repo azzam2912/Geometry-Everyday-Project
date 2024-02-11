@@ -1,0 +1,42 @@
+\begin{center}
+    \begin{asy}
+        import olympiad;
+        import geometry;
+        size(150);
+
+        pair A,B,C,D,E,F,G,H,I;
+        A = dir(-150);
+        B = dir(-30);
+        F = dir(60);
+        dot("$A$", A, SW);
+        dot("$B$", B, SE);
+        dot("$F$", F, NE);
+        draw(A--B--F--A);
+
+        D = foot(B, A, F);
+        C = foot(A, B, F);
+        H = foot(F, A, B);
+        dot("$D$", D, NW);
+        dot("$C$", C, NE);
+        dot("$H$", H, SW);
+        draw(B--D);
+        draw(A--C);
+
+        circle c = circumcircle(triangle(A,B,C));
+        draw(c);
+        E = intersectionpoint(line(A,C), line(B,D));
+        dot("$E$", E, 3*dir(172));
+        pair IG[] = intersectionpoints(line(H,F),c);
+        I = IG[0];
+        G = IG[1];
+        dot("$I$", I, SE);
+        dot("$G$", G, NE);
+        draw(F--I);
+
+        draw(circumcircle(triangle(E,B,C)));
+
+        draw(rightanglemark(A,C,B,2.5), red);
+        draw(rightanglemark(A,D,B,2.5), red);
+        draw(rightanglemark(E,H,B,2.5), red);
+    \end{asy}
+\end{center}

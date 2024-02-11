@@ -1,0 +1,25 @@
+(\begin{center}
+    \begin{asy}
+        pair B = Drawing("B", (0,0), W);
+        pair A = Drawing("A", 1.2*dir(60), N);
+        pair C = Drawing("C", 1.5*dir(0), E);
+        Drawing(A--B--C--cycle, linewidth(1)); 
+        draw(circumcircle(A,B,C));
+        pair P = Drawing("P", (0.96,0), dir(45));
+        pair Q = Drawing("Q", (0.24,0), dir(150));
+        pair M = Drawing("M", rotate(180, P)*A, S);
+        pair N = Drawing("N", rotate(180, Q)*A, S);
+        draw(A--N);
+        draw(A--M);
+        draw(B--M);
+        draw(C--N);
+        draw(C--M);
+        pair T = Drawing("T", intersectionpoint(B--M,C--N));
+        draw(T--P, blue);
+        draw(C--T, blue);
+        draw(P--M, blue);
+        draw(T--M, blue);
+        draw(P--C, blue);
+        draw(circumcircle(P,C,M), dashed+grey);
+    \end{asy}
+\end{center}
