@@ -1,0 +1,9 @@
+main-*.asy
+main-*.pdf
+*.out
+*.aux
+*.fdb_latexmk
+*.log
+*.pre
+*.fls
+*.toc
