@@ -1,5 +1,4 @@
 main-*.asy
-main-*.pdf
 *.out
 *.aux
 *.fdb_latexmk
