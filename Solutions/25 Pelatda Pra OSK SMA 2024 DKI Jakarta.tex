@@ -1,0 +1,76 @@
+\textbf{\textit{Soal. }} \input{Problems/25 Pelatda Pra OSK SMA 2024 DKI Jakarta}
+\input{Asymptote/25 Pelatda Pra OSK SMA 2024 DKI Jakarta}
+\begin{proof}[\textbf{Solusi 1. }] (Minggu, 2 Juni 2024) 
+Perhatikan bahwa $CS$ adalah diameter lingkaran luar $\triangle ABC$ sehingga $\angle CAS = \angle SBC = 90^\circ$. Oleh karena itu, dengan teorema Pythagoras di segitiga $EAS, SBF, CAS, CSB$ akan didapat
+\begin{align*}
+    CS^2 &= CS^2\\
+    AC^2 + AS^2 &= BC^2+BS^2\\
+    AC^2 - CD^2 + AS^2 &= BC^2 - CD^2 + BS^2\\
+    AD^2 + AS^2 &= BD^2 + BS^2\\
+    AE^2 + AS^2 &= BF^2 + BS^2\\
+    SE^2 &= SF^2\\
+    SE &= SF. \qed
+\end{align*}
+\end{proof}
+
+\begin{proof}[\textbf{Solusi 2. }] (Minggu, 2 Juni 2024) 
+Perhatikan bahwa $\angle SAC = \angle CBS = 90^\circ$ karena $CS$ diameter lingkaran $(ACBS)$. Dari sini didapat 
+$$\cos \angle SCF = \cos \angle SCB = \frac{BC}{CS}$$ 
+dan 
+$$\cos \angle ECS = \cos \angle ACS = \frac{AC}{CS}.$$
+
+Dengan dalil cosinus pada $\triangle FCS$ serta teorema Pythagoras di $\triangle CDB$ didapat
+\begin{align*}
+    SF^2 &= CF^2 + CS^2 - 2\cdot CF \cdot CS \cos \angle SCF\\
+    SF^2 &= CF^2 + CS^2 - 2\cdot CF \cdot BC\\
+    SF^2 &= (BC-CF)^2 - BC^2 + CS^2\\
+    SF^2 &= BF^2 - BC^2 + CS^2\\
+    SF^2 &= BD^2 - BC^2 + CS^2\\
+    SF^2 &= -CD^2 + CS^2
+\end{align*}
+Selanjutnya, dengan dalil cosinus pada $\triangle ECS$, serta teorema Pythagoras di $\triangle ADC$ didapat
+\begin{align*}
+    SE^2 &= CE^2 + CS^2 - 2\cdot CE \cdot CS \cos \angle ECS \\
+    SE^2 &= CE^2 + CS^2 - 2\cdot CE \cdot AC\\
+    SE^2 &= (AC-CE)^2 - AC^2 + CS^2\\
+    SE^2 &= AE^2 - AC^2 + CS^2\\
+    SE^2 &= AD^2 - AC^2 + CS^2\\
+    SE^2 &= -CD^2 + CS^2\\
+    SE^2 &= SF^2\\
+    SE &= SF. \qed
+\end{align*}
+\end{proof}
+
+\begin{proof}[\textbf{Solusi 3. }] (Sabtu, 4 Mei 2024) 
+Perhatikan bahwa $\angle SAC = \angle CBS = 90^\circ$ karena $CS$ diameter lingkaran $(ACBS)$. Lalu, didapat $\angle BSC = \angle BAC = A$ dan $\angle CSA = \angle CBA = B$ sehingga
+\begin{align*}
+    SB &= \dfrac{BC}{\tan \angle BSC} = \dfrac{BC}{\tan A}\\
+    SA &= \dfrac{AC}{\tan \angle CSA} = \dfrac{AC}{\tan B}
+\end{align*}
+Selanjutnya, observasi $\triangle BDC$ dan $\triangle ADC$ akan didapat
+\begin{align*}
+    BF &= BD = BC \cos B\\
+    AE &= AD = AC \cos A
+\end{align*}
+Oleh karena itu dengan teorema Pythagoras
+\begin{align*}
+    SF^2 &= SB^2 + BF^2 = \dfrac{BC^2}{\tan^2 A} + BC^2 \cos^2 B\\
+    SE^2 &= SA^2 + AE^2 = \dfrac{AC^2}{\tan^2 B} + AC^2 \cos^2 A
+\end{align*}
+Sekarang dengan properti trigonometri dan dalil sinus pada $\triangle ABC$ kita punya
+\begin{align*}
+    1 &= 1\\
+    \dfrac{\cos^2 A}{\cos^2 A} &= \dfrac{\cos^2 B}{\cos^2 B}\\
+    \dfrac{1-\sin^2 A}{\cos^2 A} &= \dfrac{1-\sin^2 B}{\cos^2 B}\\
+    \dfrac{1}{\cos^2 A}+\dfrac{\sin^2 B}{\cos^2 B} &= \dfrac{1}{\cos^2 B}+\dfrac{\sin^2 A}{\cos^2 A}\\
+    \dfrac{1}{\cos^2 A}+\tan^2 B &= \dfrac{1}{\cos^2 B}+\tan^2 A\\
+    1 &= \dfrac{\frac{1}{\cos^2 A}+\tan^2 B}{\frac{1}{\cos^2 B}+\tan^2 A}\\
+    \left(\dfrac{\sin A}{\sin B}\right)^2 &= \dfrac{\sin^2 A\left(\frac{1}{\cos^2 A}+\tan^2 B\right)}{\sin^2 B\left(\frac{1}{\cos^2 B}+\tan^2 A\right)}\\
+    \left(\dfrac{BC}{AC}\right)^2 &= \dfrac{\tan^2 A + \sin^2 A \tan^2 B}{\tan^2 B + \sin^2 B \tan^2 A}\\
+    BC^2(\tan^2 A + \sin^2 A \tan^2 B) &= AC^2(\tan^2 B + \sin^2 B \tan^2 A)\\
+    \dfrac{BC^2(\tan^2 A + \sin^2 A \tan^2 B)}{\tan^2 A \tan^2 B} &= \dfrac{AC^2(\tan^2 B + \sin^2 B \tan^2 A)}{\tan^2 A \tan^2 B}\\
+    \dfrac{BC^2}{\tan^2 A} + BC^2 \cos^2 B &= \dfrac{AC^2}{\tan^2 B} + AC^2 \cos^2 A\\
+    SF^2 &= SE^2\\
+    SF &= SE. \qed
+\end{align*}
+\end{proof}
