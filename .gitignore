@@ -6,4 +6,5 @@ main-*.asy
 *.pre
 *.fls
 *.toc
+*.eps
 .DS_Store

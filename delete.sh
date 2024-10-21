@@ -3,6 +3,7 @@
 # Define the file patterns to delete
 patterns=(
     "main-*.asy"
+    "test-*.asy"
     "*.out"
     "*.aux"
     "*.fdb_latexmk"
@@ -10,6 +11,7 @@ patterns=(
     "*.pre"
     "*.fls"
     "*.toc"
+    "*.eps"
 )
 
 # Loop through the patterns and delete matching files

@@ -10,15 +10,21 @@
         pair D = (0.20654,0);
         pair E = (0.723,0);
 
+        // Calculate F as reflection of E over AC
+        pair F = reflect(A,C)*E;
+
         draw(A--B--C--cycle);
         draw(A--D);
         draw(A--E);
+        draw(A--F, dashed);  // Draw AF as a dashed line
+        draw(C--F, dashed);  // Draw CF as a dashed line
 
         label("$A$", A, N);
         label("$B$", B, SW);
         label("$C$", C, SE);
         label("$D$", D, S);
         label("$E$", E, S);
+        label("$F$", F, NE);  // Label the new point F
 
         draw(rightanglemark(D,A,C,5), blue);
     \end{asy}
