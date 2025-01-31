@@ -1,0 +1,50 @@
+\textbf{\textit{Soal. }} \input{Problems/28 KTOM Januari 2025, Nomor 3 Esai}
+\textit{Proposed by: Raymond Christopher Tanto}
+\begin{proof}[\textbf{Solusi. }] (Minggu, 26 Januari 2024) 
+    \input{Asymptote/28 KTOM Januari 2025, Nomor 3 Esai}    
+    Notasikan $\dangle$ sebagai directed angle.
+    Misalkan $O$ adalah pusat persegi $ABCD$. Jelas bahwa $DB \perp AC$. Lalu misalkan $T$ sebagai perpotongan $BF$ dan $AG$ Kita punya beberapa lemma berikut
+    \begin{lemma}\label{lemmaktomjan25-1}
+        $A,B,G,O,F$ konsiklis.
+        \begin{proof}
+            $\dangle AFB = \dangle AOB = \dangle AGB = 90^\circ$ yang membuktikan $A,B,G,O,F$ konsiklis.
+        \end{proof}
+    \end{lemma}
+    \begin{lemma}
+        $D,F,O,E$ konsiklis dan $E, O, G, C$ konsiklis.
+        \begin{proof}
+            Dengan bantuan \cref{lemmaktomjan25-1} dan fakta bahwa $AB \parallel CD$ didapat
+            \begin{align*}
+                \dangle DOF = \dangle BOF = \dangle BAF = \dangle DEF
+            \end{align*}
+            yang membuktikan $D,F,O,E$ konsiklis. Analog cara tersebut, $E, O, G, C$ juga konsiklis.
+        \end{proof}
+    \end{lemma}
+    \begin{lemma}\label{lemmaktomjan25-3}
+        $A,G,E,D$ konsiklis dan $F,B,E,C$ konsiklis.
+        \begin{proof}
+            $\dangle ADE = 90^\circ = \dangle AGE$ yang membuktikan $A,G,E,D$ konsiklis. $\dangle BFE = 90^\circ = \dangle BCE$ yang membuktikan $F,B,E,C$ konsiklis.
+        \end{proof}
+    \end{lemma}
+    \begin{lemma}\label{lemmaktomjan25-4}
+        $F,O,G,H$ konsiklis.
+        \begin{proof}
+            Dari \cref{lemmaktomjan25-1} dan Teorema Miquel pada $\triangle DHC$, didapatkan bahwa $O$ adalah Miquel point dari $\triangle DHC$ yang berakibat $F,O,G,H$ konsiklis.
+        \end{proof}
+    \end{lemma}
+    Dari \cref{lemmaktomjan25-1} dan \cref{lemmaktomjan25-4}, didapat $F,A,H,B,G,O$ konsiklis.
+
+    Oleh karena itu, dengan memanfaatkan semua lemma di atas kita punya
+    \begin{align*}
+        \angle DFC + \angle DGC &= (\angle DFE + \angle EFC) + (\angle DGE + \angle EGC)\\
+        &= (\angle HFA + \angle EBC) + (\angle DAE + \angle BGH)\\
+        &= (\angle HBA + \angle EBC) + (\angle DAE + \angle BAH)\\
+        &= (\angle HBA + \angle BAH) + (\angle EBC + \angle DAE)\\
+        &= 90^\circ + \angle BAE\\
+        &= 90^\circ + (180^\circ - \angle FTG)\\
+        &= 90^\circ + (180^\circ - \angle BTA)\\
+        &= 90^\circ + (\angle ABF + \angle GAB)\\
+        &= 90^\circ + (\angle AHF + \angle GHB)\\ 
+        \angle DFC + \angle DGC &= 90^\circ + (\angle AHD + \angle BHC)\\ 
+    \end{align*}
+\end{proof}

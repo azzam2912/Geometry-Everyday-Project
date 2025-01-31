@@ -1,0 +1,108 @@
+\begin{center}
+    \begin{asy}
+        // Import the Asymptote geometry module
+        import olympiad;
+        import geometry;
+
+        // Define the size of the square
+        size(350);
+
+        // Define the square ABCD
+        point A = (0, 0);
+        point B = (1, 0);
+        point C = (1, 1);
+        point D = (0, 1);
+
+        // Define center
+        point O = (0.5, 0.5);
+
+        // Draw the square
+        draw(A--B--C--D--cycle);
+
+        // Define point E on segment CD
+        point E = (0.7, 1);
+
+        // Draw segment AE
+        draw(A--E);
+
+        // Construct point F on AE such that BF is perpendicular to AE
+        line AE = line(A, E);
+        line BF = perpendicular(B, AE);
+        point F = intersectionpoint(AE, BF);
+
+        // Draw segment BF
+        draw(B--F);
+
+        // Construct point G on EB such that AG is perpendicular to EB
+        line EB = line(E, B);
+        line AG = perpendicular(A, EB);
+        point G = intersectionpoint(EB, AG);
+
+        // Draw segment AG
+        draw(A--G);
+
+        // Draw lines DF and CG
+        line DF = line(D, F);
+        line CG = line(C, G);
+
+        // Find the intersection point H of DF and CG
+        point H = intersectionpoint(DF, CG);
+        point T = intersectionpoint(AG, BF);
+
+        // Draw lines DF and CG
+        draw(D--F);
+        draw(C--G);
+
+        draw(E--B);
+        draw(F--H--G);
+        draw(A--H--B);
+
+        draw(D--B, red);
+        draw(A--C, red);
+        draw(O--E, red);
+        draw(O--F, red);
+
+        draw(F--C, dotted+red);
+        draw(G--D, dotted+red);
+
+        // Label the points
+        label("$A$", A, SW);
+        label("$B$", B, SE);
+        label("$C$", C, NE);
+        label("$D$", D, NW);
+        label("$E$", E, N);
+        label("$F$", F, N);
+        label("$G$", G, NE);
+        label("$H$", H, S);
+        label("$O$", O, S);
+        label("$T$", T, S);
+
+        // Mark right angles
+        draw(rightanglemark(B, F, A, 1));
+        draw(rightanglemark(A, G, E, 1));
+        draw(rightanglemark(C, D, A, 1));
+        draw(rightanglemark(B, C, D, 1));
+        draw(rightanglemark(C, O, D, 1), red);
+
+        // Add circles
+        // Circle through A, B, G
+        circle circleABG = circle(A, B, G);
+        draw(circleABG, black);
+
+        // Circle through D, F, E
+        circle circleDFE = circle(D, F, E);
+        draw(circleDFE, dashed + blue);
+
+        // Circle through E, C, G
+        circle circleECG = circle(E, C, G);
+        draw(circleECG, dashed + blue);
+
+        // Circle through D, A, E
+        circle circleDAE = circle(D, A, E);
+        draw(circleDAE, dotted + purple);
+
+        // Circle through B, C, E
+        circle circleBCE = circle(B, C, E);
+        draw(circleBCE, dotted + purple);
+    \end{asy}
+\end{center}
