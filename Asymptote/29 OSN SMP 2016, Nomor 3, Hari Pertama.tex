@@ -1,0 +1,71 @@
+\begin{center}
+    \begin{asy}
+        // Import necessary packages
+        import geometry;
+        
+        // Set unit size
+        unitsize(2cm);
+        
+        // Define points
+        pair A = (2,3);    // Top point
+        pair B = (0,0);      // Bottom left
+        pair C = (4,0);      // Bottom right
+        pair D = (1,0);      // Between B and C, with BD = EC
+        pair E = (3,0);      // Between D and C, with BD = EC
+        
+        // Calculate A' position for A'EB to be a parallelogram
+        // Vector E-B added to position of A
+        pair Aprime = A - (E-B);  // A' positioned to make A'EB a parallelogram
+        
+        // Draw the triangle and additional lines
+        draw(A--B--C--cycle);  // The triangle ABC
+        draw(A--D);            // Line AD
+        draw(A--E);            // Line AE
+        
+        // Draw solid lines connecting A' to B and D to be a parallelogram AA'BE
+        draw(Aprime--B);       // Solid line from A' to B
+        draw(Aprime--D);       // Solid line from A' to D
+        draw(Aprime--A);
+        
+        // Draw a dashed blue circle through A', A, D, and B
+        // Using olympiad.asy's circumcircle function
+        import olympiad;
+        draw(circumcircle(Aprime, A, B), dashed+purple);
+        
+        // Mark equal segments with same-style marks
+        void markSegment(pair p1, pair p2, int marks=1) {
+            pair dir = rotate(90)*(unit(p2-p1));
+            pair midpoint = (p1+p2)/2;
+            real size = 0.1;
+            
+            for(int i=0; i < marks; ++i) {
+                real offset = (i-0.5*(marks-1))*0.15;
+                draw(midpoint + offset*unit(p2-p1) + size*dir -- 
+                     midpoint + offset*unit(p2-p1) - size*dir);
+            }
+        }
+        
+        markSegment(B, D, 1);  // Mark BD with one line
+        markSegment(E, C, 1);  // Mark EC with one line
+        
+        // Label points
+        label("A", A, N);
+        label("A$'$", Aprime, N);  // Using prime notation
+        label("B", B, SW);
+        label("C", C, SE);
+        label("D", D, S);
+        label("E", E, S);
+        
+        // draw angle marks
+        markscalefactor=0.06;
+        draw(anglemark(E,A,C), red);
+        draw(anglemark(B,A,D), red);
+        draw(anglemark(B,Aprime,D), red);
+        markscalefactor=0.04;
+        draw(anglemark(Aprime,A,B), blue);
+        draw(anglemark(C,B,A), blue);
+        draw(anglemark(Aprime,D,B), blue);
+        draw(anglemark(A,C,B), blue);
+        
+    \end{asy}
+\end{center} 
