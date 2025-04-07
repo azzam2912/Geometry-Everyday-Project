@@ -1,0 +1,63 @@
+\textbf{\textit{Soal.}} \input{Problems/30 Random Problem 4}
+
+\begin{proof}[\textbf{Solusi. }] (Senin, 7 April 2025) 
+    Perhatikan bahwa $\triangle AXY \sim \triangle ABC$ sehingga $\angle AYX = \angle ACB$. Lalu karena $M$ titik tengah busur $BC$, maka $BM=MC$ dan $\angle BCM = \angle MBC$.
+    \begin{lemma}
+        $STYX$ merupakan segiempat siklis.
+    \end{lemma}
+    \begin{proof}[\textbf{Bukti 1.}]
+       \begin{align*}
+        \dangle STY &= \dangle STM\\
+        &= \dangle STB + \dangle BTM\\
+        &= \dangle SMB + \dangle BCM\\
+        &= \dangle XMB + \dangle MBC\\
+        &= \dangle XBC + \dangle MXB\\
+        &= \dangle AXY + \dangle SXA\\
+        &= \dangle SXY.
+       \end{align*}
+       Terbukti.
+    \end{proof} 
+    \begin{proof}[\textbf{Bukti 2.}]
+        Akan dibuktikan bahwa $MY \cdot MT = MX \cdot MS$. Perhatikan dari P.O.P bahwa
+        \begin{align*}
+            AY \cdot YC &= MY \cdot YT\\
+            AX \cdot XB &= MX \cdot XS.
+        \end{align*}
+        Berarti karena $AY=YC$ dan $AX=XB$, maka 
+        \begin{align*}
+            MY \cdot MT &= MY(MY+YT) = MY^2 + MY \cdot YT = MY^2 + AY^2\\
+            MX \cdot MS &= MX(MX+XS) = MX^2 + MX \cdot XS = MX^2 + AX^2.
+        \end{align*}
+        Lalu dengan dalil cosinus pada $\triangle AMB$ dan $\triangle AMC$, dan $\cos B = \cos(180- C) = -\cos C$, kita peroleh
+        \begin{align*}
+            AM^2 &= MC^2 + AC^2 - 2MC \cdot AC \cdot \cos C\\
+            AM^2 &= MB^2 + AB^2 - 2MB \cdot BA \cdot \cos B = MC^2 + AB^2 + 2MC \cdot BA \cdot \cos C.
+        \end{align*}
+        sehingga dengan mengeliminasi kedua persamaan tersebut didapat
+        \begin{align*}
+            AC^2 - AB^2 &= 2MC (AC+AB) \cos C\\
+            AC - AB &= 2MC \cos C.
+        \end{align*}
+        Lalu dengan dalil cosinus pada $\triangle BXM$ dan $\triangle CYM$, kita peroleh
+        \begin{align*}
+            MY^2 &= AY^2 + MC^2 - 2MC \cdot AY \cdot \cos C\\
+            MX^2 &= AX^2 + MB^2 - 2MB \cdot AX \cdot \cos B = AX^2 + MC^2 - 2MC \cdot AX \cdot \cos C.
+        \end{align*}
+        sehingga dengan mengeliminasi kedua persamaan tersebut didapat
+        \begin{align*}
+            MY \cdot MT - MX \cdot MS &= (MY^2 + AY^2) - (MX^2 + AX^2)\\
+            &= (MY^2 - MX^2) + (AY^2 - AX^2)\\
+            &= (AY^2 + MC^2 - 2MC \cdot AY \cdot \cos C) - (AX^2 + MC^2 - 2MC \cdot AX \cdot \cos C) + (AY^2 - AX^2)\\
+            &= 2(AY^2 - AX^2) - 2 MC \cdot (AX+AY) \cdot \cos C\\
+            &= \frac12((2AY)^2 - (2AX)^2) + \frac12 \cdot 2 MC \cos C \cdot 2(AX+AY) \\
+            &= \frac12(AB^2-AC^2) + \frac12(AC-AB)(AB+AC)\\
+            &= \frac12(AB^2-AC^2) + \frac12(AC^2-AB^2)\\
+            &= 0.
+        \end{align*}
+        yang menyebabkan $MY \cdot MT = MX \cdot MS$. Terbukti.
+    \end{proof} 
+    Sekarang perhatikan bahwa \textit{radical axis} dari lingkaran $(STYX)$ dan $\omega$ adalah $ST$. 
+    Lalu \textit{radical axis} dari lingkaran $(STYX)$ dan $(AXT)$ adalah $XY$. 
+    Terakhir, \textit{radical axis} dari $\omega$ dan $(AXY)$ adalah garis singgung yang melewati $A$ (yang menyinggung dua lingkaran tersebut dari \textit{alternate segment theorem}).
+    Oleh karena itu, $ST$, $XY$, dan garis singgung yang melewati $A$ berpotongan di satu titik \textit{radical center}, yaitu $P$. Terbukti.
+\end{proof} 
