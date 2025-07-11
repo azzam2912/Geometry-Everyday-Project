@@ -6,11 +6,14 @@
         $STYX$ merupakan segiempat siklis.
     \end{lemma}
     \begin{proof}[\textbf{Bukti 1.}]
+        Misalkan $D$ adalah perpotongan $XM$ dan $BC$.
        \begin{align*}
         \dangle STY &= \dangle STM\\
         &= \dangle STB + \dangle BTM\\
         &= \dangle SMB + \dangle BCM\\
         &= \dangle XMB + \dangle MBC\\
+        &= \dangle MDB\\
+        &= \dangle XDB\\
         &= \dangle XBC + \dangle MXB\\
         &= \dangle AXY + \dangle SXA\\
         &= \dangle SXY.
@@ -18,6 +21,20 @@
        Terbukti.
     \end{proof} 
     \begin{proof}[\textbf{Bukti 2.}]
+        Kita punya $\dangle XSB = \dangle MSB = \dangle MCB = \dangle CBM$. Dari sini diperoleh
+        \begin{align*}
+            \dangle SXY &= \dangle SXA + \dangle AXY\\
+            &= \dangle MXB + \dangle ABC\\
+            &= \dangle SXB + \dangle ABC\\
+            &= \dangle SBX + \dangle XSB + \dangle ABC\\
+            &= \dangle SBX + \dangle CBM + \dangle ABC\\
+            &= \dangle SBM\\
+            &= \dangle STM\\
+            &= \dangle STY.
+        \end{align*}
+        Terbukti.
+    \end{proof}
+    \begin{proof}[\textbf{Bukti 3.}]
         Akan dibuktikan bahwa $MY \cdot MT = MX \cdot MS$. Perhatikan dari P.O.P bahwa
         \begin{align*}
             AY \cdot YC &= MY \cdot YT\\
