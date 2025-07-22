@@ -1,0 +1,31 @@
+\textbf{\textit{Soal.}} \input{Problems/32 Japan 2025, Problem 2}
+
+\begin{proof}[\textbf{Solusi. }] (Minggu, 20 Juli 2025) 
+    \input{Asymptote/32 Japan 2025, Problem 2}
+    Misalkan $P'$ dan $Q'$ berturut-turut adalah perpotongan $O_2O$ dengan $BC$ dan $O_1O$ dengan $BC$. 
+    Klaim bahwa $P=P'$ dan $Q=Q'$. 
+    
+    
+    Dari hubungan sudut keliling dan sudut pusat di lingkaran luar $\triangle ABC$, kita punya $\dangle P'OA = \dangle O_2OA = \dangle CBA = \dangle P'BA$ yang mengakibatkan $BP'OA$ siklis.
+    Hal ini menyebabkan $\dangle AP'O_2 = \dangle AP'O = \dangle ABO = \dangle OAB$. 
+    Dari definisi $O$, $O_1$ dan $O_2$, didapat $O_1O_2 \perp AO$ dan $OO_1 \perp AB$ serta kita juga punya $O_1A = O_1O$ dan $O_A = O_2O$ yang berarti $AO_1OO_2$ layang-layang. 
+    Ini berarti, $\dangle OAB = \dangle O_2O_1O = \dangle AO_1O_2$. 
+    Dari sini dapat disimpulkan bahwa $\dangle AP'O_2 = \dangle AO_1O_2$ yang menunjukkan $A,O_1,O_2,P'$ konsiklis. 
+    Dengan cara serupa didapatkan $A,O_1,O_2,Q'$ konsiklis. 
+    Berarti dapat disimpulkan bahwa  $A,O_1,O_2,P',Q'$, sehingga dari definisi $P,Q$ didapat bahwa $P'=P$ dan $Q'=Q$.
+    Ini berarti $O_1, O, Q$ segaris dan $O_2, O, P$ segaris atau dengan kata lain $O$ adalah perpotongan $PO_2$ dan $PO_1$.
+    
+    Dari klaim tersebut 
+    \[\dangle OPO_1 = \dangle O_2PO_1 = \dangle O_2AO_1 = \dangle O_1OO_2 = \dangle O_1OP \implies O_1O = O_1P \]
+    Sekarang, dari definisi $O_3$, perhatikan bahwa $O_3P=O_3Q$ sehingga dari sini didapat $OO_1PO_3$ adalah layang-layang.
+
+
+    Selanjutnya dengan hubungan sudut pusat dan keliling dari lingkaran luar $\triangle OPQ$, kita punya
+    \[\dangle QO_3P = 2\dangle QOP = 2\dangle O_1OP = \dangle O_1OP + \dangle OPO_1 = \dangle OO_1P = \dangle QO_1P\]
+    yang menunjukkan bahwa $O_3$ berada di lingkaran yang sama dengan $A,O_1,O_2,P',Q'$.
+
+    
+    Sekarang, karena $O_3OO_1O_2$ layang-layang maka $O_1O_3 \perp PO$. Di lain sisi karena $AO_1OO_2$ layang-layang maka $O_2O_1 \perp AO$. Dari fakta-fakta tersebut didapat
+    \[\dangle POO_3 = \dangle O_3PO = \dangle O_3PO_2 = \dangle O_3O_1O_2 = \dangle POA \]
+    yang langsung mengakibatkan $O_3, O, A$ segaris.
+\end{proof}

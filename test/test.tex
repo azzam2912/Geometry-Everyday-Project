@@ -4,72 +4,58 @@
 \begin{document}
 
 \begin{asy}
-// Import necessary packages
-import geometry;
+ /* Geogebra to Asymptote conversion, documentation at artofproblemsolving.com/Wiki go to User:Azjps/geogebra */
+import graph; size(7.346451134370179cm); 
+real labelscalefactor = 0.5; /* changes label-to-point distance */
+pen dps = linewidth(0.7) + fontsize(10); defaultpen(dps); /* default pen style */ 
+pen dotstyle = black; /* point style */ 
+real xmin = -3.7829345985631564, xmax = 3.563516535807023, ymin = -2.823592308044096, ymax = 3.879946347117573;  /* image dimensions */
+pen cczzqq = rgb(0.8,0.6,0.); pen qqwuqq = rgb(0.,0.39215686274509803,0.); pen dcrutc = rgb(0.8627450980392157,0.0784313725490196,0.23529411764705882); 
 
-// Set unit size
-unitsize(2cm);
-
-// Define points
-pair A = (2,3);    // Top point
-pair B = (0,0);      // Bottom left
-pair C = (4,0);      // Bottom right
-pair D = (1,0);      // Between B and C, with BD = EC
-pair E = (3,0);      // Between D and C, with BD = EC
-
-// Calculate A' position for A'EB to be a parallelogram
-// Vector E-B added to position of A
-pair Aprime = A - (E-B);  // A' positioned to make A'EB a parallelogram
-
-// Draw the triangle and additional lines
-draw(A--B--C--cycle);  // The triangle ABC
-draw(A--D);            // Line AD
-draw(A--E);            // Line AE
-
-// Draw solid lines connecting A' to B and D to be a parallelogram AA'BE
-draw(Aprime--B);       // Solid line from A' to B
-draw(Aprime--D);       // Solid line from A' to D
-draw(Aprime--A);
-
-// Draw a dashed blue circle through A', A, D, and B
-// Using olympiad.asy's circumcircle function
-import olympiad;
-draw(circumcircle(Aprime, A, B), dashed+purple);
-
-// Mark equal segments with same-style marks
-void markSegment(pair p1, pair p2, int marks=1) {
-    pair dir = rotate(90)*(unit(p2-p1));
-    pair midpoint = (p1+p2)/2;
-    real size = 0.1;
-    
-    for(int i=0; i < marks; ++i) {
-        real offset = (i-0.5*(marks-1))*0.15;
-        draw(midpoint + offset*unit(p2-p1) + size*dir -- 
-             midpoint + offset*unit(p2-p1) - size*dir);
-    }
-}
-
-markSegment(B, D, 1);  // Mark BD with one line
-markSegment(E, C, 1);  // Mark EC with one line
-
-// Label points
-label("A", A, N);
-label("A$'$", Aprime, N);  // Using prime notation
-label("B", B, SW);
-label("C", C, SE);
-label("D", D, S);
-label("E", E, S);
-
-// draw angle marks
-markscalefactor=0.06;
-draw(anglemark(E,A,C), red);
-draw(anglemark(B,A,D), red);
-draw(anglemark(B,Aprime,D), red);
-markscalefactor=0.04;
-draw(anglemark(Aprime,A,B), blue);
-draw(anglemark(C,B,A), blue);
-draw(anglemark(Aprime,D,B), blue);
-draw(anglemark(A,C,B), blue);
+draw((0.5,2.)--(-2.795044691486694,-0.8634932860669965)--(1.917033357346258,-0.9026952665065384)--cycle, linewidth(0.7) + cczzqq); 
+ /* draw figures */
+draw((0.5,2.)--(-2.795044691486694,-0.8634932860669965), linewidth(0.7) + cczzqq); 
+draw((-2.795044691486694,-0.8634932860669965)--(1.917033357346258,-0.9026952665065384), linewidth(0.7) + cczzqq); 
+draw((1.917033357346258,-0.9026952665065384)--(0.5,2.), linewidth(0.7) + cczzqq); 
+draw((-0.4337642323997367,-0.2530738288948993)--(-2.795044691486694,-0.8634932860669965), linewidth(0.7)); 
+draw((-0.4337642323997367,-0.2530738288948993)--(0.5,2.), linewidth(0.7)); 
+draw((-0.4337642323997367,-0.2530738288948993)--(1.917033357346258,-0.9026952665065384), linewidth(0.7)); 
+draw((-2.2266328852072075,1.8099945099452492)--(-2.795044691486694,-0.8634932860669965), linewidth(0.7) + qqwuqq); 
+draw((-2.2266328852072075,1.8099945099452492)--(0.5,2.), linewidth(0.7) + qqwuqq); 
+draw((0.5,2.)--(1.0286824510626467,0.46086116721673387), linewidth(0.7) + dcrutc); 
+draw((1.0286824510626467,0.46086116721673387)--(1.917033357346258,-0.9026952665065384), linewidth(0.7) + dcrutc); 
+draw(circle((-0.7793588150026292,0.7001813924686874), 1.8238112265280009), linewidth(0.7) + dotted); 
+draw((-0.4337642323997367,-0.2530738288948993)--(-0.7945314282604341,-1.1235667211195077), linewidth(0.7) + linetype("4 4")); 
+draw((-2.2266328852072075,1.8099945099452492)--(-0.7945314282604341,-1.1235667211195077), linewidth(0.7) + dotted); 
+draw((-2.2266328852072075,1.8099945099452492)--(-1.7027806683380826,-0.8725803411680665), linewidth(0.7) + qqwuqq); 
+draw((1.0286824510626467,0.46086116721673387)--(-0.7945314282604341,-1.1235667211195077), linewidth(0.7) + dotted); 
+draw((1.0286824510626467,0.46086116721673387)--(0.11776795129085182,-0.8877263363396883), linewidth(0.7) + dcrutc); 
+draw((-2.2266328852072075,1.8099945099452492)--(1.0286824510626467,0.46086116721673387), linewidth(0.7)); 
+draw((-2.2266328852072075,1.8099945099452492)--(-0.4337642323997367,-0.2530738288948993), linewidth(0.7) + qqwuqq); 
+draw((-0.4337642323997367,-0.2530738288948993)--(1.0286824510626467,0.46086116721673387), linewidth(0.7) + dcrutc); 
+draw((-0.4337642323997367,-0.2530738288948993)--(-1.7027806683380826,-0.8725803411680665), linewidth(0.7)); 
+draw((-0.4337642323997367,-0.2530738288948993)--(0.11776795129085182,-0.8877263363396883), linewidth(0.7)); 
+ /* dots and labels */
+dot((0.5,2.),dotstyle); 
+label("$A$", (0.5292832497864685,2.0766552468986443), NE * labelscalefactor); 
+dot((-2.795044691486694,-0.8634932860669965),dotstyle); 
+label("$B$", (-2.92833142498114,-1.0203012078251676), SE * labelscalefactor); 
+dot((1.917033357346258,-0.9026952665065384),dotstyle); 
+label("$C$", (2.0267989025769744,-1.0516627921768011), NE * labelscalefactor); 
+dot((-0.4337642323997367,-0.2530738288948993),linewidth(4.pt) + dotstyle); 
+label("$O$", (-0.35372388467463227,-0.18921922250687878), NW * labelscalefactor); 
+dot((-2.2266328852072075,1.8099945099452492),linewidth(4.pt) + dotstyle); 
+label("$O_1$", (-2.1991745888056577,1.8728049486130265), NW * labelscalefactor); 
+dot((1.0286824510626467,0.46086116721673387),linewidth(4.pt) + dotstyle); 
+label("$O_2$", (1.0624301837642403,0.3242568214927843), S * labelscalefactor); 
+dot((-1.7027806683380826,-0.8725803411680665),linewidth(4.pt) + dotstyle); 
+label("$P$", (-1.6738680509157946,-1), S * labelscalefactor); 
+dot((0.11776795129085182,-0.8877263363396883),linewidth(4.pt) + dotstyle); 
+label("$Q$", (0.1529442375668648,-1), S * labelscalefactor); 
+dot((-0.7945314282604341,-1.1235667211195077),linewidth(4.pt) + dotstyle); 
+label("$O_3$", (-0.764382104718419,-1.1895031882647095), S * labelscalefactor); 
+clip((xmin,ymin)--(xmin,ymax)--(xmax,ymax)--(xmax,ymin)--cycle); 
+ /* end of picture */
 
 \end{asy}
 
