@@ -1,0 +1,28 @@
+\textbf{\textit{Soal.}} \input{Problems/34 British MO 2019 Round 2, Problem 1}
+
+\begin{proof}[\textbf{Solusi. }] (Thursday, 24 July 2025) 
+    Misalkan garis sumbu $BC$ memotong $BC$ dan $BE$ berturut-turut di $M$ dan $N$. Lalu misalkan pula $T$ sebagai perpotongan $AD$ dengan $BC$.
+    Dari definisi garis sumbu mudah dilihat bahwa $BN=NC$, $BP=PC$, $\dangle NPB = \dangle CPN$,  $\dangle BCP = \dangle PBC$. 
+    Perhatikan bahwa $\dangle ABD = \dangle AED = 90^\circ$ yang menyebabkan $ABDE$ siklis.
+    Lalu, kita juga punya $AD \perp BC$ dan $NP \perp BC$ sehingga $AD \parallel NP$.
+    Oleh karena itu, 
+    \begin{align*}
+        \dangle CEN = \dangle AEB = \dangle ADB = \dangle NPB = \dangle CPN
+    \end{align*}
+    yang menyebabkan $NECP$ siklis.
+    \input{Asymptote/34 British MO 2019 Round 2, Problem 1}
+    Di lain sisi, karena $\dangle TAB = \dangle DAB$ dan $\dangle DBA = 90^\circ = \dangle ATB$, maka $\dangle CBA = \dangle ADB$, yang menyebabkan $\triangle AEB \sim \triangle ABC$.
+    Dari sini didapat $\dangle ABE = \dangle ECB$. 
+    Dari fakta-fakta tersebut kita punya
+    \begin{align*}
+        \dangle PEC
+        &= \dangle PNC \\
+        &= \dangle BNP \\
+        &= 90^\circ - \dangle CBN \\
+        &= \dangle DBA - \dangle CBN \\
+        &= \dangle EBA + \dangle PBC \\
+        &= \dangle ECB + \dangle BCP \\
+        \dangle PED &= \dangle ECP.
+    \end{align*}
+    Berarti diperoleh $EP=PC$. Namun, karena $BP=PC$ maka $EP=BP$. Terbukti bahwa $\triangle BEP$ sama kaki.
+\end{proof}
