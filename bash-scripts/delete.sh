@@ -22,3 +22,21 @@ for pattern in "${patterns[@]}"; do
         rm -v $files_to_delete
     fi
 done
+
+for i in {1..50}
+do
+    rm main-problems-$i.pdf
+    rm main-problems-$i.asy
+done
+
+for i in {1..50}
+do
+    rm main-solutions-$i.pdf
+    rm main-solutions-$i.asy
+done
+
+for i in {1..50}
+do
+    rm main-$i.pdf
+    rm main-$i.asy
+done
