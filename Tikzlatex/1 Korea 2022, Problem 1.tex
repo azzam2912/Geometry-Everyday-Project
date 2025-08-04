@@ -1,0 +1,80 @@
+% Setting up the TikZ picture
+\begin{tikzpicture}[scale=2.5, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+    % Defining the unit circle radius and points A, B, C using polar coordinates
+    \tkzDefPoint(125:1){A}
+    \tkzDefPoint(-150:1){B}
+    \tkzDefPoint(-30:1){C}
+    
+    % Defining origin O
+    \tkzDefPoint(0,0){O}
+    
+    % Computing point H as the sum of vectors A, B, C
+    \tkzDefTriangleCenter[ortho](A,B,C) \tkzGetPoint{H}
+    
+    % Computing midpoint M of B and C
+    \tkzDefMidPoint(B,C) \tkzGetPoint{M}
+    
+    % Computing feet of perpendiculars (projections)
+    % D is the foot of perpendicular from A to line BC
+    \tkzDefPointBy[projection=onto B--C](A) \tkzGetPoint{D}
+    % E is the foot of perpendicular from B to line CA
+    \tkzDefPointBy[projection=onto C--A](B) \tkzGetPoint{E}
+    % F is the foot of perpendicular from C to line AB
+    \tkzDefPointBy[projection=onto A--B](C) \tkzGetPoint{F}
+    
+    % P is the intersection of tangent from B and C to the circle
+    \tkzDefLine[tangent at=B](O) \tkzGetPoint{refB}
+    \tkzDefLine[tangent at=C](O) \tkzGetPoint{refC}
+    \tkzInterLL(B,refB)(C,refC) \tkzGetPoint{P}
+    \tkzDrawSegment(B,P)
+    \tkzDrawSegment(C,P)
+
+    % Computing point Q = A + P - O
+    \tkzDefPointBy[translation=from O to P](A) \tkzGetPoint{Q}
+    
+    % Computing point R as the intersection of lines A-O and E-F
+    \tkzInterLL(A,O)(E,F) \tkzGetPoint{R}
+    
+    % Computing point S as the intersection of lines E-F and P-Q
+    \tkzInterLL(E,F)(P,Q) \tkzGetPoint{S}
+    
+    % Drawing the unit circle (dotted)
+    \tkzDrawCircle[dashed](O,A)
+    
+    % Drawing triangle A-B-C
+    \tkzDrawPolygon(A,B,C)
+    
+    % Drawing lines P-B and P-C
+    \tkzDrawSegment(P,B)
+    \tkzDrawSegment(P,C)
+    
+    % Drawing dashed grey lines F-S and Q-S
+    \tkzDrawSegment[dashed, gray](F,S)
+    \tkzDrawSegment[dashed, gray](Q,S)
+    
+    % Drawing blue path A-Q-P-O-A
+    \tkzDrawPolygon[blue](A,Q,P,O)
+    
+    % Drawing lines B-E, C-F, E-F
+    \tkzDrawSegment(B,E)
+    \tkzDrawSegment(C,F)
+    \tkzDrawSegment(E,F)
+    
+    % Placing labeled dots
+    \tkzDrawPoint[dot](A) \tkzLabelPoint[above](A){$A$}
+    \tkzDrawPoint[dot](B) \tkzLabelPoint[below left](B){$B$}
+    \tkzDrawPoint[dot](C) \tkzLabelPoint[below right](C){$C$}
+    \tkzDrawPoint[dot](P) \tkzLabelPoint[below right](P){$P$}
+    \tkzDrawPoint[dot](O) \tkzLabelPoint[below](O){$O$}
+    \tkzDrawPoint[dot](H) \tkzLabelPoint[above](H){$H$}
+    \tkzDrawPoint[dot](D) \tkzLabelPoint[below right](D){$D$}
+    \tkzDrawPoint[dot](E) \tkzLabelPoint[above right](E){$E$}
+    \tkzDrawPoint[dot](F) \tkzLabelPoint[left](F){$F$}
+    \tkzDrawPoint[dot](R) \tkzLabelPoint[left](R){$R$}
+    \tkzDrawPoint[dot](Q) \tkzLabelPoint[left](Q){$Q$}
+    \tkzDrawPoint[dot](S)
+    \tkzDrawPoint[dot](M) \tkzLabelPoint[below right](M){$M$}
+    
+    \end{tikzpicture}
+    
