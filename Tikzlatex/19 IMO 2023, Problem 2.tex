@@ -1,0 +1,31 @@
+\begin{center}
+    \begin{tikzpicture}[scale=1.2, dot/.style={circle, fill, inner sep=0.3pt, outer sep=0pt}]
+
+    % Definisikan titik-titik A, B, C
+    \tkzDefPoint(0,0){B}
+    \tkzDefPoint(2,0){C}
+    \tkzDefPoint(0.5,1.7){A}
+
+    \tkzDrawSegments(B,C C,A A,B)
+    \tkzLabelPoints(A,B,C)
+    
+    % lingkaran luar (circumcircle)
+    \tkzDefTriangleCenter[circum](A,B,C)\tkzGetPoint{O}
+    \tkzDrawCircle[thin](O,A)
+    \tkzDrawPoint(O)
+    \tkzLabelPoints(O)
+    
+    \tkzDefMidArc(O,C,B) \tkzGetPoint{S}
+    \tkzLabelPoints(S)
+
+    \tkzDefLine[perpendicular=through A](B,C) \tkzGetPoint{Aperp}
+    \tkzInterLC(Aperp,A)(O,A) \tkzGetPoints{E0}{E}
+    \tkzLabelPoints(E)
+    \tkzDrawSegment(A,E)
+
+    \tkzDefLine[parallel=through D](B,C) \tkzGetPoint{Dpar}
+    
+    
+
+    \end{tikzpicture}
+\end{center}
