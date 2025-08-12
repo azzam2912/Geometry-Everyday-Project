@@ -1,7259 +1,2105 @@
-// geometry.asy
 
-// Copyright (C) 2007
-// Author: Philippe IVALDI 2007/09/01
-// http://www.piprime.fr/
 
-// This program is free software ; you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation ; either version 3 of the License, or
-// (at your option) any later version.
 
-// This program is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY ; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
 
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program ; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-// COMMENTARY:
-// An Asymptote geometry module.
 
-// THANKS:
-// Special thanks to Olivier Guibe for his help in mathematical issues.
+<!DOCTYPE html>
+<html
+  lang="en"
+  
+  data-color-mode="auto" data-light-theme="light" data-dark-theme="dark"
+  data-a11y-animated-images="system" data-a11y-link-underlines="true"
+  
+  >
 
-// BUGS:
 
-// CODE:
 
-import math;
-import markers;
 
-real Infinity=1.0/(1000*realEpsilon);
+  <head>
+    <meta charset="utf-8">
+  <link rel="dns-prefetch" href="https://github.githubassets.com">
+  <link rel="dns-prefetch" href="https://avatars.githubusercontent.com">
+  <link rel="dns-prefetch" href="https://github-cloud.s3.amazonaws.com">
+  <link rel="dns-prefetch" href="https://user-images.githubusercontent.com/">
+  <link rel="preconnect" href="https://github.githubassets.com" crossorigin>
+  <link rel="preconnect" href="https://avatars.githubusercontent.com">
 
-// A rotation in the direction dir limited to [-90,90]
-// This is useful for rotating text along a line in the direction dir.
-private transform rotate(explicit pair dir)
-{
-  real angle=degrees(dir);
-  if(angle > 90 && angle < 270) angle -= 180;
-  return rotate(angle);
-}
+  
 
-// *=======================================================*
-// *........................HEADER.........................*
-/*<asyxml><variable type="real" signature="epsgeo"><code></asyxml>*/
-real epsgeo = 10 * sqrt(realEpsilon);/*<asyxml></code><documentation>Variable used in the approximate calculations.</documentation></variable></asyxml>*/
 
-/*<asyxml><function type="void" signature="addMargins(picture,real,real,real,real)"><code></asyxml>*/
-void addMargins(picture pic = currentpicture,
-                real lmargin = 0, real bmargin = 0,
-                real rmargin = lmargin, real tmargin = bmargin,
-                bool rigid = true, bool allObject = true)
-{/*<asyxml></code><documentation>Add margins to 'pic' with respect to
-   the current bounding box of 'pic'.
-   If 'rigid' is false, margins are added iff an infinite curve will
-   be prolonged on the margin.
-   If 'allObject' is false, fixed - size objects (such as labels and
-   arrowheads) will be ignored.</documentation></function></asyxml>*/
-  pair m = allObject ? truepoint(pic, SW) : point(pic, SW);
-  pair M = allObject ? truepoint(pic, NE) : point(pic, NE);
-  if(rigid) {
-    draw(m - inverse(pic.calculateTransform()) * (lmargin, bmargin), invisible);
-    draw(M + inverse(pic.calculateTransform()) * (rmargin, tmargin), invisible);
-  } else pic.addBox(m, M, -(lmargin, bmargin), (rmargin, tmargin));
-}
+  <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/light-6448649c7147.css" /><link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/light_high_contrast-42fc7e3b06b7.css" /><link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/dark-d17b946fc2c5.css" /><link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/dark_high_contrast-1b924088c83a.css" /><link data-color-theme="light" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/light-6448649c7147.css" /><link data-color-theme="light_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/light_high_contrast-42fc7e3b06b7.css" /><link data-color-theme="light_colorblind" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/light_colorblind-44cfaf0c8f7b.css" /><link data-color-theme="light_colorblind_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/light_colorblind_high_contrast-979217efd93e.css" /><link data-color-theme="light_tritanopia" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/light_tritanopia-4d5383026bfa.css" /><link data-color-theme="light_tritanopia_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/light_tritanopia_high_contrast-ff6ff8532348.css" /><link data-color-theme="dark" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark-d17b946fc2c5.css" /><link data-color-theme="dark_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_high_contrast-1b924088c83a.css" /><link data-color-theme="dark_colorblind" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_colorblind-654786382462.css" /><link data-color-theme="dark_colorblind_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_colorblind_high_contrast-ecca008c6f6e.css" /><link data-color-theme="dark_tritanopia" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_tritanopia-fff376053989.css" /><link data-color-theme="dark_tritanopia_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_tritanopia_high_contrast-49adf52571e5.css" /><link data-color-theme="dark_dimmed" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_dimmed-66d97c13c98a.css" /><link data-color-theme="dark_dimmed_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet" data-href="https://github.githubassets.com/assets/dark_dimmed_high_contrast-c58f1d0432b9.css" />
 
-real approximate(real t)
-{
-  real ot = t;
-  if(abs(t - ceil(t)) < epsgeo) ot = ceil(t);
-  else if(abs(t - floor(t)) < epsgeo) ot = floor(t);
-  return ot;
-}
-
-real[] approximate(real[] T)
-{
-  return map(approximate, T);
-}
-
-/*<asyxml><function type="real" signature="binomial(real,real)"><code></asyxml>*/
-real binomial(real n, real k)
-{/*<asyxml></code><documentation>Return n!/((n - k)!*k!)</documentation></function></asyxml>*/
-  return gamma(n + 1)/(gamma(n - k + 1) * gamma(k + 1));
-}
-
-/*<asyxml><function type="real" signature="rf(real,real,real)"><code></asyxml>*/
-real rf(real x, real y, real z)
-{/*<asyxml></code><documentation>Computes Carlson's elliptic integral of the first kind.
-   x, y, and z must be non negative, and at most one can be zero.</documentation></function></asyxml>*/
-  real ERRTOL = 0.0025,
-    TINY = 1.5e-38,
-    BIG = 3e37,
-    THIRD = 1/3,
-    C1 = 1/24,
-    C2 = 0.1,
-    C3 = 3/44,
-    C4 = 1/14;
-  real alamb, ave, delx, dely, delz, e2, e3, sqrtx, sqrty, sqrtz, xt, yt, zt;
-  if(min(x, y, z) < 0 || min(x + y, x + z, y + z) < TINY ||
-     max(x, y, z) > BIG) abort("rf: invalid arguments.");
-  xt = x;
-  yt = y;
-  zt = z;
-  do {
-    sqrtx = sqrt(xt);
-    sqrty = sqrt(yt);
-    sqrtz = sqrt(zt);
-    alamb = sqrtx * (sqrty + sqrtz) + sqrty * sqrtz;
-    xt = 0.25 * (xt + alamb);
-    yt = 0.25 * (yt + alamb);
-    zt = 0.25 * (zt + alamb);
-    ave = THIRD * (xt + yt + zt);
-    delx = (ave - xt)/ave;
-    dely = (ave - yt)/ave;
-    delz = (ave - zt)/ave;
-  } while(max(fabs(delx), fabs(dely), fabs(delz)) > ERRTOL);
-  e2 = delx * dely - delz * delz;
-  e3 = delx * dely * delz;
-  return (1.0 + (C1 * e2 - C2 - C3 * e3) * e2 + C4 * e3)/sqrt(ave);
-}
-
-/*<asyxml><function type="real" signature="rd(real,real,real)"><code></asyxml>*/
-real rd(real x, real y, real z)
-{/*<asyxml></code><documentation>Computes Carlson's elliptic integral of the second kind.
-   x and y must be positive, and at most one can be zero.
-   z must be non negative.</documentation></function></asyxml>*/
-  real ERRTOL = 0.0015,
-    TINY = 1e-25,
-    BIG = 4.5 * 10.0^21,
-    C1 = (3/14),
-    C2 = (1/6),
-    C3 = (9/22),
-    C4 = (3/26),
-    C5 = (0.25 * C3),
-    C6 = (1.5 * C4);
-  real alamb, ave, delx, dely, delz, ea, eb, ec, ed, ee, fac, sqrtx, sqrty,
-    sqrtz, sum, xt, yt, zt;
-  if (min(x, y) < 0 || min(x + y, z) < TINY || max(x, y, z) > BIG)
-    abort("rd: invalid arguments");
-  xt = x;
-  yt = y;
-  zt = z;
-  sum = 0;
-  fac = 1;
-  do {
-    sqrtx = sqrt(xt);
-    sqrty = sqrt(yt);
-    sqrtz = sqrt(zt);
-    alamb = sqrtx * (sqrty + sqrtz) + sqrty * sqrtz;
-    sum += fac/(sqrtz * (zt + alamb));
-    fac = 0.25 * fac;
-    xt = 0.25 * (xt + alamb);
-    yt = 0.25 * (yt + alamb);
-    zt = 0.25 * (zt + alamb);
-    ave = 0.2 * (xt + yt + 3.0 * zt);
-    delx = (ave - xt)/ave;
-    dely = (ave - yt)/ave;
-    delz = (ave - zt)/ave;
-  } while (max(fabs(delx), fabs(dely), fabs(delz)) > ERRTOL);
-  ea = delx * dely;
-  eb = delz * delz;
-  ec = ea - eb;
-  ed = ea - 6 * eb;
-  ee = ed + ec + ec;
-  return 3 * sum + fac * (1.0 + ed * (-C1 + C5 * ed - C6 * delz * ee)
-                          +delz * (C2 * ee + delz * (-C3 * ec + delz * C4 * ea)))/(ave * sqrt(ave));
-}
-
-/*<asyxml><function type="real" signature="elle(real,real)"><code></asyxml>*/
-real elle(real phi, real k)
-{/*<asyxml></code><documentation>Legendre elliptic integral of the 2nd kind,
-   evaluated using Carlson's functions RD and RF.
-   The argument ranges are -infinity < phi < +infinity, 0 <= k * sin(phi) <= 1.</documentation></function></asyxml>*/
-  real result;
-  if (phi >= 0 && phi <= pi/2) {
-    real cc, q, s;
-    s = sin(phi);
-    cc = cos(phi)^2;
-    q = (1 - s * k) * (1 + s * k);
-    result = s * (rf(cc, q, 1) - (s * k)^2 * rd(cc, q, 1)/3);
-  } else
-    if (phi <= pi && phi >= 0) {
-      result = 2 * elle(pi/2, k) - elle(pi - phi, k);
-    } else
-      if (phi <= 3 * pi/2 && phi >= 0) {
-        result = 2 * elle(pi/2, k) + elle(phi - pi, k);
-      } else
-        if (phi <= 2 * pi && phi >= 0) {
-          result = 4 * elle(pi/2, k) - elle(2 * pi - phi, k);
-        } else
-          if (phi >= 0) {
-            int nb = floor(0.5 * phi/pi);
-            result = nb * elle(2 * pi, k) + elle(phi%(2 * pi), k);
-          } else result = -elle(-phi, k);
-  return result;
-}
-
-/*<asyxml><function type="pair[]" signature="intersectionpoints(pair,pair,real,real,real,real,real,real)"><code></asyxml>*/
-pair[] intersectionpoints(pair A, pair B,
-                          real a, real b, real c, real d, real f, real g)
-{/*<asyxml></code><documentation>Intersection points with the line (AB) and the quadric curve
-   a * x^2 + b * x * y + c * y^2 + d * x + f * y + g = 0 given in the default coordinate system</documentation></function></asyxml>*/
-  pair[] op;
-  real ap = B.y - A.y,
-    bpp = A.x - B.x,
-    cp = A.y * B.x - A.x * B.y;
-  real sol[];
-  if (abs(ap) > epsgeo) {
-    real aa = ap * c + a * bpp^2/ap - b * bpp,
-      bb = ap * f - bpp * d + 2 * a * bpp * cp/ap - b * cp,
-      cc = ap * g - cp * d + a * cp^2/ap;
-    sol = quadraticroots(aa, bb, cc);
-    for (int i = 0; i < sol.length; ++i) {
-      op.push((-bpp * sol[i]/ap - cp/ap, sol[i]));
-    }
-  } else {
-    real aa = a * bpp,
-      bb = d * bpp - b * cp,
-      cc = g * bpp - cp * f + c * cp^2/bpp;
-    sol = quadraticroots(aa, bb, cc);
-    for (int i = 0; i < sol.length; ++i) {
-      op.push((sol[i], -cp/bpp));
-    }
-  }
-  return op;
-}
-
-/*<asyxml><function type="pair[]" signature="intersectionpoints(pair,pair,real[])"><code></asyxml>*/
-pair[] intersectionpoints(pair A, pair B, real[] equation)
-{/*<asyxml></code><documentation>Return the intersection points of the line AB with
-   the conic whose an equation is
-   equation[0] * x^2 + equation[1] * x * y + equation[2] * y^2 + equation[3] * x + equation[4] * y + equation[5] = 0</documentation></function></asyxml>*/
-  if(equation.length != 6) abort("intersectionpoints: bad length of array for a conic equation.");
-  return intersectionpoints(A, B, equation[0], equation[1], equation[2],
-                            equation[3], equation[4], equation[5]);
-}
-// *........................HEADER.........................*
-// *=======================================================*
-
-// *=======================================================*
-// *......................COORDINATES......................*
-
-real EPS = sqrt(realEpsilon);
-
-/*<asyxml><typedef type = "convert" return = "pair" params = "pair"><code></asyxml>*/
-typedef pair convert(pair);/*<asyxml></code><documentation>Function type to convert pair in an other coordinate system.</documentation></typedef></asyxml>*/
-/*<asyxml><typedef type = "abs" return = "real" params = "pair"><code></asyxml>*/
-typedef real abs(pair);/*<asyxml></code><documentation>Function type to calculate modulus of pair.</documentation></typedef></asyxml>*/
-/*<asyxml><typedef type = "dot" return = "real" params = "pair, pair"><code></asyxml>*/
-typedef real dot(pair, pair);/*<asyxml></code><documentation>Function type to calculate dot product.</documentation></typedef></asyxml>*/
-/*<asyxml><typedef type = "polar" return = "pair" params = "real, real"><code></asyxml>*/
-typedef pair polar(real, real);/*<asyxml></code><documentation>Function type to calculate the coordinates from the polar coordinates.</documentation></typedef></asyxml>*/
-
-/*<asyxml><struct signature="coordsys"><code></asyxml>*/
-struct coordsys
-{/*<asyxml></code><documentation>This structure represents a coordinate system in the plane.</documentation></asyxml>*/
-  /*<asyxml><method type = "pair" signature="relativetodefault(pair)"><code></asyxml>*/
-  restricted convert relativetodefault = new pair(pair m){return m;};/*<asyxml></code><documentation>Convert a pair given relatively to this coordinate system to
-                                                                       the pair relatively to the default coordinate system.</documentation></method></asyxml>*/
-  /*<asyxml><method type = "pair" signature="defaulttorelativet(pair)"><code></asyxml>*/
-  restricted convert defaulttorelative = new pair(pair m){return m;};/*<asyxml></code><documentation>Convert a pair given relatively to the default coordinate system to
-                                                                       the pair relatively to this coordinate system.</documentation></method></asyxml>*/
-  /*<asyxml><method type = "real" signature="dot(pair,pair)"><code></asyxml>*/
-  restricted dot dot = new real(pair m, pair n){return dot(m, n);};/*<asyxml></code><documentation>Return the dot product of this coordinate system.</documentation></method></asyxml>*/
-  /*<asyxml><method type = "real" signature="abs(pair)"><code></asyxml>*/
-  restricted abs abs = new real(pair m){return abs(m);};/*<asyxml></code><documentation>Return the modulus of a pair in this coordinate system.</documentation></method></asyxml>*/
-  /*<asyxml><method type = "pair" signature="polar(real,real)"><code></asyxml>*/
-  restricted polar polar = new pair(real r, real a){return (r * cos(a), r * sin(a));};/*<asyxml></code><documentation>Polar coordinates routine of this coordinate system.</documentation></method></asyxml>*/
-  /*<asyxml><property type = "pair" signature="O,i,j"><code></asyxml>*/
-  restricted pair O = (0, 0), i = (1, 0), j = (0, 1);/*<asyxml></code><documentation>Origin and units vector.</documentation></property></asyxml>*/
-  /*<asyxml><method type = "void" signature="init(convert,convert,polar,dot)"><code></asyxml>*/
-  void init(convert rtd, convert dtr,
-            polar polar, dot dot)
-  {/*<asyxml></code><documentation>The default constructor of the coordinate system.</documentation></method></asyxml>*/
-    this.relativetodefault = rtd;
-    this.defaulttorelative = dtr;
-    this.polar = polar;
-    this.dot = dot;
-    this.abs = new real(pair m){return sqrt(dot(m, m));};;
-    this.O = rtd((0, 0));
-    this.i = rtd((1, 0)) - O;
-    this.j = rtd((0, 1)) - O;
-  }
-}/*<asyxml></struct></asyxml>*/
-
-/*<asyxml><operator type = "bool" signature="==(coordsys,coordsys)"><code></asyxml>*/
-bool operator ==(coordsys c1, coordsys c2)
-  {/*<asyxml></code><documentation>Return true iff the coordinate system have the same origin and units vector.</documentation></operator></asyxml>*/
-   return c1.O == c2.O && c1.i == c2.i && c1.j == c2.j;
-  }
-
-/*<asyxml><function type="coordsys" signature="cartesiansystem(pair,pair,pair)"><code></asyxml>*/
-coordsys cartesiansystem(pair O = (0, 0), pair i, pair j)
-{/*<asyxml></code><documentation>Return the Cartesian coordinate system (O, i, j).</documentation></function></asyxml>*/
- coordsys R;
- real[][] P = {{0, 0}, {0, 0}};
- real[][] iP;
- P[0][0] = i.x;
- P[0][1] = j.x;
- P[1][0] = i.y;
- P[1][1] = j.y;
- iP = inverse(P);
- real ni = abs(i);
- real nj = abs(j);
- real ij = angle(j) - angle(i);
-
- pair rtd(pair m)
- {
-   return O + (P[0][0] * m.x + P[0][1] * m.y, P[1][0] * m.x + P[1][1] * m.y);
- }
-
- pair dtr(pair m)
- {
-   m-=O;
-   return (iP[0][0] * m.x + iP[0][1] * m.y, iP[1][0] * m.x + iP[1][1] * m.y);
- }
-
- pair polar(real r, real a)
- {
-   real ca = sin(ij - a)/(ni * sin(ij));
-   real sa = sin(a)/(nj * sin(ij));
-   return r * (ca, sa);
- }
-
- real tdot(pair m, pair n)
- {
-   return m.x * n.x * ni^2 + m.y * n.y * nj^2 + (m.x * n.y + n.x * m.y) * dot(i, j);
- }
-
- R.init(rtd, dtr, polar, tdot);
- return R;
-}
-
-
-/*<asyxml><function type="void" signature="show(picture,Label,Label,Label,coordsys,pen,pen,pen,pen,pen)"><code></asyxml>*/
-void show(picture pic = currentpicture, Label lo = "$O$",
-          Label li = "$\vec{\imath}$",
-          Label lj = "$\vec{\jmath}$",
-          coordsys R,
-          pen dotpen = currentpen, pen xpen = currentpen, pen ypen = xpen,
-          pen ipen = red,
-          pen jpen = ipen,
-          arrowbar arrow = Arrow)
-{/*<asyxml></code><documentation>Draw the components (O, i, j, x - axis, y - axis) of 'R'.</documentation></function></asyxml>*/
- unravel R;
- dot(pic, O, dotpen);
- drawline(pic, O, O + i, xpen);
- drawline(pic, O, O + j, ypen);
- draw(pic, li, O--(O + i), ipen, arrow);
- Label lj = lj.copy();
- lj.align(lj.align, unit(I * j));
- draw(pic, lj, O--(O + j), jpen, arrow);
- draw(pic, lj, O--(O + j), jpen, arrow);
- Label lo = lo.copy();
- lo.align(lo.align, -2 * dir(O--O + i, O--O + j));
- lo.p(dotpen);
- label(pic, lo, O);
-}
-
-/*<asyxml><operator type = "pair" signature="/(pair,coordsys)"><code></asyxml>*/
-pair operator /(pair p, coordsys R)
-{/*<asyxml></code><documentation>Return the xy - coordinates of 'p' relatively to
-   the coordinate system 'R'.
-   For example, if R = cartesiansystem((1, 2), (1, 0), (0, 1)), (0, 0)/R is (-1, -2).</documentation></operator></asyxml>*/
- return R.defaulttorelative(p);
-}
-
-/*<asyxml><operator type = "pair" signature="*(coordsys,pair)"><code></asyxml>*/
-pair operator *(coordsys R, pair p)
-{/*<asyxml></code><documentation>Return the coordinates of 'p' given in the
-   xy - coordinates 'R'.
-   For example, if R = cartesiansystem((1, 2), (1, 0), (0, 1)), R * (0, 0) is (1, 2).</documentation></operator></asyxml>*/
- return R.relativetodefault(p);
-}
-
-/*<asyxml><operator type = "path" signature="*(coordsys,path)"><code></asyxml>*/
-path operator *(coordsys R, path g)
-{/*<asyxml></code><documentation>Return the reconstructed path applying R * pair to each node, pre and post control point of 'g'.</documentation></operator></asyxml>*/
- guide og = R * point(g, 0);
- real l = length(g);
- for(int i = 1; i <= l; ++i)
-   {
-     pair P = R * point(g, i);
-     pair post = R * postcontrol(g, i - 1);
-     pair pre = R * precontrol(g, i);
-     if(i == l && (cyclic(g)))
-       og = og..controls post and pre..cycle;
-     else
-       og = og..controls post and pre..P;
-   }
- return og;
-}
-
-/*<asyxml><operator type = "coordsys" signature="*(transform,coordsys)"><code></asyxml>*/
-coordsys operator *(transform t,coordsys R)
-{/*<asyxml></code><documentation>Provide transform * coordsys.
-   Note that shiftless(t) is applied to R.i and R.j.</documentation></operator></asyxml>*/
- coordsys oc;
- oc = cartesiansystem(t * R.O, shiftless(t) * R.i, shiftless(t) * R.j);
- return oc;
-}
-
-/*<asyxml><constant type = "coordsys" signature="defaultcoordsys"><code></asyxml>*/
-restricted coordsys defaultcoordsys = cartesiansystem(0, (1, 0), (0, 1));/*<asyxml></code><documentation>One can always refer to the default coordinate system using this constant.</documentation></constant></asyxml>*/
-/*<asyxml><variable type="coordsys" signature="currentcoordsys"><code></asyxml>*/
-coordsys currentcoordsys = defaultcoordsys;/*<asyxml></code><documentation>The coordinate system used by default.</documentation></variable></asyxml>*/
-
-/*<asyxml><struct signature="point"><code></asyxml>*/
-struct point
-{/*<asyxml></code><documentation>This structure replaces the pair to embed its coordinate system.
-   For example, if 'P = point(cartesiansystem((1, 2), i, j), (0, 0))',
-   P is equal to the pair (1, 2).</documentation></asyxml>*/
-  /*<asyxml><property type = "coordsys" signature="coordsys"><code></asyxml>*/
-  coordsys coordsys;/*<asyxml></code><documentation>The coordinate system of this point.</documentation></property><property type = "pair" signature="coordinates"><code></asyxml>*/
-  restricted pair coordinates;/*<asyxml></code><documentation>The coordinates of this point relatively to the coordinate system 'coordsys'.</documentation></property><property type = "real" signature="x, y"><code></asyxml>*/
-  restricted real x, y;/*<asyxml></code><documentation>The xpart and the ypart of 'coordinates'.</documentation></property></asyxml>*/
-  /*<asyxml><method type = "" signature="init(coordsys,pair)"><code><property type = "real" signature="m"><code></asyxml>*/
-  real m = 1;/*<asyxml></code><documentation>Used to cast mass<->point.</documentation></property></asyxml>*/
-  void init(coordsys R, pair coordinates, real mass)
-  {/*<asyxml></code><documentation>The constructor.</documentation></method></asyxml>*/
-    this.coordsys = R;
-    this.coordinates = coordinates;
-    this.x = coordinates.x;
-    this.y = coordinates.y;
-    this.m = mass;
-  }
-}/*<asyxml></struct></asyxml>*/
-
-/*<asyxml><function type="point" signature="point(coordsys,pair,real)"><code></asyxml>*/
-point point(coordsys R, pair p, real m = 1)
-{/*<asyxml></code><documentation>Return the point which has the coodinates 'p' in the
-   coordinate system 'R' and the mass 'm'.</documentation></function></asyxml>*/
-  point op;
-  op.init(R, p, m);
-  return op;
-}
-
-/*<asyxml><function type="point" signature="point(explicit pair,real)"><code></asyxml>*/
-point point(explicit pair p, real m)
-{/*<asyxml></code><documentation>Return the point which has the coodinates 'p' in the current
-   coordinate system and the mass 'm'.</documentation></function></asyxml>*/
-  point op;
-  op.init(currentcoordsys, p, m);
-  return op;
-}
-
-/*<asyxml><function type="point" signature="point(coordsys,explicit point,real)"><code></asyxml>*/
-point point(coordsys R, explicit point M, real m = M.m)
-{/*<asyxml></code><documentation>Return the point of 'R' which has the coordinates of 'M' and the mass 'm'.
-   Do not confuse this routine with the further routine 'changecoordsys'.</documentation></function></asyxml>*/
-  point op;
-  op.init(R, M.coordinates, M.m);
-  return op;
-}
-
-/*<asyxml><function type="point" signature="changecoordsys(coordsys,point)"><code></asyxml>*/
-point changecoordsys(coordsys R, point M)
-{/*<asyxml></code><documentation>Return the point 'M' in the coordinate system 'coordsys'.
-   In other words, the returned point marks the same plot as 'M' does.</documentation></function></asyxml>*/
-  point op;
-  coordsys mco = M.coordsys;
-  op.init(R, R.defaulttorelative(mco.relativetodefault(M.coordinates)), M.m);
-  return op;
-}
-
-/*<asyxml><function type="pair" signature="pair coordinates(point)"><code></asyxml>*/
-pair coordinates(point M)
-{/*<asyxml></code><documentation>Return the coordinates of 'M' in its coordinate system.</documentation></function></asyxml>*/
-  return M.coordinates;
-}
-
-/*<asyxml><function type="bool" signature="bool samecoordsys(bool...point[])"><code></asyxml>*/
-bool samecoordsys(bool warn = true ... point[] M)
-{/*<asyxml></code><documentation>Return true iff all the points have the same coordinate system.
-   If 'warn' is true and the coordinate systems are different, a warning is sent.</documentation></function></asyxml>*/
-  bool ret = true;
-  coordsys t = M[0].coordsys;
-  for (int i = 1; i < M.length; ++i) {
-    ret = (t == M[i].coordsys);
-    if(!ret) break;
-    t = M[i].coordsys;
-  }
-  if(warn && !ret)
-    warning("coodinatesystem",
-            "the coordinate system of two objects are not the same.
-The operation will be done relative to the default coordinate system.");
-  return ret;
-}
-
-/*<asyxml><function type="point[]" signature="standardizecoordsys(coordsys,bool...point[])"><code></asyxml>*/
-point[] standardizecoordsys(coordsys R = currentcoordsys,
-                            bool warn = true ... point[] M)
-{/*<asyxml></code><documentation>Return the points with the same coordinate system 'R'.
-   If 'warn' is true and the coordinate systems are different, a warning is sent.</documentation></function></asyxml>*/
-  point[] op = new point[];
-  op = M;
-  if(!samecoordsys(warn ... M))
-    for (int i = 1; i < M.length; ++i)
-      op[i] = changecoordsys(R, M[i]);
-  return op;
-}
-
-/*<asyxml><operator type = "pair" signature="cast(point)"><code></asyxml>*/
-pair operator cast(point P)
-{/*<asyxml></code><documentation>Cast point to pair.</documentation></operator></asyxml>*/
-  return P.coordsys.relativetodefault(P.coordinates);
-}
-
-/*<asyxml><operator type = "pair[]" signature="cast(point[])"><code></asyxml>*/
-pair[] operator cast(point[] P)
-{/*<asyxml></code><documentation>Cast point[] to pair[].</documentation></operator></asyxml>*/
-  pair[] op;
-  for (int i = 0; i < P.length; ++i) {
-    op.push((pair)P[i]);
-  }
-  return op;
-}
-
-/*<asyxml><operator type = "point" signature="cast(pair)"><code></asyxml>*/
-point operator cast(pair p)
-{/*<asyxml></code><documentation>Cast pair to point relatively to the current coordinate
-   system 'currentcoordsys'.</documentation></operator></asyxml>*/
-  return point(currentcoordsys, p);
-}
-
-/*<asyxml><operator type = "point[]" signature="cast(pair[])"><code></asyxml>*/
-point[] operator cast(pair[] p)
-{/*<asyxml></code><documentation>Cast pair[] to point[] relatively to the current coordinate
-   system 'currentcoordsys'.</documentation></operator></asyxml>*/
-  pair[] op;
-  for (int i = 0; i < p.length; ++i) {
-    op.push((point)p[i]);
-  }
-  return op;
-}
-
-/*<asyxml><function type="pair" signature="locate(point)"><code></asyxml>*/
-pair locate(point P)
-{/*<asyxml></code><documentation>Return the coordinates of 'P' in the default coordinate system.</documentation></function></asyxml>*/
-  return P.coordsys * P.coordinates;
-}
-
-/*<asyxml><function type="point" signature="locate(pair)"><code></asyxml>*/
-point locate(pair p)
-{/*<asyxml></code><documentation>Return the point in the current coordinate system 'currentcoordsys'.</documentation></function></asyxml>*/
-  return p; //automatic casting 'pair to point'.
-}
-
-/*<asyxml><operator type = "point" signature="*(real,explicit point)"><code></asyxml>*/
-point operator *(real x, explicit point P)
-{/*<asyxml></code><documentation>Multiply the coordinates (not the mass) of 'P' by 'x'.</documentation></operator></asyxml>*/
-  return point(P.coordsys, x * P.coordinates, P.m);
-}
-
-/*<asyxml><operator type = "point" signature="/(explicit point,real)"><code></asyxml>*/
-point operator /(explicit point P, real x)
-{/*<asyxml></code><documentation>Divide the coordinates (not the mass) of 'P' by 'x'.</documentation></operator></asyxml>*/
-  return point(P.coordsys, P.coordinates/x, P.m);
-}
-
-/*<asyxml><operator type = "point" signature="/(real,explicit point)"><code></asyxml>*/
-point operator /(real x, explicit point P)
-{/*<asyxml></code><documentation></documentation></operator></asyxml>*/
-  return point(P.coordsys, x/P.coordinates, P.m);
-}
-
-/*<asyxml><operator type = "point" signature="-(explicit point)"><code></asyxml>*/
-point operator -(explicit point P)
-{/*<asyxml></code><documentation>-P. The mass is inchanged.</documentation></operator></asyxml>*/
-  return point(P.coordsys, -P.coordinates, P.m);
-}
-
-/*<asyxml><operator type = "point" signature="+(explicit point,explicit point)"><code></asyxml>*/
-point operator +(explicit point P1, explicit point P2)
-{/*<asyxml></code><documentation>Provide 'point + point'.
-   If the two points haven't the same coordinate system, a warning is sent and the
-   returned point has the default coordinate system 'defaultcoordsys'.
-   The masses are added.</documentation></operator></asyxml>*/
-  point[] P = standardizecoordsys(P1, P2);
-  coordsys R = P[0].coordsys;
-  return point(R, P[0].coordinates + P[1].coordinates, P1.m + P2.m);
-}
-
-/*<asyxml><operator type = "point" signature="+(explicit point,explicit pair)"><code></asyxml>*/
-point operator +(explicit point P1, explicit pair p2)
-{/*<asyxml></code><documentation>Provide 'point + pair'.
-   The pair 'p2' is supposed to be coordinates relatively to the coordinates system of 'P1'.
-   The mass is not changed.</documentation></operator></asyxml>*/
-  coordsys R = currentcoordsys;
-  return point(R, P1.coordinates + point(R, p2).coordinates, P1.m);
-}
-point operator +(explicit pair p1, explicit point p2)
-{
-  return p2 + p1;
-}
-
-/*<asyxml><operator type = "point" signature="-(explicit point,explicit point)"><code></asyxml>*/
-point operator -(explicit point P1, explicit point P2)
-{/*<asyxml></code><documentation>Provide 'point - point'.</documentation></operator></asyxml>*/
-  return P1 + (-P2);
-}
-
-/*<asyxml><operator type = "point" signature="-(explicit point,explicit pair)"><code></asyxml>*/
-point operator -(explicit point P1, explicit pair p2)
-{/*<asyxml></code><documentation>Provide 'point - pair'.
-   The pair 'p2' is supposed to be coordinates relatively to the coordinates system of 'P1'.</documentation></operator></asyxml>*/
-  return P1 + (-p2);
-}
-point operator -(explicit pair p1, explicit point P2)
-{
-  return p1 + (-P2);
-}
-
-/*<asyxml><operator type = "point" signature="*(transform,explicit point)"><code></asyxml>*/
-point operator *(transform t, explicit point P)
-{/*<asyxml></code><documentation>Provide 'transform * point'.
-   Note that the transforms scale, xscale, yscale and rotate are carried out relatively
-   the default coordinate system 'defaultcoordsys' which is not desired for point
-   defined in an other coordinate system.
-   On can use scale(real, point), xscale(real, point), yscale(real, point), rotate(real, point),
-   scaleO(real), xscaleO(real), yscaleO(real) and rotateO(real) (described further)
-   to change the coordinate system of reference.</documentation></operator></asyxml>*/
-  coordsys R = P.coordsys;
-  return point(R, (t * locate(P))/R, P.m);
-}
-
-/*<asyxml><operator type = "point" signature="*(explicit point,explicit point)"><code></asyxml>*/
-point operator *(explicit point P1, explicit point P2)
-{/*<asyxml></code><documentation>Provide 'point * point'.
-   The resulted mass is the mass of P2</documentation></operator></asyxml>*/
-  point[] P = standardizecoordsys(P1, P2);
-  coordsys R = P[0].coordsys;
-  return point(R, P[0].coordinates * P[1].coordinates, P2.m);
-}
-
-/*<asyxml><operator type = "point" signature="*(explicit point,explicit pair)"><code></asyxml>*/
-point operator *(explicit point P1, explicit pair p2)
-{/*<asyxml></code><documentation>Provide 'point * pair'.
-   The pair 'p2' is supposed to be the coordinates of
-   the point in the coordinates system of 'P1'.
-   'pair * point' is also defined.</documentation></operator></asyxml>*/
-  point P = point(P1.coordsys, p2, P1.m);
-  return P1 * P;
-}
-point operator *(explicit pair p1, explicit point p2)
-{
-  return p2 * p1;
-}
-
-/*<asyxml><operator type = "bool" signature="==(explicit point,explicit point)"><code></asyxml>*/
-bool operator ==(explicit point M, explicit point N)
-  {/*<asyxml></code><documentation>Provide the test 'M == N' wish returns true iff MN < EPS</documentation></operator></asyxml>*/
-   return abs(locate(M) - locate(N)) < EPS;
-  }
-
-/*<asyxml><operator type = "bool" signature="!=(explicit point,explicit point)"><code></asyxml>*/
-bool operator !=(explicit point M, explicit point N)
-{/*<asyxml></code><documentation>Provide the test 'M != N' wish return true iff MN >= EPS</documentation></operator></asyxml>*/
- return !(M == N);
-}
-
-/*<asyxml><operator type = "guide" signature="cast(point)"><code></asyxml>*/
-guide operator cast(point p)
-{/*<asyxml></code><documentation>Cast point to guide.</documentation></operator></asyxml>*/
- return locate(p);
-}
-
-/*<asyxml><operator type = "path" signature="cast(point)"><code></asyxml>*/
-path operator cast(point p)
-{/*<asyxml></code><documentation>Cast point to path.</documentation></operator></asyxml>*/
- return locate(p);
-}
-
-/*<asyxml><function type="void" signature="dot(picture,Label,explicit point,align,string,pen)"><code></asyxml>*/
-void dot(picture pic = currentpicture, Label L, explicit point Z,
-         align align = NoAlign,
-         string format = defaultformat, pen p = currentpen)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
- Label L = L.copy();
- L.position(locate(Z));
- if(L.s == "") {
-   if(format == "") format = defaultformat;
-   L.s = "("+format(format, Z.x)+", "+format(format, Z.y)+")";
- }
- L.align(align, E);
- L.p(p);
- dot(pic, locate(Z), p);
- add(pic, L);
-}
-
-/*<asyxml><function type="real" signature="abs(coordsys,pair)"><code></asyxml>*/
-real abs(coordsys R, pair m)
-{/*<asyxml></code><documentation>Return the modulus |m| in the coordinate system 'R'.</documentation></function></asyxml>*/
- return R.abs(m);
-}
-
-/*<asyxml><function type="real" signature="abs(explicit point)"><code></asyxml>*/
-real abs(explicit point M)
-{/*<asyxml></code><documentation>Return the modulus |M| in its coordinate system.</documentation></function></asyxml>*/
- return M.coordsys.abs(M.coordinates);
-}
-
-/*<asyxml><function type="real" signature="length(explicit point)"><code></asyxml>*/
-real length(explicit point M)
-{/*<asyxml></code><documentation>Return the modulus |M| in its coordinate system (same as 'abs').</documentation></function></asyxml>*/
- return M.coordsys.abs(M.coordinates);
-}
-
-/*<asyxml><function type="point" signature="conj(explicit point)"><code></asyxml>*/
-point conj(explicit point M)
-{/*<asyxml></code><documentation>Conjugate.</documentation></function></asyxml>*/
- return point(M.coordsys, conj(M.coordinates), M.m);
-}
-
-/*<asyxml><function type="real" signature="degrees(explicit point,coordsys,bool)"><code></asyxml>*/
-real degrees(explicit point M, coordsys R = M.coordsys, bool warn = true)
-{/*<asyxml></code><documentation>Return the angle of M (in degrees) relatively to 'R'.</documentation></function></asyxml>*/
- return (degrees(locate(M) - R.O, warn) - degrees(R.i))%360;
-}
-
-/*<asyxml><function type="real" signature="angle(explicit point,coordsys,bool)"><code></asyxml>*/
-real angle(explicit point M, coordsys R = M.coordsys, bool warn = true)
-{/*<asyxml></code><documentation>Return the angle of M (in radians) relatively to 'R'.</documentation></function></asyxml>*/
- return radians(degrees(M, R, warn));
-}
-
-bool Finite(explicit point z)
-{
- return abs(z.x) < Infinity && abs(z.y) < Infinity;
-}
-
-/*<asyxml><function type="bool" signature="finite(explicit point)"><code></asyxml>*/
-bool finite(explicit point p)
-{/*<asyxml></code><documentation>Avoid to compute 'finite((pair)(infinite_point))'.</documentation></function></asyxml>*/
- return finite(p.coordinates);
-}
-
-/*<asyxml><function type="real" signature="dot(point,point)"><code></asyxml>*/
-real dot(point A, point B)
-{/*<asyxml></code><documentation>Return the dot product in the coordinate system of 'A'.</documentation></function></asyxml>*/
- point[] P = standardizecoordsys(A.coordsys, A, B);
- return P[0].coordsys.dot(P[0].coordinates, P[1].coordinates);
-}
-
-/*<asyxml><function type="real" signature="dot(point,explicit pair)"><code></asyxml>*/
-real dot(point A, explicit pair B)
-{/*<asyxml></code><documentation>Return the dot product in the default coordinate system.
-   dot(explicit pair, point) is also defined.</documentation></function></asyxml>*/
- return dot(locate(A), B);
-}
-real dot(explicit pair A, point B)
-{
- return dot(A, locate(B));
-}
-
-/*<asyxml><function type="transforms" signature="rotateO(real)"><code></asyxml>*/
-transform rotateO(real a)
-{/*<asyxml></code><documentation>Rotation around the origin of the current coordinate system.</documentation></function></asyxml>*/
- return rotate(a, currentcoordsys.O);
-}
-
-/*<asyxml><function type="transform" signature="projection(point,point)"><code></asyxml>*/
-transform projection(point A, point B)
-{/*<asyxml></code><documentation>Return the orthogonal projection on the line (AB).</documentation></function></asyxml>*/
- pair dir = unit(locate(A) - locate(B));
- pair a = locate(A);
- real cof = dir.x * a.x + dir.y * a.y;
- real tx = a.x - dir.x * cof;
- real txx = dir.x^2;
- real txy = dir.x * dir.y;
- real ty = a.y - dir.y * cof;
- real tyx = txy;
- real tyy = dir.y^2;
- transform t = (tx, ty, txx, txy, tyx, tyy);
- return t;
-}
-
-/*<asyxml><function type="transform" signature="projection(point,point,point,point,bool)"><code></asyxml>*/
-transform projection(point A, point B, point C, point D, bool safe = false)
-{/*<asyxml></code><documentation>Return the (CD) parallel projection on (AB).
-   If 'safe = true' and (AB)//(CD) return the identity.
-   If 'safe = false' and (AB)//(CD) return an infinity scaling.</documentation></function></asyxml>*/
- pair a = locate(A);
- pair u = unit(locate(B) - locate(A));
- pair v = unit(locate(D) - locate(C));
- real c = u.x * a.y - u.y * a.x;
- real d = (conj(u) * v).y;
- if (abs(d) < epsgeo) {
-   return safe ? identity() : scale(infinity);
- }
- real tx = c * v.x/d;
- real ty = c * v.y/d;
- real txx = u.x * v.y/d;
- real txy = -u.x * v.x/d;
- real tyx = u.y * v.y/d;
- real tyy = -u.y * v.x/d;
- transform t = (tx, ty, txx, txy, tyx, tyy);
- return t;
-}
-
-/*<asyxml><function type="transform" signature="scale(real,point)"><code></asyxml>*/
-transform scale(real k, point M)
-{/*<asyxml></code><documentation>Homothety.</documentation></function></asyxml>*/
- pair P = locate(M);
- return shift(P) * scale(k) * shift(-P);
-}
-
-/*<asyxml><function type="transform" signature="xscale(real,point)"><code></asyxml>*/
-transform xscale(real k, point M)
-{/*<asyxml></code><documentation>xscale from 'M' relatively to the x - axis of the coordinate system of 'M'.</documentation></function></asyxml>*/
- pair P = locate(M);
- real a = degrees(M.coordsys.i);
- return (shift(P) * rotate(a)) * xscale(k) * (rotate(-a) * shift(-P));
-}
-
-/*<asyxml><function type="transform" signature="yscale(real,point)"><code></asyxml>*/
-transform yscale(real k, point M)
-{/*<asyxml></code><documentation>yscale from 'M' relatively to the y - axis of the coordinate system of 'M'.</documentation></function></asyxml>*/
- pair P = locate(M);
- real a = degrees(M.coordsys.j) - 90;
- return (shift(P) * rotate(a)) * yscale(k) * (rotate(-a) * shift(-P));
-}
-
-/*<asyxml><function type="transform" signature="scale(real,point,point,point,point,bool)"><code></asyxml>*/
-transform scale(real k, point A, point B, point C, point D, bool safe = false)
-{/*<asyxml></code><documentation><url href = "http://fr.wikipedia.org/wiki/Affinit%C3%A9_%28math%C3%A9matiques%29"/>
-   (help me for English translation...)
-   If 'safe = true' and (AB)//(CD) return the identity.
-   If 'safe = false' and (AB)//(CD) return a infinity scaling.</documentation></function></asyxml>*/
- pair a = locate(A);
- pair u = unit(locate(B) - locate(A));
- pair v = unit(locate(D) - locate(C));
- real c = u.x * a.y - u.y * a.x;
- real d = (conj(u) * v).y;
- real d = (conj(u) * v).y;
- if (abs(d) < epsgeo) {
-   return safe ? identity() : scale(infinity);
- }
- real tx = (1 - k) * c * v.x/d;
- real ty = (1 - k) * c * v.y/d;
- real txx = (1 - k) * u.x * v.y/d + k;
- real txy = (k - 1) * u.x * v.x/d;
- real tyx = (1 - k) * u.y * v.y/d;
- real tyy = (k - 1) * u.y * v.x/d + k;
- transform t = (tx, ty, txx, txy, tyx, tyy);
- return t;
-}
-
-/*<asyxml><function type="transform" signature="scaleO(real)"><code></asyxml>*/
-transform scaleO(real x)
-{/*<asyxml></code><documentation>Homothety from the origin of the current coordinate system.</documentation></function></asyxml>*/
- return scale(x, (0, 0));
-}
-
-/*<asyxml><function type="transform" signature="xscaleO(real)"><code></asyxml>*/
-transform xscaleO(real x)
-{/*<asyxml></code><documentation>xscale from the origin and relatively to the current coordinate system.</documentation></function></asyxml>*/
- return scale(x, (0, 0), (0, 1), (0, 0), (1, 0));
-}
-
-/*<asyxml><function type="transform" signature="yscaleO(real)"><code></asyxml>*/
-transform yscaleO(real x)
-{/*<asyxml></code><documentation>yscale from the origin and relatively to the current coordinate system.</documentation></function></asyxml>*/
- return scale(x, (0, 0), (1, 0), (0, 0), (0, 1));
-}
-
-/*<asyxml><struct signature="vector"><code></asyxml>*/
-struct vector
-{/*<asyxml></code><documentation>Like a point but casting to pair, adding etc does not take account
-   of the origin of the coordinate system.</documentation><property type = "point" signature="v"><code></asyxml>*/
-  point v;/*<asyxml></code><documentation>Coordinates as a point (embed coordinate system and pair).</documentation></property></asyxml>*/
-}/*<asyxml></struct></asyxml>*/
-
-/*<asyxml><operator type = "point" signature="cast(vector)"><code></asyxml>*/
-point operator cast(vector v)
-{/*<asyxml></code><documentation>Cast vector 'v' to point 'M' so that OM = v.</documentation></operator></asyxml>*/
- return v.v;
-}
-
-/*<asyxml><operator type = "vector" signature="cast(pair)"><code></asyxml>*/
-vector operator cast(pair v)
-{/*<asyxml></code><documentation>Cast pair to vector relatively to the current coordinate
-   system 'currentcoordsys'.</documentation></operator></asyxml>*/
- vector ov;
- ov.v = point(currentcoordsys, v);
- return ov;
-}
-
-/*<asyxml><operator type = "vector" signature="cast(explicit point)"><code></asyxml>*/
-vector operator cast(explicit point v)
-{/*<asyxml></code><documentation>A point can be interpreted like a vector using the code
-   '(vector)a_point'.</documentation></operator></asyxml>*/
- vector ov;
- ov.v = v;
- return ov;
-}
-
-/*<asyxml><operator type = "pair" signature="cast(explicit vector)"><code></asyxml>*/
-pair operator cast(explicit vector v)
-{/*<asyxml></code><documentation>Cast vector to pair (the coordinates of 'v' in the default coordinate system).</documentation></operator></asyxml>*/
- return locate(v.v) - v.v.coordsys.O;
-}
-
-/*<asyxml><operator type = "align" signature="cast(vector)"><code></asyxml>*/
-align operator cast(vector v)
-{/*<asyxml></code><documentation>Cast vector to align.</documentation></operator></asyxml>*/
- return (pair)v;
-}
-
-/*<asyxml><function type="vector" signature="vector(coordsys, pair)"><code></asyxml>*/
-vector vector(coordsys R = currentcoordsys, pair v)
-{/*<asyxml></code><documentation>Return the vector of 'R' which has the coordinates 'v'.</documentation></function></asyxml>*/
- vector ov;
- ov.v = point(R, v);
- return ov;
-}
-
-/*<asyxml><function type="vector" signature="vector(point)"><code></asyxml>*/
-vector vector(point M)
-{/*<asyxml></code><documentation>Return the vector OM, where O is the origin of the coordinate system of 'M'.
-   Useful to write 'vector(P - M);' instead of '(vector)(P - M)'.</documentation></function></asyxml>*/
- return M;
-}
-
-/*<asyxml><function type="point" signature="point(explicit vector)"><code></asyxml>*/
-point point(explicit vector u)
-{/*<asyxml></code><documentation>Return the point M so that OM = u, where O is the origin of the coordinate system of 'u'.</documentation></function></asyxml>*/
- return u.v;
-}
-
-/*<asyxml><function type="pair" signature="locate(explicit vector)"><code></asyxml>*/
-pair locate(explicit vector v)
-{/*<asyxml></code><documentation>Return the coordinates of 'v' in the default coordinate system (like casting vector to pair).</documentation></function></asyxml>*/
- return (pair)v;
-}
-
-/*<asyxml><function type="void" signature="show(Label,pen,arrowbar)"><code></asyxml>*/
-void show(Label L, vector v, pen p = currentpen, arrowbar arrow = Arrow)
-{/*<asyxml></code><documentation>Draw the vector v (from the origin of its coordinate system).</documentation></function></asyxml>*/
- coordsys R = v.v.coordsys;
- draw(L, R.O--v.v, p, arrow);
-}
-
-/*<asyxml><function type="vector" signature="changecoordsys(coordsys,vector)"><code></asyxml>*/
-vector changecoordsys(coordsys R, vector v)
-{/*<asyxml></code><documentation>Return the vector 'v' relatively to coordinate system 'R'.</documentation></function></asyxml>*/
- vector ov;
- ov.v = point(R, (locate(v) + R.O)/R);
- return ov;
-}
-
-/*<asyxml><operator type = "vector" signature="*(real,explicit vector)"><code></asyxml>*/
-vector operator *(real x, explicit vector v)
-{/*<asyxml></code><documentation>Provide real * vector.</documentation></operator></asyxml>*/
- return x * v.v;
-}
-
-/*<asyxml><operator type = "vector" signature="/(explicit vector,real)"><code></asyxml>*/
-vector operator /(explicit vector v, real x)
-{/*<asyxml></code><documentation>Provide vector/real</documentation></operator></asyxml>*/
- return v.v/x;
-}
-
-/*<asyxml><operator type = "vector" signature="*(transform t,explicit vector)"><code></asyxml>*/
-vector operator *(transform t, explicit vector v)
-{/*<asyxml></code><documentation>Provide transform * vector.</documentation></operator></asyxml>*/
- return t * v.v;
-}
-
-/*<asyxml><operator type = "vector" signature="*(explicit point,explicit vector)"><code></asyxml>*/
-vector operator *(explicit point M, explicit vector v)
-{/*<asyxml></code><documentation>Provide point * vector</documentation></operator></asyxml>*/
- return M * v.v;
-}
-
-/*<asyxml><operator type = "point" signature="+(explicit point,explicit vector)"><code></asyxml>*/
-point operator +(point M, explicit vector v)
-{/*<asyxml></code><documentation>Return 'M' shifted by 'v'.</documentation></operator></asyxml>*/
- return shift(locate(v)) * M;
-}
-
-/*<asyxml><operator type = "point" signature="-(explicit point,explicit vector)"><code></asyxml>*/
-point operator -(point M, explicit vector v)
-{/*<asyxml></code><documentation>Return 'M' shifted by '-v'.</documentation></operator></asyxml>*/
- return shift(-locate(v)) * M;
-}
-
-/*<asyxml><operator type = "vector" signature="-(explicit vector)"><code></asyxml>*/
-vector operator -(explicit vector v)
-{/*<asyxml></code><documentation>Provide -v.</documentation></operator></asyxml>*/
- return -v.v;
-}
-
-/*<asyxml><operator type = "point" signature="+(explicit pair,explicit vector)"><code></asyxml>*/
-point operator +(explicit pair m, explicit vector v)
-{/*<asyxml></code><documentation>The pair 'm' is supposed to be the coordinates of
-   a point in the current coordinates system 'currentcoordsys'.
-   Return this point shifted by the vector 'v'.</documentation></operator></asyxml>*/
- return locate(m) + v;
-}
-
-/*<asyxml><operator type = "point" signature="-(explicit pair,explicit vector)"><code></asyxml>*/
-point operator -(explicit pair m, explicit vector v)
-{/*<asyxml></code><documentation>The pair 'm' is supposed to be the coordinates of
-   a point in the current coordinates system 'currentcoordsys'.
-   Return this point shifted by the vector '-v'.</documentation></operator></asyxml>*/
- return m + (-v);
-}
-
-/*<asyxml><operator type = "vector" signature="+(explicit vector,explicit vector)"><code></asyxml>*/
-vector operator +(explicit vector v1, explicit vector v2)
-{/*<asyxml></code><documentation>Provide vector + vector.
-   If the two vector haven't the same coordinate system, the returned
-   vector is relative to the default coordinate system (without warning).</documentation></operator></asyxml>*/
- coordsys R = v1.v.coordsys;
- if(samecoordsys(false, v1, v2)){R = defaultcoordsys;}
- return vector(R, (locate(v1) + locate(v2))/R);
-}
-
-/*<asyxml><operator type = "vector" signature="-(explicit vector, explicit vector)"><code></asyxml>*/
-vector operator -(explicit vector v1, explicit vector v2)
-{/*<asyxml></code><documentation>Provide vector - vector.
-   If the two vector haven't the same coordinate system, the returned
-   vector is relative to the default coordinate system (without warning).</documentation></operator></asyxml>*/
- return v1 + (-v2);
-}
-
-/*<asyxml><operator type = "bool" signature="==(explicit vector,explicit vector)"><code></asyxml>*/
-bool operator ==(explicit vector u, explicit vector v)
-  {/*<asyxml></code><documentation>Return true iff |u - v|<EPS.</documentation></operator></asyxml>*/
-   return abs(u - v) < EPS;
-  }
-
-/*<asyxml><function type="bool" signature="collinear(vector,vector)"><code></asyxml>*/
-bool collinear(vector u, vector v)
-{/*<asyxml></code><documentation>Return 'true' iff the vectors 'u' and 'v' are collinear.</documentation></function></asyxml>*/
- return abs(ypart((conj((pair)u) * (pair)v))) < EPS;
-}
-
-/*<asyxml><function type="vector" signature="unit(point)"><code></asyxml>*/
-vector unit(point M)
-{/*<asyxml></code><documentation>Return the unit vector according to the modulus of its coordinate system.</documentation></function></asyxml>*/
- return M/abs(M);
-}
-
-/*<asyxml><function type="vector" signature="unit(vector)"><code></asyxml>*/
-vector unit(vector u)
-{/*<asyxml></code><documentation>Return the unit vector according to the modulus of its coordinate system.</documentation></function></asyxml>*/
- return u.v/abs(u.v);
-}
-
-/*<asyxml><function type="real" signature="degrees(vector,coordsys,bool)"><code></asyxml>*/
-real degrees(vector v,
-             coordsys R = v.v.coordsys,
-             bool warn = true)
-{/*<asyxml></code><documentation>Return the angle of 'v' (in degrees) relatively to 'R'.</documentation></function></asyxml>*/
- return (degrees(locate(v), warn) - degrees(R.i))%360;
-}
-
-/*<asyxml><function type="real" signature="angle(vector,coordsys,bool)"><code></asyxml>*/
-real angle(explicit vector v,
-           coordsys R = v.v.coordsys,
-           bool warn = true)
-{/*<asyxml></code><documentation>Return the angle of 'v' (in radians) relatively to 'R'.</documentation></function></asyxml>*/
- return radians(degrees(v, R, warn));
-}
-
-/*<asyxml><function type="vector" signature="conj(explicit vector)"><code></asyxml>*/
-vector conj(explicit vector u)
-{/*<asyxml></code><documentation>Conjugate.</documentation></function></asyxml>*/
- return conj(u.v);
-}
-
-/*<asyxml><function type="transform" signature="rotate(explicit vector)"><code></asyxml>*/
-transform rotate(explicit vector dir)
-{/*<asyxml></code><documentation>A rotation in the direction 'dir' limited to [-90, 90]
-   This is useful for rotating text along a line in the direction dir.
-   rotate(explicit point dir) is also defined.
-   </documentation></function></asyxml>*/
- return rotate(locate(dir));
-}
-transform rotate(explicit point dir){return rotate(locate(vector(dir)));}
-// *......................COORDINATES......................*
-// *=======================================================*
-
-// *=======================================================*
-// *.........................BASES.........................*
-/*<asyxml><variable type="point" signature="origin"><code></asyxml>*/
-point origin = point(defaultcoordsys, (0, 0));/*<asyxml></code><documentation>The origin of the current coordinate system.</documentation></variable></asyxml>*/
-
-/*<asyxml><function type="point" signature="origin(coordsys)"><code></asyxml>*/
-point origin(coordsys R = currentcoordsys)
-{/*<asyxml></code><documentation>Return the origin of the coordinate system 'R'.</documentation></function></asyxml>*/
-  return point(R, (0, 0)); //use automatic casting;
-}
-
-/*<asyxml><variable type="real" signature="linemargin"><code></asyxml>*/
-real linemargin = 0;/*<asyxml></code><documentation>Margin used to draw lines.</documentation></variable></asyxml>*/
-/*<asyxml><function type="real" signature="linemargin()"><code></asyxml>*/
-real linemargin()
-{/*<asyxml></code><documentation>Return the margin used to draw lines.</documentation></function></asyxml>*/
-  return linemargin;
-}
-
-/*<asyxml><variable type="pen" signature="addpenline"><code></asyxml>*/
-pen addpenline = squarecap;/*<asyxml></code><documentation>Add this property to the drawing pen of "finish" lines.</documentation></variable></asyxml>*/
-pen addpenline(pen p) {
-  return addpenline + p;
-}
-
-/*<asyxml><variable type="pen" signature="addpenarc"><code></asyxml>*/
-pen addpenarc = squarecap;/*<asyxml></code><documentation>Add this property to the drawing pen of arcs.</documentation></variable></asyxml>*/
-pen addpenarc(pen p) {return addpenarc + p;}
-
-/*<asyxml><variable type="string" signature="defaultmassformat"><code></asyxml>*/
-string defaultmassformat = "$\left(%L;%.4g\right)$";/*<asyxml></code><documentation>Format used to construct the default label of masses.</documentation></variable></asyxml>*/
-
-/*<asyxml><function type="int" signature="sgnd(real)"><code></asyxml>*/
-int sgnd(real x)
-{/*<asyxml></code><documentation>Return the -1 if x < 0, 1 if x >= 0.</documentation></function></asyxml>*/
-  return (x == 0) ? 1 : sgn(x);
-}
-int sgnd(int x)
-{
-  return (x == 0) ? 1 : sgn(x);
-}
-
-/*<asyxml><function type="bool" signature="defined(pair)"><code></asyxml>*/
-bool defined(point P)
-{/*<asyxml></code><documentation>Return true iff the coordinates of 'P' are finite.</documentation></function></asyxml>*/
-  return finite(P.coordinates);
-}
-
-/*<asyxml><function type="bool" signature="onpath(picture,path,point,pen)"><code></asyxml>*/
-bool onpath(picture pic = currentpicture, path g, point M, pen p = currentpen)
-{/*<asyxml></code><documentation>Return true iff 'M' is on the path drawn with the pen 'p' in 'pic'.</documentation></function></asyxml>*/
-  transform t = inverse(pic.calculateTransform());
-  return intersect(g, shift(locate(M)) * scale(linewidth(p)/2) * t * unitcircle).length > 0;
-}
-
-/*<asyxml><function type="bool" signature="sameside(point,point,point)"><code></asyxml>*/
-bool sameside(point M, point N, point O)
-{/*<asyxml></code><documentation>Return 'true' iff 'M' and 'N' are same side of the point 'O'.</documentation></function></asyxml>*/
-  pair m = M, n = N, o = O;
-  return dot(m - o, n - o) >= -epsgeo;
-}
-
-/*<asyxml><function type="bool" signature="between(point,point,point)"><code></asyxml>*/
-bool between(point M, point O, point N)
-{/*<asyxml></code><documentation>Return 'true' iff 'O' is between 'M' and 'N'.</documentation></function></asyxml>*/
-  return (!sameside(N, M, O) || M == O || N == O);
-}
-
-
-typedef path pathModifier(path);
-pathModifier NoModifier = new path(path g){return g;};
-
-private void Drawline(picture pic = currentpicture, Label L = "", pair P, bool dirP = true, pair Q, bool dirQ = true,
-                      align align = NoAlign, pen p = currentpen,
-                      arrowbar arrow = None,
-                      Label legend = "", marker marker = nomarker,
-                      pathModifier pathModifier = NoModifier)
-{/* Add the two parameters 'dirP' and 'dirQ' to the native routine
-    'drawline' of the module 'math'.
-    Segment [PQ] will be prolonged in direction of P if 'dirP = true', in
-    direction of Q if 'dirQ = true'.
-    If 'dirP = dirQ = true', the behavior is that of the native 'drawline'.
-    Add all the other parameters of 'Draw'.*/
-  pic.add(new void (frame f, transform t, transform T, pair m, pair M) {
-      picture opic;
-      // Reduce the bounds by the size of the pen.
-      m -= min(p) - (linemargin(), linemargin()); M -= max(p) + (linemargin(), linemargin());
-
-      // Calculate the points and direction vector in the transformed space.
-      t = t * T;
-      pair z = t * P;
-      pair q = t * Q;
-      pair v = q - z;
-      // path g;
-      pair ptp, ptq;
-      real cp = dirP ? 1:0;
-      real cq = dirQ ? 1:0;
-      // Handle horizontal and vertical lines.
-      if(v.x == 0) {
-        if(m.x <= z.x && z.x <= M.x)
-          if (dot(v, m - z) < 0) {
-            ptp = (z.x, z.y + cp * (m.y - z.y));
-            ptq = (z.x, q.y + cq * (M.y - q.y));
-          } else {
-            ptq = (z.x, q.y + cq * (m.y - q.y));
-            ptp = (z.x, z.y + cp * (M.y - z.y));
-          }
-      } else if(v.y == 0) {
-        if (dot(v, m - z) < 0) {
-          ptp = (z.x + cp * (m.x - z.x), z.y);
-          ptq = (q.x + cq * (M.x - q.x), z.y);
-        } else {
-          ptq = (q.x + cq * (m.x - q.x), z.y);
-          ptp = (z.x + cp * (M.x - z.x), z.y);
-        }
-      } else {
-        // Calculate the maximum and minimum t values allowed for the
-        // parametric equation z + t * v
-        real mx = (m.x - z.x)/v.x, Mx = (M.x - z.x)/v.x;
-        real my = (m.y - z.y)/v.y, My = (M.y - z.y)/v.y;
-        real tmin = max(v.x > 0 ? mx : Mx, v.y > 0 ? my : My);
-        real tmax = min(v.x > 0 ? Mx : mx, v.y > 0 ? My : my);
-        pair pmin = z + tmin * v;
-        pair pmax = z + tmax * v;
-        if(tmin <= tmax) {
-          ptp = z + cp * tmin * v;
-          ptq = z + (cq == 0 ? v:tmax * v);
-        }
-      }
-      path g = ptp--ptq;
-      if (length(g)>0)
-        {
-          if(L.s != "") {
-            Label lL = L.copy();
-            if(L.defaultposition) lL.position(Relative(.9));
-            lL.p(p);
-            lL.out(opic, g);
-          }
-          g = pathModifier(g);
-          if(linetype(p).length == 0){
-            pair m = midpoint(g);
-            pen tp;
-            tp = dirP ? p : addpenline(p);
-            draw(opic, pathModifier(m--ptp), tp);
-            tp = dirQ ? p : addpenline(p);
-            draw(opic, pathModifier(m--ptq), tp);
-          } else {
-            draw(opic, g, p);
-          }
-          marker.markroutine(opic, marker.f, g);
-          arrow(opic, g, p, NoMargin);
-          add(f, opic.fit());
-        }
-    });
-}
-
-/*<asyxml><function type="void" signature="clipdraw(picture,Label,path,align,pen,arrowbar,arrowbar,real,real,Label,marker)"><code></asyxml>*/
-void clipdraw(picture pic = currentpicture, Label L = "", path g,
-              align align = NoAlign, pen p = currentpen,
-              arrowbar arrow = None, arrowbar bar = None,
-              real xmargin = 0, real ymargin = xmargin,
-              Label legend = "", marker marker = nomarker)
-{/*<asyxml></code><documentation>Draw the path 'g' on 'pic' clipped to the bounding box of 'pic'.</documentation></function></asyxml>*/
-  if(L.s != "") {
-    picture tmp;
-    label(tmp, L, g, p);
-    add(pic, tmp);
-  }
-  pic.add(new void (frame f, transform t, transform T, pair m, pair M) {
-      // Reduce the bounds by the size of the pen and the margins.
-      m += min(p) + (xmargin, ymargin); M -= max(p) + (xmargin, ymargin);
-      path bound = box(m, M);
-      picture tmp;
-      draw(tmp, "", t * T * g, align, p, arrow, bar, NoMargin, legend, marker);
-      clip(tmp, bound);
-      add(f, tmp.fit());
-    });
-}
-
-/*<asyxml><function type="void" signature="distance(picture pic,Label,point,point,bool,real,pen,pen,arrow)"><code></asyxml>*/
-void distance(picture pic = currentpicture, Label L = "", point A, point B,
-              bool rotated = true, real offset = 3mm,
-              pen p = currentpen, pen joinpen = invisible,
-              arrowbar arrow = Arrows(NoFill))
-{/*<asyxml></code><documentation>Draw arrow between A and B (from FAQ).</documentation></function></asyxml>*/
-  pair A = A, B = B;
-  path g = A--B;
-  transform Tp = shift(-offset * unit(B - A) * I);
-  pic.add(new void(frame f, transform t) {
-      picture opic;
-      path G = Tp * t * g;
-      transform id = identity();
-      transform T = rotated ? rotate(B - A) : id;
-      Label L = L.copy();
-      L.align(L.align, Center);
-      if(abs(ypart((conj(A - B) * L.align.dir))) < epsgeo && L.filltype == NoFill)
-        L.filltype = UnFill(1);
-      draw(opic, T * L, G, p, arrow, Bars, PenMargins);
-      pair Ap = t * A, Bp = t * B;
-      draw(opic, (Ap--Tp * Ap)^^(Bp--Tp * Bp), joinpen);
-      add(f, opic.fit());
-    }, true);
-  pic.addBox(min(g), max(g), Tp * min(p), Tp * max(p));
-}
-
-/*<asyxml><variable type="real" signature="perpfactor"><code></asyxml>*/
-real perpfactor = 1;/*<asyxml></code><documentation>Factor for drawing perpendicular symbol.</documentation></variable></asyxml>*/
-/*<asyxml><function type="void" signature="perpendicularmark(picture,point,explicit pair,explicit pair,real,pen,margin,filltype)"><code></asyxml>*/
-void perpendicularmark(picture pic = currentpicture, point z,
-                       explicit pair align,
-                       explicit pair dir = E, real size = 0,
-                       pen p = currentpen,
-                       margin margin = NoMargin,
-                       filltype filltype = NoFill)
-{/*<asyxml></code><documentation>Draw a perpendicular symbol at z aligned in the direction align
-   relative to the path z--z + dir.
-   dir(45 + n * 90), where n in N*, are common values for 'align'.</documentation></function></asyxml>*/
-  p = squarecap + miterjoin + p;
-  if(size == 0) size = perpfactor * 3mm + linewidth(p) / 2;
-  frame apic;
-  pair d1 = size * align * unit(dir) * dir(-45);
-  pair d2 = I * d1;
-  path g = d1--d1 + d2--d2;
-  g = margin(g, p).g;
-  draw(apic, g, p);
-  if(filltype != NoFill) filltype.fill(apic, (relpoint(g, 0) - relpoint(g, 0.5)+
-                                              relpoint(g, 1))--g--cycle, p + solid);
-  add(pic, apic, locate(z));
-}
-
-/*<asyxml><function type="void" signature="perpendicularmark(picture,point,vector,vector,real,pen,margin,filltype)"><code></asyxml>*/
-void perpendicularmark(picture pic = currentpicture, point z,
-                       vector align,
-                       vector dir = E, real size = 0,
-                       pen p = currentpen,
-                       margin margin = NoMargin,
-                       filltype filltype = NoFill)
-{/*<asyxml></code><documentation>Draw a perpendicular symbol at z aligned in the direction align
-   relative to the path z--z + dir.
-   dir(45 + n * 90), where n in N, are common values for 'align'.</documentation></function></asyxml>*/
-  perpendicularmark(pic, z, (pair)align, (pair)dir, size,
-                    p, margin, filltype);
-}
-
-/*<asyxml><function type="void" signature="perpendicularmark(picture,point,explicit pair,path,real,pen,margin,filltype)"><code></asyxml>*/
-void perpendicularmark(picture pic = currentpicture, point z, explicit pair align, path g,
-                       real size = 0, pen p = currentpen,
-                       margin margin = NoMargin,
-                       filltype filltype = NoFill)
-{/*<asyxml></code><documentation>Draw a perpendicular symbol at z aligned in the direction align
-   relative to the path z--z + dir(g, 0).
-   dir(45 + n * 90), where n in N, are common values for 'align'.</documentation></function></asyxml>*/
-  perpendicularmark(pic, z, align, dir(g, 0), size, p, margin, filltype);
-}
-
-/*<asyxml><function type="void" signature="perpendicularmark(picture,point,vector,path,real,pen,margin,filltype)"><code></asyxml>*/
-void perpendicularmark(picture pic = currentpicture, point z, vector align, path g,
-                       real size = 0, pen p = currentpen,
-                       margin margin = NoMargin,
-                       filltype filltype = NoFill)
-{/*<asyxml></code><documentation>Draw a perpendicular symbol at z aligned in the direction align
-   relative to the path z--z + dir(g, 0).
-   dir(45 + n * 90), where n in N, are common values for 'align'.</documentation></function></asyxml>*/
-  perpendicularmark(pic, z, (pair)align, dir(g, 0), size, p, margin, filltype);
-}
-
-/*<asyxml><function type="void" signature="markrightangle(picture,point,point,point,real,pen,margin,filltype)"><code></asyxml>*/
-void markrightangle(picture pic = currentpicture, point A, point O,
-                    point B, real size = 0, pen p = currentpen,
-                    margin margin = NoMargin,
-                    filltype filltype = NoFill)
-{/*<asyxml></code><documentation>Mark the angle AOB with a perpendicular symbol.</documentation></function></asyxml>*/
-  pair Ap = A, Bp = B, Op = O;
-  pair dir = Ap - Op;
-  real a1 = degrees(dir);
-  pair align = rotate(-a1) * dir(Op--Ap, Op--Bp);
-  perpendicularmark(pic = pic, z = O, align = align,
-                    dir = dir, size = size, p = p,
-                    margin = margin, filltype = filltype);
-}
-
-/*<asyxml><function type="bool" signature="simeq(point,point,real)"><code></asyxml>*/
-bool simeq(point A, point B, real fuzz = epsgeo)
-{/*<asyxml></code><documentation>Return true iff abs(A - B) < fuzz.
-   This routine is used internally to know if two points are equal, in particular by the operator == in 'point == point'.</documentation></function></asyxml>*/
-  return (abs(A - B) < fuzz);
-}
-bool simeq(point a, real b, real fuzz = epsgeo)
-{
-  coordsys R = a.coordsys;
-  return (abs(a - point(R, ((pair)b)/R)) < fuzz);
-}
-
-/*<asyxml><function type="pair" signature="attract(pair,path,real)"><code></asyxml>*/
-pair attract(pair m, path g, real fuzz = 0)
-{/*<asyxml></code><documentation>Return the nearest point (A PAIR) of 'm' which is on the path g.
-   'fuzz' is the argument 'fuzz' of 'intersect'.</documentation></function></asyxml>*/
-  if(intersect(m, g, fuzz).length > 0) return m;
-  pair p;
-  real step = 1, r = 0;
-  real[] t;
-  static real eps = sqrt(realEpsilon);
-  do {// Find a radius for intersection
-    r += step;
-    t = intersect(shift(m) * scale(r) * unitcircle, g);
-  } while(t.length <= 0);
-  p = point(g, t[1]);
-  real rm = 0, rM = r;
-  while(rM - rm > eps) {
-    r = (rm + rM)/2;
-    t = intersect(shift(m) * scale(r) * unitcircle, g, fuzz);
-    if(t.length <= 0) {
-      rm = r;
-    } else {
-      rM = r;
-      p = point(g, t[1]);
-    }
-  }
-  return p;
-}
-
-/*<asyxml><function type="point" signature="attract(point,path,real)"><code></asyxml>*/
-point attract(point M, path g, real fuzz = 0)
-{/*<asyxml></code><documentation>Return the nearest point (A POINT) of 'M' which is on the path g.
-   'fuzz' is the argument 'fuzz' of 'intersect'.</documentation></function></asyxml>*/
-  return point(M.coordsys, attract(locate(M), g)/M.coordsys);
-}
-
-/*<asyxml><function type="real[]" signature="intersect(path,explicit pair)"><code></asyxml>*/
-real[] intersect(path g, explicit pair p, real fuzz = 0)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  fuzz = fuzz <= 0 ? sqrt(realEpsilon) : fuzz;
-  real[] or;
-  real r = realEpsilon;
-  do{
-    or = intersect(g, shift(p) * scale(r) * unitcircle, fuzz);
-    r *= 2;
-  } while(or.length == 0);
-  return or;
-}
-
-/*<asyxml><function type="real[]" signature="intersect(path,explicit point)"><code></asyxml>*/
-real[] intersect(path g, explicit point P, real fuzz = epsgeo)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  return intersect(g, locate(P), fuzz);
-}
-// *.........................BASES.........................*
-// *=======================================================*
-
-// *=======================================================*
-// *.........................LINES.........................*
-/*<asyxml><struct signature="line"><code></asyxml>*/
-struct line
-{/*<asyxml></code><documentation>This structure provides the objects line, semi - line and segment oriented from A to B.
-   All the calculus with this structure will be as exact as Asymptote can do.
-   For a full precision, you must not cast 'line' to 'path' excepted for drawing routines.</documentation></asyxml>*/
-  /*<asyxml><property type = "point" signature="A,B"><code></asyxml>*/
-  restricted point A,B;/*<asyxml></code><documentation>Two line's points with same coordinate system.</documentation></property><property type = "bool" signature="extendA,extendB"><code></asyxml>*/
-  bool extendA,extendB;/*<asyxml></code><documentation>If true,extend 'l' in direction of A (resp. B).</documentation></property><property type = "vector" signature="u,v"><code></asyxml>*/
-  restricted vector u,v;/*<asyxml></code><documentation>u = unit(AB) = direction vector,v = normal vector.</documentation></property><property type = "real" signature="a,b,c"><code></asyxml>*/
-  restricted real a,b,c;/*<asyxml></code><documentation>Coefficients of the equation ax + by + c = 0 in the coordinate system of 'A'.</documentation></property><property type = "real" signature="slope,origin"><code></asyxml>*/
-  restricted real slope, origin;/*<asyxml></code><documentation>Slope and ordinate at the origin.</documentation></property></asyxml>*/
-  /*<asyxml><method type = "line" signature="copy()"><code></asyxml>*/
-  line copy()
-  {/*<asyxml></code><documentation>Copy a line in a new instance.</documentation></method></asyxml>*/
-    line l = new line;
-    l.A = A;
-    l.B = B;
-    l.a = a;
-    l.b = b;
-    l.c = c;
-    l.slope = slope;
-    l.origin = origin;
-    l.u = u;
-    l.v = v;
-    l.extendA = extendA;
-    l.extendB = extendB;
-    return l;
-  }
-
-  /*<asyxml><method type = "void" signature="init(point,bool,point,bool)"><code></asyxml>*/
-  void init(point A, bool extendA = true, point B, bool extendB = true)
-  {/*<asyxml></code><documentation>Initialize line.
-     If 'extendA' is true, the "line" is infinite in the direction of A.</documentation></method></asyxml>*/
-    point[] P = standardizecoordsys(A, B);
-    this.A = P[0];
-    this.B = P[1];
-    this.a = B.y - A.y;
-    this.b = A.x - B.x;
-    this.c = A.y * B.x - A.x * B.y;
-    this.slope= (this.b == 0) ? infinity : -this.a/this.b;
-    this.origin = (this.b == 0) ? (this.c == 0) ? 0:infinity : -this.c/this.b;
-    this.u = unit(P[1]-P[0]);
-    //     int tmp = sgnd(this.slope);
-    //     this.u = (dot((pair)this.u, N) >= 0) ? tmp * this.u : -tmp * this.u;
-    this.v = rotate(90, point(P[0].coordsys, (0, 0))) * this.u;
-    this.extendA = extendA;
-    this.extendB = extendB;
-  }
-}/*<asyxml></struct></asyxml>*/
-
-/*<asyxml><function type="line" signature="line(point,bool,point,bool)"><code></asyxml>*/
-line line(point A, bool extendA = true, point B, bool extendB = true)
-{/*<asyxml></code><documentation>Return the line passing through 'A' and 'B'.
-   If 'extendA' is true, the "line" is infinite in the direction of A.
-   A "line" can be half-line or segment.</documentation></function></asyxml>*/
-  if (A == B) abort("line: the points must be distinct.");
-  line l;
-  l.init(A, extendA, B, extendB);
-  return l;
-}
-
-/*<asyxml><struct signature="segment"><code></asyxml>*/
-struct segment
-{/*<asyxml></code><documentation><look href = "struct line"/>.</documentation></asyxml>*/
-  restricted point A, B;// Extremity.
-  restricted vector u, v;// u = direction vector, v = normal vector.
-  restricted real a, b, c;// Coefficients of the equation ax + by + c = 0
-  restricted real slope, origin;
-  segment copy()
-  {
-    segment s = new segment;
-    s.A = A;
-    s.B = B;
-    s.a = a;
-    s.b = b;
-    s.c = c;
-    s.slope = slope;
-    s.origin = origin;
-    s.u = u;
-    s.v = v;
-    return s;
-  }
-
-  void init(point A, point B)
-  {
-    line l;
-    l.init(A, B);
-    this.A = l.A; this.B = l.B;
-    this.a = l.a; this.b = l.b; this.c = l.c;
-    this.slope = l.slope; this.origin = l.origin;
-    this.u = l.u; this.v = l.v;
-  }
-}/*<asyxml></struct></asyxml>*/
-
-/*<asyxml><function type="segment" signature="segment(point,point)"><code></asyxml>*/
-segment segment(point A, point B)
-{/*<asyxml></code><documentation>Return the segment whose the extremities are A and B.</documentation></function></asyxml>*/
-  segment s;
-  s.init(A, B);
-  return s;
-}
-
-/*<asyxml><function type="real" signature="length(segment)"><code></asyxml>*/
-real length(segment s)
-{/*<asyxml></code><documentation>Return the length of 's'.</documentation></function></asyxml>*/
-  return abs(s.A - s.B);
-}
-
-/*<asyxml><operator type = "line" signature="cast(segment)"><code></asyxml>*/
-line operator cast(segment s)
-{/*<asyxml></code><documentation>A segment is casted to a "finite line".</documentation></operator></asyxml>*/
-  return line(s.A, false, s.B, false);
-}
-
-/*<asyxml><operator type = "segment" signature="cast(line)"><code></asyxml>*/
-segment operator cast(line l)
-{/*<asyxml></code><documentation>Cast line 'l' to segment [l.A l.B].</documentation></operator></asyxml>*/
-  return segment(l.A, l.B);
-}
-
-path operator ecast(segment s)
-{
-  return s.A -- s.B;
-}
-
-/*<asyxml><operator type = "line" signature="*(transform,line)"><code></asyxml>*/
-line operator *(transform t, line l)
-{/*<asyxml></code><documentation>Provide transform * line</documentation></operator></asyxml>*/
-  return line(t * l.A, l.extendA, t * l.B, l.extendB);
-}
-/*<asyxml><operator type = "line" signature="/(line,real)"><code></asyxml>*/
-line operator /(line l, real x)
-{/*<asyxml></code><documentation>Provide l/x.
-   Return the line passing through l.A/x and l.B/x.</documentation></operator></asyxml>*/
-  return line(l.A/x, l.extendA, l.B/x, l.extendB);
-}
-line operator /(line l, int x){return line(l.A/x, l.B/x);}
-/*<asyxml><operator type = "line" signature="*(real,line)"><code></asyxml>*/
-line operator *(real x, line l)
-{/*<asyxml></code><documentation>Provide x * l.
-   Return the line passing through x * l.A and x * l.B.</documentation></operator></asyxml>*/
-  return line(x * l.A, l.extendA, x * l.B, l.extendB);
-}
-line operator *(int x, line l){return line(x * l.A, l.extendA, x * l.B, l.extendB);}
-
-/*<asyxml><operator type = "line" signature="*(point,line)"><code></asyxml>*/
-line operator *(point M, line l)
-{/*<asyxml></code><documentation>Provide point * line.
-   Return the line passing through unit(M) * l.A and unit(M) * l.B.</documentation></operator></asyxml>*/
-  return line(unit(M) * l.A, l.extendA, unit(M) * l.B, l.extendB);
-}
-/*<asyxml><operator type = "line" signature="+(line,point)"><code></asyxml>*/
-line operator +(line l, vector u)
-{/*<asyxml></code><documentation>Provide line + vector (and so line + point).
-   Return the line 'l' shifted by 'u'.</documentation></operator></asyxml>*/
-  return line(l.A + u, l.extendA, l.B + u, l.extendB);
-}
-/*<asyxml><operator type = "line" signature="-(line,vector)"><code></asyxml>*/
-line operator -(line l, vector u)
-{/*<asyxml></code><documentation>Provide line - vector (and so line - point).
-   Return the line 'l' shifted by '-u'.</documentation></operator></asyxml>*/
-  return line(l.A - u, l.extendA, l.B - u, l.extendB);
-}
-
-/*<asyxml><operator type = "line[]" signature="^^(line,line)"><code></asyxml>*/
-line[] operator ^^(line l1, line l2)
-{/*<asyxml></code><documentation>Provide line^^line.
-   Return the line array {l1, l2}.</documentation></operator></asyxml>*/
-  line[] ol;
-  ol.push(l1); ol.push(l2);
-  return ol;
-}
-
-/*<asyxml><operator type = "line[]" signature="^^(line,line[])"><code></asyxml>*/
-line[] operator ^^(line l1, line[] l2)
-{/*<asyxml></code><documentation>Provide line^^line[].
-   Return the line array {l1, l2[0], l2[1]...}.
-   line[]^^line is also defined.</documentation></operator></asyxml>*/
-  line[] ol;
-  ol.push(l1);
-  for (int i = 0; i < l2.length; ++i) {
-    ol.push(l2[i]);
-  }
-  return ol;
-}
-line[] operator ^^(line[] l2, line l1)
-{
-  line[] ol = l2;
-  ol.push(l1);
-  return ol;
-}
-
-/*<asyxml><operator type = "line[]" signature="^^(line,line[])"><code></asyxml>*/
-line[] operator ^^(line l1[], line[] l2)
-{/*<asyxml></code><documentation>Provide line[]^^line[].
-   Return the line array {l1[0], l1[1], ..., l2[0], l2[1], ...}.</documentation></operator></asyxml>*/
-  line[] ol = l1;
-  for (int i = 0; i < l2.length; ++i) {
-    ol.push(l2[i]);
-  }
-  return ol;
-}
-
-/*<asyxml><function type="bool" signature="sameside(point,point,line)"><code></asyxml>*/
-bool sameside(point M, point P, line l)
-{/*<asyxml></code><documentation>Return 'true' iff 'M' and 'N' are same side of the line (or on the line) 'l'.</documentation></function></asyxml>*/
-  pair A = l.A, B = l.B, m = M, p = P;
-  pair mil = (A + B)/2;
-  pair mA = rotate(90, mil) * A;
-  pair mB = rotate(-90, mil) * A;
-  return (abs(m - mA) <= abs(m - mB)) == (abs(p - mA) <= abs(p - mB));
-  // transform proj = projection(l.A, l.B);
-  // point Mp = proj * M;
-  // point Pp = proj * P;
-  // dot(Mp);dot(Pp);
-  // return dot(locate(Mp - M), locate(Pp - P)) >= 0;
-}
-
-/*<asyxml><function type="line" signature="line(segment)"><code></asyxml>*/
-line line(segment s)
-{/*<asyxml></code><documentation>Return the line passing through 's.A'
-   and 's.B'.</documentation></function></asyxml>*/
-  return line(s.A, s.B);
-}
-/*<asyxml><function type="segment" signature="segment(line)"><code></asyxml>*/
-segment segment(line l)
-{/*<asyxml></code><documentation>Return the segment whose extremities
-   are 'l.A' and 'l.B'.</documentation></function></asyxml>*/
-  return segment(l.A, l.B);
-}
-
-/*<asyxml><function type="point" signature="midpoint(segment)"><code></asyxml>*/
-point midpoint(segment s)
-{/*<asyxml></code><documentation>Return the midpoint of 's'.</documentation></function></asyxml>*/
-  return 0.5 * (s.A + s.B);
-}
-
-/*<asyxml><function type="void" signature="write(line)"><code></asyxml>*/
-void write(explicit line l)
-{/*<asyxml></code><documentation>Write some informations about 'l'.</documentation></function></asyxml>*/
-  write("A = "+(string)((pair)l.A));
-  write("Extend A = "+(l.extendA ? "true" : "false"));
-  write("B = "+(string)((pair)l.B));
-  write("Extend B = "+(l.extendB ? "true" : "false"));
-  write("u = "+(string)((pair)l.u));
-  write("v = "+(string)((pair)l.v));
-  write("a = "+(string) l.a);
-  write("b = "+(string) l.b);
-  write("c = "+(string) l.c);
-  write("slope = "+(string) l.slope);
-  write("origin = "+(string) l.origin);
-}
-
-/*<asyxml><function type="void" signature="write(explicit segment)"><code></asyxml>*/
-void write(explicit segment s)
-{/*<asyxml></code><documentation>Write some informations about 's'.</documentation></function></asyxml>*/
-  write("A = "+(string)((pair)s.A));
-  write("B = "+(string)((pair)s.B));
-  write("u = "+(string)((pair)s.u));
-  write("v = "+(string)((pair)s.v));
-  write("a = "+(string) s.a);
-  write("b = "+(string) s.b);
-  write("c = "+(string) s.c);
-  write("slope = "+(string) s.slope);
-  write("origin = "+(string) s.origin);
-}
-
-/*<asyxml><operator type = "bool" signature="==(line,line)"><code></asyxml>*/
-bool operator ==(line l1, line l2)
-  {/*<asyxml></code><documentation>Provide the test 'line == line'.</documentation></operator></asyxml>*/
-   return (collinear(l1.u, l2.u) &&
-           abs(ypart((locate(l1.A) - locate(l1.B))/(locate(l1.A) - locate(l2.B)))) < epsgeo &&
-           l1.extendA == l2.extendA && l1.extendB == l2.extendB);
-  }
-
-/*<asyxml><operator type = "bool" signature="!=(line,line)"><code></asyxml>*/
-bool operator !=(line l1, line l2)
-{/*<asyxml></code><documentation>Provide the test 'line != line'.</documentation></operator></asyxml>*/
- return !(l1 == l2);
-}
-
-/*<asyxml><operator type = "bool" signature="@(point,line)"><code></asyxml>*/
-bool operator @(point m, line l)
-{/*<asyxml></code><documentation>Provide the test 'point @ line'.
-   Return true iff 'm' is on the 'l'.</documentation></operator></asyxml>*/
- point M = changecoordsys(l.A.coordsys, m);
- if (abs(l.a * M.x + l.b * M.y + l.c) >= epsgeo) return false;
- if (l.extendA && l.extendB) return true;
- if (!l.extendA && !l.extendB) return between(l.A, M, l.B);
- if (l.extendA) return sameside(M, l.A, l.B);
- return sameside(M, l.B, l.A);
-}
-
-/*<asyxml><function type="coordsys" signature="coordsys(line)"><code></asyxml>*/
-coordsys coordsys(line l)
-{/*<asyxml></code><documentation>Return the coordinate system in which 'l' is defined.</documentation></function></asyxml>*/
- return l.A.coordsys;
-}
-
-/*<asyxml><function type="line" signature="reverse(line)"><code></asyxml>*/
-line reverse(line l)
-{/*<asyxml></code><documentation>Permute the points 'A' and 'B' of 'l' and so its orientation.</documentation></function></asyxml>*/
- return line(l.B, l.extendB, l.A, l.extendA);
-}
-
-/*<asyxml><function type="line" signature="extend(line)"><code></asyxml>*/
-line extend(line l)
-{/*<asyxml></code><documentation>Return the infinite line passing through 'l.A' and 'l.B'.</documentation></function></asyxml>*/
- line ol = l.copy();
- ol.extendA = true;
- ol.extendB = true;
- return ol;
-}
-
-/*<asyxml><function type="line" signature="complementary(explicit line)"><code></asyxml>*/
-line complementary(explicit line l)
-{/*<asyxml></code><documentation>Return the complementary of a half-line with respect of
-   the full line 'l'.</documentation></function></asyxml>*/
- if (l.extendA && l.extendB)
-   abort("complementary: the parameter is not a half-line.");
- point origin = l.extendA ? l.B : l.A;
- point ptdir = l.extendA ?
- rotate(180, l.B) * l.A : rotate(180, l.A) * l.B;
- return line(origin, false, ptdir);
-}
-
-/*<asyxml><function type="line[]" signature="complementary(explicit segment)"><code></asyxml>*/
-line[] complementary(explicit segment s)
-{/*<asyxml></code><documentation>Return the two half-lines of origin 's.A' and 's.B' respectively.</documentation></function></asyxml>*/
- line[] ol = new line[2];
- ol[0] = complementary(line(s.A, false, s.B));
- ol[1] = complementary(line(s.A, s.B, false));
- return ol;
-}
-
-/*<asyxml><function type="line" signature="Ox(coordsys)"><code></asyxml>*/
-line Ox(coordsys R = currentcoordsys)
-{/*<asyxml></code><documentation>Return the x-axis of 'R'.</documentation></function></asyxml>*/
- return line(point(R, (0, 0)), point(R, E));
-}
-/*<asyxml><constant type = "line" signature="Ox"><code></asyxml>*/
-restricted line Ox = Ox();/*<asyxml></code><documentation>the x-axis of
-                            the default coordinate system.</documentation></constant></asyxml>*/
-
-/*<asyxml><function type="line" signature="Oy(coordsys)"><code></asyxml>*/
-line Oy(coordsys R = currentcoordsys)
-{/*<asyxml></code><documentation>Return the y-axis of 'R'.</documentation></function></asyxml>*/
-  return line(point(R, (0, 0)), point(R, N));
-}
-/*<asyxml><constant type = "line" signature="Oy"><code></asyxml>*/
-restricted line Oy = Oy();/*<asyxml></code><documentation>the y-axis of
-                            the default coordinate system.</documentation></constant></asyxml>*/
-
-/*<asyxml><function type="line" signature="line(real,point)"><code></asyxml>*/
-line line(real a, point A = point(currentcoordsys, (0, 0)))
-{/*<asyxml></code><documentation>Return the line passing through 'A' with an
-   angle (in the coordinate system of A) 'a' in degrees.
-   line(point, real) is also defined.</documentation></function></asyxml>*/
-  return line(A, A + point(A.coordsys, A.coordsys.polar(1, radians(a))));
-}
-line line(point A = point(currentcoordsys, (0, 0)), real a)
-{
-  return line(a, A);
-}
-line line(int a, point A = point(currentcoordsys, (0, 0)))
-{
-  return line((real)a, A);
-}
-
-/*<asyxml><function type="line" signature="line(coordsys,real,real)"><code></asyxml>*/
-line line(coordsys R = currentcoordsys, real slope, real origin)
-{/*<asyxml></code><documentation>Return the line defined by slope and y-intercept relative to 'R'.</documentation></function></asyxml>*/
-  if (slope == infinity || slope == -infinity)
-    abort("The slope is infinite. Please, use the routine 'vline'.");
-  return line(point(R, (0, origin)), point(R, (1, origin + slope)));
-}
-
-/*<asyxml><function type="line" signature="line(coordsys,real,real,real)"><code></asyxml>*/
-line line(coordsys R = currentcoordsys, real a, real b, real c)
-{/*<asyxml></code><documentation>Retrun the line defined by equation relative to 'R'.</documentation></function></asyxml>*/
-  if (a == 0 && b == 0) abort("line: inconsistent equation...");
-  pair M;
-  M = (a == 0) ? (0, -c/b) : (-c/a, 0);
-  return line(point(R, M), point(R, M + (-b, a)));
-}
-
-/*<asyxml><function type="line" signature="vline(coordsys)"><code></asyxml>*/
-line vline(coordsys R = currentcoordsys)
-{/*<asyxml></code><documentation>Return a vertical line in 'R' passing through the origin of 'R'.</documentation></function></asyxml>*/
-  point P = point(R, (0, 0));
-  point PP = point(R, (R.O + N)/R);
-  return line(P, PP);
-}
-/*<asyxml><constant type = "line" signature="vline"><code></asyxml>*/
-restricted line vline = vline();/*<asyxml></code><documentation>The vertical line in the current coordinate system passing
-                                  through the origin of this system.</documentation></constant></asyxml>*/
-
-/*<asyxml><function type="line" signature="hline(coordsys)"><code></asyxml>*/
-line hline(coordsys R = currentcoordsys)
-{/*<asyxml></code><documentation>Return a horizontal line in 'R' passing through the origin of 'R'.</documentation></function></asyxml>*/
-  point P = point(R, (0, 0));
-  point PP = point(R, (R.O + E)/R);
-  return line(P, PP);
-}
-/*<asyxml><constant type = "line" signature="hline"><code></asyxml>*/
-line hline = hline();/*<asyxml></code><documentation>The horizontal line in the current coordinate system passing
-                       through the origin of this system.</documentation></constant></asyxml>*/
-
-/*<asyxml><function type="line" signature="changecoordsys(coordsys,line)"><code></asyxml>*/
-line changecoordsys(coordsys R, line l)
-{/*<asyxml></code><documentation>Return the line 'l' in the coordinate system 'R'.</documentation></function></asyxml>*/
-  point A = changecoordsys(R, l.A);
-  point B = changecoordsys(R, l.B);
-  return line(A, B);
-}
-
-/*<asyxml><function type="transform" signature="scale(real,line,line,bool)"><code></asyxml>*/
-transform scale(real k, line l1, line l2, bool safe = false)
-{/*<asyxml></code><documentation>Return the dilatation with respect to
-   'l1' in the direction of 'l2'.</documentation></function></asyxml>*/
-  return scale(k, l1.A, l1.B, l2.A, l2.B, safe);
-}
-
-/*<asyxml><function type="transform" signature="reflect(line)"><code></asyxml>*/
-transform reflect(line l)
-{/*<asyxml></code><documentation>Return the reflect about the line 'l'.</documentation></function></asyxml>*/
-  return reflect((pair)l.A, (pair)l.B);
-}
-
-/*<asyxml><function type="transform" signature="reflect(line,line)"><code></asyxml>*/
-transform reflect(line l1, line l2, bool safe = false)
-{/*<asyxml></code><documentation>Return the reflect about the line
-   'l1' in the direction of 'l2'.</documentation></function></asyxml>*/
-  return scale(-1.0, l1, l2, safe);
-}
-
-
-/*<asyxml><function type="point[]" signature="intersectionpoints(line,path)"><code></asyxml>*/
-point[] intersectionpoints(line l, path g)
-{/*<asyxml></code><documentation>Return all points of intersection of the line 'l' with the path 'g'.</documentation></function></asyxml>*/
-  // TODO utiliser la version 1.44 de intersections(path g, pair p, pair q)
-  // real [] t = intersections(g, l.A, l.B);
-  // coordsys R = coordsys(l);
-  // return sequence(new point(int n){return point(R, point(g, t[n])/R);}, t.length);
-  real [] t;
-  pair[] op;
-  pair A = l.A;
-  pair B = l.B;
-  real dy = B.y - A.y,
-    dx = A.x - B.x,
-    lg = length(g);
-
-  for (int i = 0; i < lg; ++i)
-    {
-      pair z0 = point(g, i),
-        z1 = point(g, i + 1),
-        c0 = postcontrol(g, i),
-        c1 = precontrol(g, i + 1),
-        t3 = z1 - z0 - 3 * c1 + 3 * c0,
-        t2 = 3 * z0 + 3 * c1 - 6 * c0,
-        t1 = 3 * c0 - 3z0;
-      real a = dy * t3.x + dx * t3.y,
-        b = dy * t2.x + dx * t2.y,
-        c = dy * t1.x + dx * t1.y,
-        d = dy * z0.x + dx * z0.y + A.y * B.x - A.x * B.y;
-
-      t = cubicroots(a, b, c, d);
-      for (int j = 0; j < t.length; ++j)
-        if (
-            t[j]>=0
-            && (
-                t[j]<1
-                || (
-                    t[j] == 1
-                    && (i == lg - 1)
-                    && !cyclic(g)
-                    )
-                )
-            ) {
-          op.push(point(g, i + t[j]));
-        }
+  <style type="text/css">
+    :root {
+      --tab-size-preference: 4;
     }
 
-  point[] opp;
-  for (int i = 0; i < op.length; ++i)
-    opp.push(point(coordsys(l), op[i]/coordsys(l)));
-  return opp;
-}
-
-/*<asyxml><function type="point" signature="intersectionpoint(line,line)"><code></asyxml>*/
-point intersectionpoint(line l1, line l2)
-{/*<asyxml></code><documentation>Return the point of intersection of line 'l1' with 'l2'.
-   If 'l1' and 'l2' have an infinity or none point of intersection,
-   this routine return (infinity, infinity).</documentation></function></asyxml>*/
-  point[] P = standardizecoordsys(l1.A, l1.B, l2.A, l2.B);
-  coordsys R = P[0].coordsys;
-  pair p = extension(P[0], P[1], P[2], P[3]);
-  if(finite(p)){
-    point p = point(R, p/R);
-    if (p @ l1 && p @ l2) return p;
-  }
-  return point(R, (infinity, infinity));
-}
-
-/*<asyxml><function type="line" signature="parallel(point,line)"><code></asyxml>*/
-line parallel(point M, line l)
-{/*<asyxml></code><documentation>Return the line parallel to 'l' passing through 'M'.</documentation></function></asyxml>*/
-  point A, B;
-  if (M.coordsys != coordsys(l))
-    {
-      A = changecoordsys(M.coordsys, l.A);
-      B = changecoordsys(M.coordsys, l.B);
-    } else {A = l.A;B = l.B;}
-  return line(M, M - A + B);
-}
-
-/*<asyxml><function type="line" signature="parallel(point,explicit vector)"><code></asyxml>*/
-line parallel(point M, explicit vector dir)
-{/*<asyxml></code><documentation>Return the line of direction 'dir' and passing through 'M'.</documentation></function></asyxml>*/
-  return line(M, M + locate(dir));
-}
-
-/*<asyxml><function type="line" signature="parallel(point,explicit pair)"><code></asyxml>*/
-line parallel(point M, explicit pair dir)
-{/*<asyxml></code><documentation>Return the line of direction 'dir' and passing through 'M'.</documentation></function></asyxml>*/
-  return line(M, M + vector(currentcoordsys, dir));
-}
-
-/*<asyxml><function type="bool" signature="parallel(line,line)"><code></asyxml>*/
-bool parallel(line l1, line l2, bool strictly = false)
-{/*<asyxml></code><documentation>Return 'true' if 'l1' and 'l2' are (strictly ?) parallel.</documentation></function></asyxml>*/
-  bool coll = collinear(l1.u, l2.u);
-  return strictly ? coll && (l1 != l2) : coll;
-}
-
-/*<asyxml><function type="bool" signature="concurrent(...line[])"><code></asyxml>*/
-bool concurrent(... line[] l)
-{/*<asyxml></code><documentation>Returns true if all the lines 'l' are concurrent.</documentation></function></asyxml>*/
-  if (l.length < 3) abort("'concurrent' needs at least for three lines ...");
-  pair point = intersectionpoint(l[0], l[1]);
-  bool conc;
-  for (int i = 2; i < l.length; ++i) {
-    pair pt = intersectionpoint(l[i - 1], l[i]);
-    conc = simeq(pt, point);
-    if (!conc) break;
-  }
-  return conc;
-}
-
-/*<asyxml><function type="transform" signature="projection(line)"><code></asyxml>*/
-transform projection(line l)
-{/*<asyxml></code><documentation>Return the orthogonal projection on 'l'.</documentation></function></asyxml>*/
-  return projection(l.A, l.B);
-}
-
-/*<asyxml><function type="transform" signature="projection(line,line,bool)"><code></asyxml>*/
-transform projection(line l1, line l2, bool safe = false)
-{/*<asyxml></code><documentation>Return the projection on (AB) in parallel of (CD).
-   If 'safe = true' and (l1)//(l2) return the identity.
-   If 'safe = false' and (l1)//(l2) return a infinity scaling.</documentation></function></asyxml>*/
-  return projection(l1.A, l1.B, l2.A, l2.B, safe);
-}
-
-/*<asyxml><function type="transform" signature="vprojection(line,bool)"><code></asyxml>*/
-transform vprojection(line l, bool safe = false)
-{/*<asyxml></code><documentation>Return the projection on 'l' in parallel of N--S.
-   If 'safe' is 'true' the projected point keeps the same place if 'l'
-   is vertical.</documentation></function></asyxml>*/
-  coordsys R = defaultcoordsys;
-  return projection(l, line(point(R, N), point(R, S)), safe);
-}
-
-/*<asyxml><function type="transform" signature="hprojection(line,bool)"><code></asyxml>*/
-transform hprojection(line l, bool safe = false)
-{/*<asyxml></code><documentation>Return the projection on 'l' in parallel of E--W.
-   If 'safe' is 'true' the projected point keeps the same place if 'l'
-   is horizontal.</documentation></function></asyxml>*/
-  coordsys R = defaultcoordsys;
-  return projection(l, line(point(R, E), point(R, W)), safe);
-}
-
-/*<asyxml><function type="line" signature="perpendicular(point,line)"><code></asyxml>*/
-line perpendicular(point M, line l)
-{/*<asyxml></code><documentation>Return the perpendicular line of 'l' passing through 'M'.</documentation></function></asyxml>*/
-  point Mp = projection(l) * M;
-  point A = Mp == l.A ? l.B : l.A;
-  return line(Mp, rotate(90, Mp) * A);
-}
-
-/*<asyxml><function type="line" signature="perpendicular(point,explicit vector)"><code></asyxml>*/
-line perpendicular(point M, explicit vector normal)
-{/*<asyxml></code><documentation>Return the line passing through 'M'
-   whose normal is \param{normal}.</documentation></function></asyxml>*/
-  return perpendicular(M, line(M, M + locate(normal)));
-}
-
-/*<asyxml><function type="line" signature="perpendicular(point,explicit pair)"><code></asyxml>*/
-line perpendicular(point M, explicit pair normal)
-{/*<asyxml></code><documentation>Return the line passing through 'M'
-   whose normal is \param{normal} (given in the currentcoordsys).</documentation></function></asyxml>*/
-  return perpendicular(M, line(M, M + vector(currentcoordsys, normal)));
-}
-
-/*<asyxml><function type="bool" signature="perpendicular(line,line)"><code></asyxml>*/
-bool perpendicular(line l1, line l2)
-{/*<asyxml></code><documentation>Return 'true' if 'l1' and 'l2' are perpendicular.</documentation></function></asyxml>*/
-  return abs(dot(locate(l1.u), locate(l2.u))) < epsgeo ;
-}
-
-/*<asyxml><function type="real" signature="angle(line,coordsys)"><code></asyxml>*/
-real angle(line l, coordsys R = coordsys(l))
-{/*<asyxml></code><documentation>Return the angle of the oriented line 'l',
-   in radian, in the interval ]-pi, pi] and relatively to 'R'.</documentation></function></asyxml>*/
-  return angle(l.u, R, false);
-}
-
-/*<asyxml><function type="real" signature="degrees(line,coordsys,bool)"><code></asyxml>*/
-real degrees(line l, coordsys R = coordsys(l))
-{/*<asyxml></code><documentation>Returns the angle of the oriented line 'l' in degrees,
-   in the interval [0, 360[ and relatively to 'R'.</documentation></function></asyxml>*/
-  return degrees(angle(l, R));
-}
-
-/*<asyxml><function type="real" signature="sharpangle(line,line)"><code></asyxml>*/
-real sharpangle(line l1, line l2)
-{/*<asyxml></code><documentation>Return the measure in radians of the sharp angle formed by 'l1' and 'l2'.</documentation></function></asyxml>*/
-  vector u1 = l1.u;
-  vector u2 = (dot(l1.u, l2.u) < 0) ? -l2.u : l2.u;
-  real a12 = angle(locate(u2)) - angle(locate(u1));
-  a12 = a12%(sgnd(a12) * pi);
-  if (a12 <= -pi/2) {
-    a12 += pi;
-  } else if (a12 > pi/2) {
-    a12 -= pi;
-  }
-  return a12;
-}
-
-/*<asyxml><function type="real" signature="angle(line,line)"><code></asyxml>*/
-real angle(line l1, line l2)
-{/*<asyxml></code><documentation>Return the measure in radians of oriented angle (l1.u, l2.u).</documentation></function></asyxml>*/
-  return angle(locate(l2.u)) - angle(locate(l1.u));
-}
-
-/*<asyxml><function type="real" signature="degrees(line,line)"><code></asyxml>*/
-real degrees(line l1, line l2)
-{/*<asyxml></code><documentation>Return the measure in degrees of the
-   angle formed by the oriented lines 'l1' and 'l2'.</documentation></function></asyxml>*/
-  return degrees(angle(l1, l2));
-}
-
-/*<asyxml><function type="real" signature="sharpdegrees(line,line)"><code></asyxml>*/
-real sharpdegrees(line l1, line l2)
-{/*<asyxml></code><documentation>Return the measure in degrees of the sharp angle formed by 'l1' and 'l2'.</documentation></function></asyxml>*/
-  return degrees(sharpangle(l1, l2));
-}
-
-/*<asyxml><function type="line" signature="bisector(line,line,real,bool)"><code></asyxml>*/
-line bisector(line l1, line l2, real angle = 0, bool sharp = true)
-{/*<asyxml></code><documentation>Return the bisector of the angle formed by 'l1' and 'l2'
-   rotated by the angle 'angle' (in degrees) around intersection point of 'l1' with 'l2'.
-   If 'sharp' is true (the default), this routine returns the bisector of the sharp angle.
-   Note that the returned line inherit of coordinate system of 'l1'.</documentation></function></asyxml>*/
-  line ol;
-  if (l1 == l2) return l1;
-  point A = intersectionpoint(l1, l2);
-  if (finite(A)) {
-    if(sharp) ol = rotate(sharpdegrees(l1, l2)/2 + angle, A) * l1;
-    else {
-      coordsys R = coordsys(l1);
-      pair a = A, b = A + l1.u, c = A + l2.u;
-      pair pp = extension(a, a + dir(a--b, a--c), b, b + dir(b--a, b--c));
-      return rotate(angle, A) * line(A, point(R, pp/R));
+    pre, code {
+      tab-size: var(--tab-size-preference);
     }
-  } else {
-    ol = l1;
-  }
-  return ol;
-}
-
-/*<asyxml><function type="line" signature="sector(int,int,line,line,real,bool)"><code></asyxml>*/
-line sector(int n = 2, int p = 1, line l1, line l2, real angle = 0, bool sharp = true)
-{/*<asyxml></code><documentation>Return the p-th nth-sector of the angle
-   formed by the oriented line 'l1' and 'l2'
-   rotated by the angle 'angle' (in degrees) around the intersection point of 'l1' with 'l2'.
-   If 'sharp' is true (the default), this routine returns the bisector of the sharp angle.
-   Note that the returned line inherit of coordinate system of 'l1'.</documentation></function></asyxml>*/
-  line ol;
-  if (l1 == l2) return l1;
-  point A = intersectionpoint(l1, l2);
-  if (finite(A)) {
-    if(sharp) ol = rotate(p * sharpdegrees(l1, l2)/n + angle, A) * l1;
-    else {
-      ol = rotate(p * degrees(l1, l2)/n + angle, A) * l1;
-    }
-  } else {
-    ol = l1;
-  }
-  return ol;
-}
-
-/*<asyxml><function type="line" signature="bisector(point,point,point,point,real)"><code></asyxml>*/
-line bisector(point A, point B, point C, point D, real angle = 0, bool sharp = true)
-{/*<asyxml></code><documentation>Return the bisector of the angle formed by the lines (AB) and (CD).
-   <look href = "#bisector(line, line, real, bool)"/>.</documentation></function></asyxml>*/
-  point[] P = standardizecoordsys(A, B, C, D);
-  return bisector(line(P[0], P[1]), line(P[2], P[3]), angle, sharp);
-}
-
-/*<asyxml><function type="line" signature="bisector(segment,real)"><code></asyxml>*/
-line bisector(segment s, real angle = 0)
-{/*<asyxml></code><documentation>Return the bisector of the segment line 's' rotated by 'angle' (in degrees) around the
-   midpoint of 's'.</documentation></function></asyxml>*/
-  coordsys R = coordsys(s);
-  point m = midpoint(s);
-  vector dir = rotateO(90) * unit(s.A - m);
-  return rotate(angle, m) * line(m + dir, m - dir);
-}
-
-/*<asyxml><function type="line" signature="bisector(point,point,real)"><code></asyxml>*/
-line bisector(point A, point B, real angle = 0)
-{/*<asyxml></code><documentation>Return the bisector of the segment line [AB] rotated by 'angle' (in degrees) around the
-   midpoint of [AB].</documentation></function></asyxml>*/
-  point[] P = standardizecoordsys(A, B);
-  return bisector(segment(P[0], P[1]), angle);
-}
-
-/*<asyxml><function type="real" signature="distance(point,line)"><code></asyxml>*/
-real distance(point M, line l)
-{/*<asyxml></code><documentation>Return the distance from 'M' to 'l'.
-   distance(line, point) is also defined.</documentation></function></asyxml>*/
-  point A = changecoordsys(defaultcoordsys, l.A);
-  point B = changecoordsys(defaultcoordsys, l.B);
-  line ll = line(A, B);
-  pair m = locate(M);
-  return abs(ll.a * m.x + ll.b * m.y + ll.c)/sqrt(ll.a^2 + ll.b^2);
-}
-
-real distance(line l, point M)
-{
-  return distance(M, l);
-}
-
-/*<asyxml><function type="void" signature="draw(picture,Label,line,bool,bool,align,pen,arrowbar,Label,marker)"><code></asyxml>*/
-void draw(picture pic = currentpicture, Label L = "",
-          line l, bool dirA = l.extendA, bool dirB = l.extendB,
-          align align = NoAlign, pen p = currentpen,
-          arrowbar arrow = None,
-          Label legend = "", marker marker = nomarker,
-          pathModifier pathModifier = NoModifier)
-{/*<asyxml></code><documentation>Draw the line 'l' without altering the size of picture pic.
-   The boolean parameters control the infinite section.
-   The global variable 'linemargin' (default value is 0) allows to modify
-   the bounding box in which the line must be drawn.</documentation></function></asyxml>*/
-  if(!(dirA || dirB)) draw(l.A--l.B, invisible);// l is a segment.
-  Drawline(pic, L, l.A, dirP = dirA, l.B, dirQ = dirB,
-           align, p, arrow,
-           legend, marker, pathModifier);
-}
-
-/*<asyxml><function type="void" signature="draw(picture,Label[], line[], align,pen[], arrowbar,Label,marker)"><code></asyxml>*/
-void draw(picture pic = currentpicture, Label[] L = new Label[], line[] l,
-          align align = NoAlign, pen[] p = new pen[],
-          arrowbar arrow = None,
-          Label[] legend = new Label[], marker marker = nomarker,
-          pathModifier pathModifier = NoModifier)
-{/*<asyxml></code><documentation>Draw each lines with the corresponding pen.</documentation></function></asyxml>*/
-  for (int i = 0; i < l.length; ++i) {
-    draw(pic, L.length>0 ? L[i] : "", l[i],
-         align, p = p.length>0 ? p[i] : currentpen,
-         arrow, legend.length>0 ? legend[i] : "", marker,
-         pathModifier);
-  }
-}
-
-/*<asyxml><function type="void" signature="draw(picture,Label[], line[], align,pen,arrowbar,Label,marker)"><code></asyxml>*/
-void draw(picture pic = currentpicture, Label[] L = new Label[], line[] l,
-          align align = NoAlign, pen p,
-          arrowbar arrow = None,
-          Label[] legend = new Label[], marker marker = nomarker,
-          pathModifier pathModifier = NoModifier)
-{/*<asyxml></code><documentation>Draw each lines with the same pen 'p'.</documentation></function></asyxml>*/
-  pen[] tp = sequence(new pen(int i){return p;}, l.length);
-  draw(pic, L, l, align, tp, arrow, legend, marker, pathModifier);
-}
-
-/*<asyxml><function type="void" signature="show(picture,line,pen)"><code></asyxml>*/
-void show(picture pic = currentpicture, line l, pen p = red)
-{/*<asyxml></code><documentation>Draw some informations of 'l'.</documentation></function></asyxml>*/
-  dot("$A$", (pair)l.A, align = -locate(l.v), p);
-  dot("$B$", (pair)l.B, align = -locate(l.v), p);
-  draw(l, dotted);
-  draw("$\vec{u}$", locate(l.A)--locate(l.A + l.u), p, Arrow);
-  draw("$\vec{v}$", locate(l.A)--locate(l.A + l.v), p, Arrow);
-}
-
-/*<asyxml><function type="point[]" signature="sameside(point,line,line)"><code></asyxml>*/
-point[] sameside(point M, line l1, line l2)
-{/*<asyxml></code><documentation>Return two points on 'l1' and 'l2' respectively.
-   The first point is from the same side of M relatively to 'l2',
-   the second point is from the same side of M relatively to 'l1'.</documentation></function></asyxml>*/
-  point[] op;
-  coordsys R1 = coordsys(l1);
-  coordsys R2 = coordsys(l2);
-  if (parallel(l1, l2)) {
-    op.push(projection(l1) * M);
-    op.push(projection(l2) * M);
-  } else {
-    point O = intersectionpoint(l1, l2);
-    if (M @ l2) op.push((sameside(M, O + l1.u, l2)) ? O + l1.u : rotate(180, O) * (O + l1.u));
-    else op.push(projection(l1, l2) * M);
-    if (M @ l1) op.push((sameside(M, O + l2.u, l1)) ? O + l2.u : rotate(180, O) * (O + l2.u));
-    else {op.push(projection(l2, l1) * M);}
-  }
-  return op;
-}
-
-/*<asyxml><function type="void" signature="markangle(picture,Label,int,real,real,explicit line,explicit line,explicit pair,arrowbar,pen,filltype,margin,marker)"><code></asyxml>*/
-void markangle(picture pic = currentpicture,
-               Label L = "", int n = 1, real radius = 0, real space = 0,
-               explicit line l1, explicit line l2, explicit pair align = dir(1),
-               arrowbar arrow = None, pen p = currentpen,
-               filltype filltype = NoFill,
-               margin margin = NoMargin, marker marker = nomarker)
-{/*<asyxml></code><documentation>Mark the angle (l1, l2) aligned in the direction 'align' relative to 'l1'.
-   Commune values for 'align' are dir(real).</documentation></function></asyxml>*/
-  if (parallel(l1, l2, true)) return;
-  real al = degrees(l1, defaultcoordsys);
-  pair O, A, B;
-  if (radius == 0) radius = markangleradius(p);
-  real d = degrees(locate(l1.u));
-  align = rotate(d) * align;
-  if (l1 == l2) {
-    O = midpoint(segment(l1.A, l1.B));
-    A = l1.A;B = l1.B;
-    if (sameside(rotate(sgn(angle(B-A)) * 45, O) * A, O + align, l1)) {radius = -radius;}
-  } else {
-    O = intersectionpoint(extend(l1), extend(l2));
-    pair R = O + align;
-    point [] ss = sameside(point(coordsys(l1), R/coordsys(l1)), l1, l2);
-    A = ss[0];
-    B = ss[1];
-  }
-  markangle(pic = pic, L = L, n = n, radius = radius, space = space,
-            O = O, A = A, B = B,
-            arrow = arrow, p = p, filltype = filltype,
-            margin = margin, marker = marker);
-}
-
-/*<asyxml><function type="void" signature="markangle(picture,Label,int,real,real,explicit line,explicit line,explicit vector,arrowbar,pen,filltype,margin,marker)"><code></asyxml>*/
-void markangle(picture pic = currentpicture,
-               Label L = "", int n = 1, real radius = 0, real space = 0,
-               explicit line l1, explicit line l2, explicit vector align,
-               arrowbar arrow = None, pen p = currentpen,
-               filltype filltype = NoFill,
-               margin margin = NoMargin, marker marker = nomarker)
-{/*<asyxml></code><documentation>Mark the angle (l1, l2) in the direction 'dir' given relatively to 'l1'.</documentation></function></asyxml>*/
-  markangle(pic, L, n, radius, space, l1, l2, (pair)align, arrow,
-            p, filltype, margin, marker);
-}
-
-/*<asyxml><function type="void" signature="markangle(picture,Label,int,real,real,line,line,arrowbar,pen,filltype,margin,marker)"><code></asyxml>*/
-// void markangle(picture pic = currentpicture,
-//                Label L = "", int n = 1, real radius = 0, real space = 0,
-//                explicit line l1, explicit line l2,
-//                arrowbar arrow = None, pen p = currentpen,
-//                filltype filltype = NoFill,
-//                margin margin = NoMargin, marker marker = nomarker)
-// {/*<asyxml></code><documentation>Mark the oriented angle (l1, l2).</documentation></function></asyxml>*/
-//   if (parallel(l1, l2, true)) return;
-//   real al = degrees(l1, defaultcoordsys);
-//   pair O, A, B;
-//   if (radius == 0) radius = markangleradius(p);
-//   real d = degrees(locate(l1.u));
-//   if (l1 == l2) {
-//     O = midpoint(segment(l1.A, l1.B));
-//   } else {
-//     O = intersectionpoint(extend(l1), extend(l2));
-//   }
-//   A = O + locate(l1.u);
-//   B = O + locate(l2.u);
-//   markangle(pic = pic, L = L, n = n, radius = radius, space = space,
-//             O = O, A = A, B = B,
-//             arrow = arrow, p = p, filltype = filltype,
-//             margin = margin, marker = marker);
-// }
-
-/*<asyxml><function type="void" signature="perpendicularmark(picture,line,line,real,pen,int,margin,filltype)"><code></asyxml>*/
-void perpendicularmark(picture pic = currentpicture, line l1, line l2,
-                       real size = 0, pen p = currentpen, int quarter = 1,
-                       margin margin = NoMargin, filltype filltype = NoFill)
-{/*<asyxml></code><documentation>Draw a right angle at the intersection point of lines and
-   aligned in the 'quarter' nth quarter of circle formed by 'l1.u' and
-   'l2.u'.</documentation></function></asyxml>*/
-  point P = intersectionpoint(l1, l2);
-  pair align = rotate(90 * (quarter - 1)) * dir(45);
-  perpendicularmark(P, align, locate(l1.u), size, p, margin, filltype);
-}
-// *.........................LINES.........................*
-// *=======================================================*
-
-// *=======================================================*
-// *........................CONICS.........................*
-/*<asyxml><struct signature="bqe"><code></asyxml>*/
-struct bqe
-{/*<asyxml></code><documentation>Bivariate Quadratic Equation.</documentation></asyxml>*/
-  /*<asyxml><property type = "real[]" signature="a"><code></asyxml>*/
-  real[] a;/*<asyxml></code><documentation>a[0] * x^2 + a[1] * x * y + a[2] * y^2 + a[3] * x + a[4] * y + a[5] = 0</documentation></property><property type = "coordsys" signature="coordsys"><code></asyxml>*/
-  coordsys coordsys;/*<asyxml></code></property></asyxml>*/
-}/*<asyxml></struct></asyxml>*/
-
-/*<asyxml><function type="bqe" signature="bqe(coordsys,real,real,real,real,real,real)"><code></asyxml>*/
-bqe bqe(coordsys R = currentcoordsys,
-        real a, real b, real c, real d, real e, real f)
-{/*<asyxml></code><documentation>Return the bivariate quadratic equation
-   a[0] * x^2 + a[1] * x * y + a[2] * y^2 + a[3] * x + a[4] * y + a[5] = 0
-   relatively to the coordinate system R.</documentation></function></asyxml>*/
-  bqe obqe;
-  obqe.coordsys = R;
-  obqe.a = new real[] {a, b, c, d, e, f};
-  return obqe;
-}
-
-/*<asyxml><function type="bqe" signature="changecoordsys(coordsys,bqe)"><code></asyxml>*/
-bqe changecoordsys(coordsys R, bqe bqe)
-{/*<asyxml></code><documentation>Returns the bivariate quadratic equation relatively to 'R'.</documentation></function></asyxml>*/
-  pair i = coordinates(changecoordsys(R, vector(defaultcoordsys,
-                                                bqe.coordsys.i)));
-  pair j = coordinates(changecoordsys(R, vector(defaultcoordsys,
-                                                bqe.coordsys.j)));
-  pair O = coordinates(changecoordsys(R, point(defaultcoordsys,
-                                               bqe.coordsys.O)));
-  real a = bqe.a[0], b = bqe.a[1], c = bqe.a[2], d = bqe.a[3], f = bqe.a[4], g = bqe.a[5];
-  real ux = i.x, uy = i.y;
-  real vx = j.x, vy = j.y;
-  real ox = O.x, oy = O.y;
-  real D = ux * vy - uy * vx;
-  real ap = (a * vy^2 - b * uy * vy + c * uy^2)/D^2;
-  real bpp = (-2 * a * vx * vy + b * ux * vy + b * uy * vx - 2 * c * ux * uy)/D^2;
-  real cp = (a * vx^2 - b * ux * vx + c * ux^2)/D^2;
-  real dp = (-2a * ox * vy^2 + 2a * oy * vx * vy + 2b * ox * uy * vy-
-             b * oy * ux * vy - b * oy * uy * vx - 2c * ox * uy^2 + 2c * oy * uy * ux)/D^2+
-    (d * vy - f * uy)/D;
-  real fp = (2a * ox * vx * vy - b * ox * ux * vy - 2a * oy * vx^2-
-             b * ox * uy * vx + 2 * b * oy * ux * vx + 2c * ox * ux * uy - 2c * oy * ux^2)/D^2+
-    (f * ux - d * vx)/D;
-  g = (a * ox^2 * vy^2 - 2a * ox * oy * vx * vy - b * ox^2 * uy * vy + b * ox * oy * ux * vy+
-       a * oy^2 * vx^2 + b * ox * oy * uy * vx - b * oy^2 * ux * vx + c * ox^2 * uy^2-
-       2 * c * ox * oy * ux * uy + c * oy^2 * ux^2)/D^2+
-    (d * oy * vx + f * ox * uy - d * ox * vy - f * oy * ux)/D + g;
-  bqe obqe;
-  obqe.a = approximate(new real[] {ap, bpp, cp, dp, fp, g});
-  obqe.coordsys = R;
-  return obqe;
-}
-
-/*<asyxml><function type="bqe" signature="bqe(point,point,point,point,point)"><code></asyxml>*/
-bqe bqe(point M1, point M2, point M3, point M4, point M5)
-{/*<asyxml></code><documentation>Return the bqe of conic passing through the five points (if possible).</documentation></function></asyxml>*/
-  coordsys R;
-  pair[] pts;
-  if (samecoordsys(M1, M2, M3, M4, M5)) {
-    R = M1.coordsys;
-    pts= new pair[] {M1.coordinates, M2.coordinates, M3.coordinates, M4.coordinates, M5.coordinates};
-  } else {
-    R = defaultcoordsys;
-    pts= new pair[] {M1, M2, M3, M4, M5};
-  }
-  real[][] M;
-  real[] x;
-  bqe bqe;
-  bqe.coordsys = R;
-  for (int i = 0; i < 5; ++i) {// Try a = -1
-    M[i] = new real[] {pts[i].x * pts[i].y, pts[i].y^2, pts[i].x, pts[i].y, 1};
-    x[i] = pts[i].x^2;
-  }
-  if(abs(determinant(M)) < 1e-5) {// Try c = -1
-    for (int i = 0; i < 5; ++i) {
-      M[i] = new real[] {pts[i].x^2, pts[i].x * pts[i].y, pts[i].x, pts[i].y, 1};
-      x[i] = pts[i].y^2;
-    }
-    real[] coef = solve(M, x);
-    bqe.a = new real[] {coef[0], coef[1], -1, coef[2], coef[3], coef[4]};
-  } else {
-    real[] coef = solve(M, x);
-    bqe.a = new real[] {-1, coef[0], coef[1], coef[2], coef[3], coef[4]};
-  }
-  bqe.a = approximate(bqe.a);
-  return bqe;
-}
-
-/*<asyxml><function type="bool" signature="samecoordsys(bool...bqe[])"><code></asyxml>*/
-bool samecoordsys(bool warn = true ... bqe[] bqes)
-{/*<asyxml></code><documentation>Return true if all the bivariate quadratic equations have the same coordinate system.</documentation></function></asyxml>*/
-  bool ret = true;
-  coordsys t = bqes[0].coordsys;
-  for (int i = 1; i < bqes.length; ++i) {
-    ret = (t == bqes[i].coordsys);
-    if(!ret) break;
-    t = bqes[i].coordsys;
-  }
-  if(warn && !ret)
-    warning("coodinatesystem",
-            "the coordinate system of two bivariate quadratic equations are not
-the same. The operation will be done relatively to the default coordinate
-system.");
-  return ret;
-}
-
-/*<asyxml><function type="real[]" signature="realquarticroots(real,real,real,real,real)"><code></asyxml>*/
-real[] realquarticroots(real a, real b, real c, real d, real e)
-{/*<asyxml></code><documentation>Return the real roots of the quartic equation ax^4 + b^x3 + cx^2 + dx = 0.</documentation></function></asyxml>*/
-  static real Fuzz = sqrt(realEpsilon);
-  pair[] zroots = quarticroots(a, b, c, d, e);
-  real[] roots;
-  real p(real x){return a * x^4 + b * x^3 + c * x^2 + d * x + e;}
-  real prime(real x){return 4 * a * x^3 + 3 * b * x^2 + 2 * c * x + d;}
-  real x;
-  bool search = true;
-  int n;
-  void addroot(real x)
-  {
-    bool exist = false;
-    for (int i = 0; i < roots.length; ++i) {
-      if(abs(roots[i]-x) < 1e-5) {exist = true; break;}
-    }
-    if(!exist) roots.push(x);
-  }
-  for(int i = 0; i < zroots.length; ++i) {
-    if(zroots[i].y == 0 || abs(p(zroots[i].x)) < Fuzz) addroot(zroots[i].x);
-    else {
-      if(abs(zroots[i].y) < 1e-3) {
-        x = zroots[i].x;
-        search = true;
-        n = 200;
-        while(search) {
-          real tx = abs(p(x)) < Fuzz ? x : newton(iterations = n, p, prime, x);
-          if(tx < realMax) {
-            if(abs(p(tx)) < Fuzz) {
-              addroot(tx);
-              search = false;
-            } else if(n < 200) n *=2;
-            else {
-              search = false;
-            }
-          } else search = false; //It's not a real root.
-        }
-      }
-    }
-  }
-  return roots;
-}
-
-/*<asyxml><struct signature="conic"><code></asyxml>*/
-struct conic
-{/*<asyxml></code><documentation></documentation><property type = "real" signature="e,p,h"><code></asyxml>*/
-  real e, p, h;/*<asyxml></code><documentation>BE CAREFUL: h = distance(F, D) and p = h * e (http://en.wikipedia.org/wiki/Ellipse)
-                 While http://mathworld.wolfram.com/ takes p = distance(F,D).</documentation></property><property type = "point" signature="F"><code></asyxml>*/
-  point F;/*<asyxml></code><documentation>Focus.</documentation></property><property type = "line" signature="D"><code></asyxml>*/
-  line D;/*<asyxml></code><documentation>Directrix.</documentation></property><property type = "line" signature="l"><code></asyxml>*/
-  line[] l;/*<asyxml></code><documentation>Case of degenerated conic (not yet implemented !).</documentation></property></asyxml>*/
-}/*<asyxml></struct></asyxml>*/
-
-bool degenerate(conic c)
-{
-  return !finite(c.p) || !finite(c.h);
-}
-
-/*ANCconic conic(point, line, real)ANC*/
-conic conic(point F, line l, real e)
-{/*DOC
-   The conic section define by the eccentricity 'e', the focus 'F'
-   and the directrix 'l'.
-   Note that an eccentricity equal to 0 defines a circle centered at F,
-   with a radius equal at the distance from 'F' to 'l'.
-   If the coordinate system of 'F' and 'l' are not identical, the conic is
-   attached to 'defaultcoordsys'.
-   DOC*/
-  if(e < 0) abort("conic: 'e' can't be negative.");
-  conic oc;
-  point[] P = standardizecoordsys(F, l.A, l.B);
-  line ll;
-  ll = line(P[1], P[2]);
-  oc.e = e < epsgeo ? 0 : e; // Handle case of circle.
-  oc.F = P[0];
-  oc.D = ll;
-  oc.h = distance(P[0], ll);
-  oc.p = abs(e) < epsgeo ? oc.h : e * oc.h;
-  return oc;
-}
-
-/*<asyxml><struct signature="circle"><code></asyxml>*/
-struct circle
-{/*<asyxml></code><documentation>All the calculus with this structure will be as exact as Asymptote can do.
-   For a full precision, you must not cast 'circle' to 'path' excepted for drawing routines.</documentation></asyxml>*/
-  /*<asyxml><property type = "point" signature="C"><code></asyxml>*/
-  point C;/*<asyxml></code><documentation>Center</documentation></property><property><code></asyxml>*/
-  real r;/*<asyxml></code><documentation>Radius</documentation></property><property><code></asyxml>*/
-  line l;/*<asyxml></code><documentation>If the radius is infinite, this line is used instead of circle.</documentation></property></asyxml>*/
-}/*<asyxml></struct></asyxml>*/
-
-bool degenerate(circle c)
-{
-  return !finite(c.r);
-}
-
-line line(circle c){
-  if(finite(c.r)) abort("Circle can not be casted to line here.");
-  return c.l;
-}
-
-/*<asyxml><struct signature="ellipse"><code></asyxml>*/
-struct ellipse
-{/*<asyxml></code><documentation>Look at <html><a href = "http://mathworld.wolfram.com/Ellipse.html">http://mathworld.wolfram.com/Ellipse.html</a></html></documentation></asyxml>*/
-  /*<asyxml><property type = "point" signature="F1,F2,C"><code></asyxml>*/
-  restricted point F1,F2,C;/*<asyxml></code><documentation>Foci and center.</documentation></property><property type = "real" signature="a,b,c,e,p"><code></asyxml>*/
-  restricted real a,b,c,e,p;/*<asyxml></code></property><property type = "real" signature="angle"><code></asyxml>*/
-  restricted real angle;/*<asyxml></code><documentation>Value is degrees(F2 - F1).</documentation></property><property type = "line" signature="D1,D2"><code></asyxml>*/
-  restricted line D1,D2;/*<asyxml></code><documentation>Directrices.</documentation></property><property type = "line" signature="l"><code></asyxml>*/
-  line l;/*<asyxml></code><documentation>If one axis is infinite, this line is used instead of ellipse.</documentation></property></asyxml>*/
-
-  /*<asyxml><method type = "void" signature="init(point,point,real)"><code></asyxml>*/
-  void init(point f1, point f2, real a)
-  {/*<asyxml></code><documentation>Ellipse given by foci and semimajor axis.</documentation></method></asyxml>*/
-    point[] P = standardizecoordsys(f1, f2);
-    this.F1 = P[0];
-    this.F2 = P[1];
-    this.C = (P[0] + P[1])/2;
-    this.angle = degrees(F2 - F1, warn=false);
-    this.a = a;
-    if(!finite(a)) {
-      this.l = line(P[0], P[1]);
-      this.b = infinity;
-      this.e = 0;
-      this.c = 0;
-    } else {
-      this.c = abs(C - P[0]);
-      this.b = this.c < epsgeo ? a : sqrt(a^2 - c^2); // Handle case of circle.
-      this.e = this.c < epsgeo ? 0 : this.c/a; // Handle case of circle.
-      if(this.e >= 1) abort("ellipse.init: wrong parameter: e >= 1.");
-      this.p = a * (1 - this.e^2);
-      if (this.c != 0) {// directrix is not set for a circle.
-        point A = this.C + (a^2/this.c) * unit(P[0]-this.C);
-        this.D1 = line(A, A + rotateO(90) * unit(A - this.C));
-        this.D2 = reverse(rotate(180, C) * D1);
-      }
-    }
-  }
-}/*<asyxml></struct></asyxml>*/
-
-bool degenerate(ellipse el)
-{
-  return !finite(el.a) || !finite(el.b);
-}
-
-/*<asyxml><struct signature="parabola"><code></asyxml>*/
-struct parabola
-{/*<asyxml></code><documentation>Look at <html><a href = "http://mathworld.wolfram.com/Parabola.html">http://mathworld.wolfram.com/Parabola.html</a></html></documentation><property type = "point" signature="F,V"><code></asyxml>*/
-  restricted point F,V;/*<asyxml></code><documentation>Focus and vertex</documentation></property><property type = "real" signature="a,p,e = 1"><code></asyxml>*/
-  restricted real a,p,e = 1;/*<asyxml></code></property><property type = "real" signature="angle"><code></asyxml>*/
-  restricted real angle;/*<asyxml></code><documentation>Value is degrees(F - V).</documentation></property><property type = "line" signature="D"><code></asyxml>*/
-  restricted line D;/*<asyxml></code><documentation>Directrix</documentation></property><property type = "pair" signature="bmin,bmax"><code></asyxml>*/
-  pair bmin, bmax;/*<asyxml></code><documentation>The (left, bottom) and (right, top) coordinates of region bounding box for drawing the parabola.
-                    If unset the current picture bounding box is used instead.</documentation></property></asyxml>*/
-
-  /*<asyxml><method type = "void" signature="init(point,line)"><code></asyxml>*/
-  void init(point F, line directrix)
-  {/*<asyxml></code><documentation>Parabola given by focus and directrix.</documentation></method></asyxml>*/
-    point[] P = standardizecoordsys(F, directrix.A, directrix.B);
-    this.F = P[0];
-    line l = line(P[1], P[2]);
-    this.D = l;
-    this.a = distance(P[0], l)/2;
-    this.p = 2 * a;
-    this.V = 0.5 * (F + projection(D) * P[0]);
-    this.angle = degrees(F - V, warn=false);
-  }
-}/*<asyxml></struct></asyxml>*/
-
-/*<asyxml><struct signature="hyperbola"><code></asyxml>*/
-struct hyperbola
-{/*<asyxml></code><documentation><html>Look at <a href = "http://mathworld.wolfram.com/Hyperbola.html">http://mathworld.wolfram.com/Hyperbola.html</a></html></documentation><property type = "point" signature="F1,F2"><code></asyxml>*/
-  restricted point F1,F2;/*<asyxml></code><documentation>Foci.</documentation></property><property type = "point" signature="C,V1,V2"><code></asyxml>*/
-  restricted point C,V1,V2;/*<asyxml></code><documentation>Center and vertices.</documentation></property><property type = "real" signature="a,b,c,e,p"><code></asyxml>*/
-  restricted real a,b,c,e,p;/*<asyxml></code><documentation></documentation></property><property type = "real" signature="angle"><code></asyxml>*/
-  restricted real angle;/*<asyxml></code><documentation>Value is degrees(F2 - F1).</documentation></property><property type = "line" signature="D1,D2,A1,A2"><code></asyxml>*/
-  restricted line D1,D2,A1,A2;/*<asyxml></code><documentation>Directrices and asymptotes.</documentation></property><property type = "pair" signature="bmin,bmax"><code></asyxml>*/
-  pair bmin, bmax; /*<asyxml></code><documentation>The (left, bottom) and (right, top) coordinates of region bounding box for drawing the hyperbola.
-                     If unset the current picture bounding box is used instead.</documentation></property></asyxml>*/
-
-  /*<asyxml><method type = "void" signature="init(point,point,real)"><code></asyxml>*/
-  void init(point f1, point f2, real a)
-  {/*<asyxml></code><documentation>Hyperbola given by foci and semimajor axis.</documentation></method></asyxml>*/
-    point[] P = standardizecoordsys(f1, f2);
-    this.F1 = P[0];
-    this.F2 = P[1];
-    this.C = (P[0] + P[1])/2;
-    this.angle = degrees(F2 - F1, warn=false);
-    this.a = a;
-    this.c = abs(C - P[0]);
-    this.e = this.c/a;
-    if(this.e <= 1) abort("hyperbola.init: wrong parameter: e <= 1.");
-    this.b = a * sqrt(this.e^2 - 1);
-    this.p = a * (this.e^2 - 1);
-    point A = this.C + (a^2/this.c) * unit(P[0]-this.C);
-    this.D1 = line(A, A + rotate(90,this.C.coordsys.O) * unit(A - this.C));
-    this.D2 = reverse(rotate(180, C) * D1);
-    this.V1 = C + a * unit(F1 - C);
-    this.V2 = C + a * unit(F2 - C);
-    this.A1 = line(C, V1 + b * unit(rotateO(-90) * (C - V1)));
-    this.A2 = line(C, V1 + b * unit(rotateO(90) * (C - V1)));
-  }
-}/*<asyxml></struct></asyxml>*/
-
-/*<asyxml><variable type="int" signature="conicnodesfactor"><code></asyxml>*/
-int conicnodesfactor = 1;/*<asyxml></code><documentation>Factor for the node number of all conics.</documentation></variable></asyxml>*/
-
-/*<asyxml><variable type="int" signature="circlenodesnumberfactor"><code></asyxml>*/
-int circlenodesnumberfactor = 100;/*<asyxml></code><documentation>Factor for the node number of circles.</documentation></variable></asyxml>*/
-/*<asyxml><function type="int" signature="circlenodesnumber(real)"><code></asyxml>*/
-int circlenodesnumber(real r)
-{/*<asyxml></code><documentation>Return the number of nodes for drawing a circle of radius 'r'.</documentation></function></asyxml>*/
-  if (circlenodesnumberfactor < 100)
-    warning("circlenodesnumberfactor",
-            "variable 'circlenodesnumberfactor' may be too small.");
-  int oi = ceil(circlenodesnumberfactor * abs(r)^0.1);
-  oi = 45 * floor(oi/45);
-  return oi == 0 ? 4 : conicnodesfactor * oi;
-}
-
-/*<asyxml><function type="int" signature="circlenodesnumber(real,real,real)"><code></asyxml>*/
-int circlenodesnumber(real r, real angle1, real angle2)
-{/*<asyxml></code><documentation>Return the number of nodes to draw a circle arc.</documentation></function></asyxml>*/
-  return (r > 0) ?
-    ceil(circlenodesnumber(r) * abs(angle1 - angle2)/360) :
-    ceil(circlenodesnumber(r) * abs((1 - abs(angle1 - angle2)/360)));
-}
-
-/*<asyxml><variable type="int" signature="ellispenodesnumberfactor"><code></asyxml>*/
-int ellipsenodesnumberfactor = 250;/*<asyxml></code><documentation>Factor for the node number of ellispe (non-circle).</documentation></variable></asyxml>*/
-/*<asyxml><function type="int" signature="ellipsenodesnumber(real,real)"><code></asyxml>*/
-int ellipsenodesnumber(real a, real b)
-{/*<asyxml></code><documentation>Return the number of nodes to draw a ellipse of axis 'a' and 'b'.</documentation></function></asyxml>*/
-  if (ellipsenodesnumberfactor < 250)
-    write("ellipsenodesnumberfactor",
-          "variable 'ellipsenodesnumberfactor' maybe too small.");
-  int tmp = circlenodesnumberfactor;
-  circlenodesnumberfactor = ellipsenodesnumberfactor;
-  int oi = circlenodesnumber(max(abs(a), abs(b))/min(abs(a), abs(b)));
-  circlenodesnumberfactor = tmp;
-  return conicnodesfactor * oi;
-}
-
-/*<asyxml><function type="int" signature="ellipsenodesnumber(real,real,real)"><code></asyxml>*/
-int ellipsenodesnumber(real a, real b, real angle1, real angle2, bool dir)
-{/*<asyxml></code><documentation>Return the number of nodes to draw an ellipse arc.</documentation></function></asyxml>*/
-  real d;
-  real da = angle2 - angle1;
-  if(dir) {
-    d = angle1 < angle2 ? da : 360 + da;
-  } else {
-    d = angle1 < angle2 ? -360 + da : da;
-  }
-  int n = floor(ellipsenodesnumber(a, b) * abs(d)/360);
-  return n < 5 ? 5 : n;
-}
-
-/*<asyxml><variable type="int" signature="parabolanodesnumberfactor"><code></asyxml>*/
-int parabolanodesnumberfactor = 100;/*<asyxml></code><documentation>Factor for the number of nodes of parabolas.</documentation></variable></asyxml>*/
-/*<asyxml><function type="int" signature="parabolanodesnumber(parabola,real,real)"><code></asyxml>*/
-int parabolanodesnumber(parabola p, real angle1, real angle2)
-{/*<asyxml></code><documentation>Return the number of nodes for drawing a parabola.</documentation></function></asyxml>*/
-  return conicnodesfactor * floor(0.01 * parabolanodesnumberfactor * abs(angle1 - angle2));
-}
-
-/*<asyxml><variable type="int" signature="hyperbolanodesnumberfactor"><code></asyxml>*/
-int hyperbolanodesnumberfactor = 100;/*<asyxml></code><documentation>Factor for the number of nodes of hyperbolas.</documentation></variable></asyxml>*/
-/*<asyxml><function type="int" signature="hyperbolanodesnumber(hyperbola,real,real)"><code></asyxml>*/
-int hyperbolanodesnumber(hyperbola h, real angle1, real angle2)
-{/*<asyxml></code><documentation>Return the number of nodes for drawing an hyperbola.</documentation></function></asyxml>*/
-  return conicnodesfactor * floor(0.01 * hyperbolanodesnumberfactor * abs(angle1 - angle2)/h.e);
-}
-
-/*<asyxml><operator type = "conic" signature="+(conic,explicit point)"><code></asyxml>*/
-conic operator +(conic c, explicit point M)
-{/*<asyxml></code><documentation></documentation></operator></asyxml>*/
-  return conic(c.F + M, c.D + M, c.e);
-}
-/*<asyxml><operator type = "conic" signature="-(conic,explicit point)"><code></asyxml>*/
-conic operator -(conic c, explicit point M)
-{/*<asyxml></code><documentation></documentation></operator></asyxml>*/
-  return conic(c.F - M, c.D - M, c.e);
-}
-/*<asyxml><operator type = "conic" signature="+(conic,explicit pair)"><code></asyxml>*/
-conic operator +(conic c, explicit pair m)
-{/*<asyxml></code><documentation></documentation></operator></asyxml>*/
-  point M = point(c.F.coordsys, m);
-  return conic(c.F + M, c.D + M, c.e);
-}
-/*<asyxml><operator type = "conic" signature="-(conic,explicit pair)"><code></asyxml>*/
-conic operator -(conic c, explicit pair m)
-{/*<asyxml></code><documentation></documentation></operator></asyxml>*/
-  point M = point(c.F.coordsys, m);
-  return conic(c.F - M, c.D - M, c.e);
-}
-/*<asyxml><operator type = "conic" signature="+(conic,vector)"><code></asyxml>*/
-conic operator +(conic c, vector v)
-{/*<asyxml></code><documentation></documentation></operator></asyxml>*/
-  return conic(c.F + v, c.D + v, c.e);
-}
-/*<asyxml><operator type = "conic" signature="-(conic,vector)"><code></asyxml>*/
-conic operator -(conic c, vector v)
-{/*<asyxml></code><documentation></documentation></operator></asyxml>*/
-  return conic(c.F - v, c.D - v, c.e);
-}
-
-/*<asyxml><function type="coordsys" signature="coordsys(conic)"><code></asyxml>*/
-coordsys coordsys(conic co)
-{/*<asyxml></code><documentation>Return the coordinate system of 'co'.</documentation></function></asyxml>*/
-  return co.F.coordsys;
-}
-
-/*<asyxml><function type="conic" signature="changecoordsys(coordsys,conic)"><code></asyxml>*/
-conic changecoordsys(coordsys R, conic co)
-{/*<asyxml></code><documentation>Change the coordinate system of 'co' to 'R'</documentation></function></asyxml>*/
-  line l = changecoordsys(R, co.D);
-  point F = changecoordsys(R, co.F);
-  return conic(F, l, co.e);
-}
-
-/*<asyxml><typedef type = "polarconicroutine" return = "path" params = "conic, real, real, int, bool"><code></asyxml>*/
-typedef path polarconicroutine(conic co, real angle1, real angle2, int n, bool direction);/*<asyxml></code><documentation>Routine type used to draw conics from 'angle1' to 'angle2'</documentation></typedef></asyxml>*/
-
-/*<asyxml><function type="path" signature="arcfromfocus(conic,real,real,int,bool)"><code></asyxml>*/
-path arcfromfocus(conic co, real angle1, real angle2, int n = 400, bool direction = CCW)
-{/*<asyxml></code><documentation>Return the path of the conic section 'co' from angle1 to angle2 in degrees,
-   drawing in the given direction, with n nodes.</documentation></function></asyxml>*/
-  guide op;
-  if (n < 1) return op;
-  if (angle1 > angle2) {
-    path g = arcfromfocus(co, angle2, angle1, n, !direction);
-    return g == nullpath ? g : reverse(g);
-  }
-  point O = projection(co.D) * co.F;
-  pair i = unit(locate(co.F) - locate(O));
-  pair j = rotate(90) * i;
-  coordsys Rp = cartesiansystem(co.F, i, j);
-  real a1 = direction ? radians(angle1) : radians(angle2);
-  real a2 = direction ? radians(angle2) : radians(angle1) + 2 * pi;
-  real step = n == 1 ? 0 : (a2 - a1)/(n - 1);
-  real a, r;
-  for (int i = 0; i < n; ++i) {
-    a = a1 + i * step;
-    if(co.e >= 1) {
-      r = 1 - co.e * cos(a);
-      if(r > epsgeo) {
-        r = co.p/r;
-        op = op--Rp * Rp.polar(r, a);
-      }
-    } else {
-      r = co.p/(1 - co.e * cos(a));
-      op = op..Rp * Rp.polar(r, a);
-    }
-  }
-  if(co.e < 1 && abs(abs(a2 - a1) - 2 * pi) < epsgeo) op = (path)op..cycle;
-
-  return (direction ? op : op == nullpath ? op :reverse(op));
-}
-
-/*<asyxml><variable type="polarconicroutine" signature="currentpolarconicroutine"><code></asyxml>*/
-polarconicroutine currentpolarconicroutine = arcfromfocus;/*<asyxml></code><documentation>Default routine used to cast conic section to path.</documentation></variable></asyxml>*/
-
-/*<asyxml><function type="point" signature="angpoint(conic,real)"><code></asyxml>*/
-point angpoint(conic co, real angle)
-{/*<asyxml></code><documentation>Return the point of 'co' whose the angular (in degrees)
-   coordinate is 'angle' (mesured from the focus of 'co', relatively
-   to its 'natural coordinate system').</documentation></function></asyxml>*/
-  coordsys R = coordsys(co);
-  return point(R, point(arcfromfocus(co, angle, angle, 1, CCW), 0)/R);
-}
-
-/*<asyxml><operator type = "bool" signature="@(point,conic)"><code></asyxml>*/
-bool operator @(point M, conic co)
-{/*<asyxml></code><documentation>Return true iff 'M' on 'co'.</documentation></operator></asyxml>*/
-  if(co.e == 0) return abs(abs(co.F - M) - co.p) < 10 * epsgeo;
-  return abs(co.e * distance(M, co.D) - abs(co.F - M)) < 10 * epsgeo;
-}
-
-/*<asyxml><function type="coordsys" signature="coordsys(ellipse)"><code></asyxml>*/
-coordsys coordsys(ellipse el)
-{/*<asyxml></code><documentation>Return the coordinate system of 'el'.</documentation></function></asyxml>*/
-  return el.F1.coordsys;
-}
-
-/*<asyxml><function type="coordsys" signature="canonicalcartesiansystem(ellipse)"><code></asyxml>*/
-coordsys canonicalcartesiansystem(ellipse el)
-{/*<asyxml></code><documentation>Return the canonical cartesian system of the ellipse 'el'.</documentation></function></asyxml>*/
-  if(degenerate(el)) return cartesiansystem(el.l.A, el.l.u, el.l.v);
-  pair O = locate(el.C);
-  pair i = el.e == 0 ? el.C.coordsys.i : unit(locate(el.F1) - O);
-  pair j = rotate(90) * i;
-  return cartesiansystem(O, i, j);
-}
-
-/*<asyxml><function type="coordsys" signature="canonicalcartesiansystem(parabola)"><code></asyxml>*/
-coordsys canonicalcartesiansystem(parabola p)
-{/*<asyxml></code><documentation>Return the canonical cartesian system of a parabola,
-   so that Origin = vertex of 'p' and directrix: x = -a.</documentation></function></asyxml>*/
-  point A = projection(p.D) * p.F;
-  pair O = locate((A + p.F)/2);
-  pair i = unit(locate(p.F) - O);
-  pair j = rotate(90) * i;
-  return cartesiansystem(O, i, j);
-}
-
-/*<asyxml><function type="coordsys" signature="canonicalcartesiansystem(hyperbola)"><code></asyxml>*/
-coordsys canonicalcartesiansystem(hyperbola h)
-{/*<asyxml></code><documentation>Return the canonical cartesian system of an hyperbola.</documentation></function></asyxml>*/
-  pair O = locate(h.C);
-  pair i = unit(locate(h.F2) - O);
-  pair j = rotate(90) * i;
-  return cartesiansystem(O, i, j);
-}
-
-/*<asyxml><function type="ellipse" signature="ellipse(point,point,real)"><code></asyxml>*/
-ellipse ellipse(point F1, point F2, real a)
-{/*<asyxml></code><documentation>Return the ellipse whose the foci are 'F1' and 'F2'
-   and the semimajor axis is 'a'.</documentation></function></asyxml>*/
-  ellipse oe;
-  oe.init(F1, F2, a);
-  return oe;
-}
-
-/*<asyxml><constant type = "bool" signature="byfoci,byvertices"><code></asyxml>*/
-restricted bool byfoci = true, byvertices = false;/*<asyxml></code><documentation>Constants useful for the routine 'hyperbola(point P1, point P2, real ae, bool byfoci = byfoci)'</documentation></constant></asyxml>*/
-
-/*<asyxml><function type="hyperbola" signature="hyperbola(point,point,real,bool)"><code></asyxml>*/
-hyperbola hyperbola(point P1, point P2, real ae, bool byfoci = byfoci)
-{/*<asyxml></code><documentation>if 'byfoci = true':
-   return the hyperbola whose the foci are 'P1' and 'P2'
-   and the semimajor axis is 'ae'.
-   else return the hyperbola whose vertexes are 'P1' and 'P2' with eccentricity 'ae'.</documentation></function></asyxml>*/
-  hyperbola oh;
-  point[] P = standardizecoordsys(P1, P2);
-  if(byfoci) {
-    oh.init(P[0], P[1], ae);
-  } else {
-    real a = abs(P[0]-P[1])/2;
-    vector V = unit(P[0]-P[1]);
-    point F1 = P[0] + a * (ae - 1) * V;
-    point F2 = P[1]-a * (ae - 1) * V;
-    oh.init(F1, F2, a);
-  }
-  return oh;
-}
-
-/*<asyxml><function type="ellipse" signature="ellipse(point,point,point)"><code></asyxml>*/
-ellipse ellipse(point F1, point F2, point M)
-{/*<asyxml></code><documentation>Return the ellipse passing through 'M' whose the foci are 'F1' and 'F2'.</documentation></function></asyxml>*/
-  real a = abs(F1 - M) + abs(F2 - M);
-  return ellipse(F1, F2, finite(a) ? a/2 : a);
-}
-
-/*<asyxml><function type="ellipse" signature="ellipse(point,real,real,real)"><code></asyxml>*/
-ellipse ellipse(point C, real a, real b, real angle = 0)
-{/*<asyxml></code><documentation>Return the ellipse centered at 'C' with semimajor axis 'a' along C--C + dir(angle),
-   semiminor axis 'b' along the perpendicular.</documentation></function></asyxml>*/
-  ellipse oe;
-  coordsys R = C.coordsys;
-  angle += degrees(R.i);
-  if(a < b) {angle += 90; real tmp = a; a = b; b = tmp;}
-  if(finite(a) && finite(b)) {
-    real c = sqrt(abs(a^2 - b^2));
-    point f1, f2;
-    if(abs(a - b) < epsgeo) {
-      f1 = C; f2 = C;
-    } else {
-      f1 = point(R, (locate(C) + rotate(angle) * (-c, 0))/R);
-      f2 = point(R, (locate(C) + rotate(angle) * (c, 0))/R);
-    }
-    oe.init(f1, f2, a);
-  } else {
-    if(finite(b) || !finite(a)) oe.init(C, C + R.polar(1, angle), infinity);
-    else oe.init(C, C + R.polar(1, 90 + angle), infinity);
-  }
-  return oe;
-}
-
-/*<asyxml><function type="ellipse" signature="ellipse(bqe)"><code></asyxml>*/
-ellipse ellipse(bqe bqe)
-{/*<asyxml></code><documentation>Return the ellipse a[0] * x^2 + a[1] * xy + a[2] * y^2 + a[3] * x + a[4] * y + a[5] = 0
-   given in the coordinate system of 'bqe' with a[i] = bque.a[i].
-   <url href = "http://mathworld.wolfram.com/QuadraticCurve.html"/>
-   <url href = "http://mathworld.wolfram.com/Ellipse.html"/>.</documentation></function></asyxml>*/
-  bqe lbqe = changecoordsys(defaultcoordsys, bqe);
-  real a = lbqe.a[0], b = lbqe.a[1]/2, c = lbqe.a[2], d = lbqe.a[3]/2, f = lbqe.a[4]/2, g = lbqe.a[5];
-  coordsys R = bqe.coordsys;
-  string message = "ellipse: the given equation is not an equation of an ellipse.";
-  real u = b^2 * g + d^2 * c + f^2 * a;
-  real delta = a * c * g + b * f * d + d * b * f - u;
-  if(abs(delta) < epsgeo) abort(message);
-  real j = b^2 - a * c;
-  real i = a + c;
-  real dd = j * (sgnd(c - a) * sqrt((a - c)^2 + 4 * (b^2)) - c-a);
-  real ddd = j * (-sgnd(c - a) * sqrt((a - c)^2 + 4 * (b^2)) - c-a);
-
-  if(abs(ddd) < epsgeo || abs(dd) < epsgeo ||
-     j >= -epsgeo || delta/sgnd(i) > 0) abort(message);
-
-  real x = (c * d - b * f)/j, y = (a * f - b * d)/j;
-  // real dir = abs(b) < epsgeo ? 0 : pi/2-0.5 * acot(0.5 * (c-a)/b);
-  real dir = abs(b) < epsgeo ? 0 : 0.5 * acot(0.5 * (c - a)/b);
-  if(dir * (c - a) * b < 0) dir = dir < 0 ? dir + pi/2 : dir - pi/2;
-  real cd = cos(dir), sd = sin(dir);
-  real t = a * cd^2 - 2 * b * cd * sd + c * sd^2;
-  real tt = a * sd^2 + 2 * b * cd * sd + c * cd^2;
-  real gg = -g + ((d * cd - f * sd)^2)/t + ((d * sd + f * cd)^2)/tt;
-  t = t/gg; tt = tt/gg;
-  // The equation of the ellipse is t * (x - center.x)^2 + tt * (y - center.y)^2 = 1;
-  real aa, bb;
-  aa = sqrt(2 * (u - 2 * b * d * f - a * c * g)/dd);
-  bb = sqrt(2 * (u - 2 * b * d * f - a * c * g)/ddd);
-  a = t > tt ? max(aa, bb) : min(aa, bb);
-  b = t > tt ? min(aa, bb) : max(aa, bb);
-  return ellipse(point(R, (x, y)/R),
-                 a, b, degrees(pi/2 - dir - angle(R.i)));
-}
-
-/*<asyxml><function type="ellipse" signature="ellipse(point,point,point,point,point)"><code></asyxml>*/
-ellipse ellipse(point M1, point M2, point M3, point M4, point M5)
-{/*<asyxml></code><documentation>Return the ellipse passing through the five points (if possible)</documentation></function></asyxml>*/
-  return ellipse(bqe(M1, M2, M3, M4, M5));
-}
-
-/*<asyxml><function type="bool" signature="inside(ellipse,point)"><code></asyxml>*/
-bool inside(ellipse el, point M)
-{/*<asyxml></code><documentation>Return 'true' iff 'M' is inside 'el'.</documentation></function></asyxml>*/
-  return abs(el.F1 - M) + abs(el.F2 - M) - 2 * el.a < -epsgeo;
-}
-
-/*<asyxml><function type="bool" signature="inside(parabola,point)"><code></asyxml>*/
-bool inside(parabola p, point M)
-{/*<asyxml></code><documentation>Return 'true' if 'M' is inside 'p'.</documentation></function></asyxml>*/
-  return distance(p.D, M) - abs(p.F - M) > epsgeo;
-}
-
-/*<asyxml><function type="parabola" signature="parabola(point,line)"><code></asyxml>*/
-parabola parabola(point F, line l)
-{/*<asyxml></code><documentation>Return the parabola whose focus is 'F' and directrix is 'l'.</documentation></function></asyxml>*/
-  parabola op;
-  op.init(F, l);
-  return op;
-}
-
-/*<asyxml><function type="parabola" signature="parabola(point,point)"><code></asyxml>*/
-parabola parabola(point F, point vertex)
-{/*<asyxml></code><documentation>Return the parabola whose focus is 'F' and vertex is 'vertex'.</documentation></function></asyxml>*/
-  parabola op;
-  point[] P = standardizecoordsys(F, vertex);
-  point A = rotate(180, P[1]) * P[0];
-  point B = A + rotateO(90) * unit(P[1]-A);
-  op.init(P[0], line(A, B));
-  return op;
-}
-
-/*<asyxml><function type="parabola" signature="parabola(point,real,real)"><code></asyxml>*/
-parabola parabola(point F, real a, real angle)
-{/*<asyxml></code><documentation>Return the parabola whose focus is F, latus rectum is 4a and
-   the angle of the axis of symmetry (in the coordinate system of F) is 'angle'.</documentation></function></asyxml>*/
-  parabola op;
-  coordsys R = F.coordsys;
-  point A = F - point(R, R.polar(2a, radians(angle)));
-  point B = A + point(R, R.polar(1, radians(90 + angle)));
-  op.init(F, line(A, B));
-  return op;
-}
-
-/*<asyxml><function type="bool" signature="isparabola(bqe)"><code></asyxml>*/
-bool isparabola(bqe bqe)
-{/*<asyxml></code><documentation>Return true iff 'bqe' is the equation of a parabola.</documentation></function></asyxml>*/
-  bqe lbqe = changecoordsys(defaultcoordsys, bqe);
-  real a = lbqe.a[0], b = lbqe.a[1]/2, c = lbqe.a[2], d = lbqe.a[3]/2, f = lbqe.a[4]/2, g = lbqe.a[5];
-  real delta = a * c * g + b * f * d + d * b * f - (b^2 * g + d^2 * c + f^2 * a);
-  return (abs(delta) > epsgeo && abs(b^2 - a * c) < epsgeo);
-}
-
-/*<asyxml><function type="parabola" signature="parabola(bqe)"><code></asyxml>*/
-parabola parabola(bqe bqe)
-{/*<asyxml></code><documentation>Return the parabola a[0]x^2 + a[1]xy + a[2]y^2 + a[3]x + a[4]y + a[5]] = 0 (a[n] means bqe.a[n]).
-   <url href = "http://mathworld.wolfram.com/QuadraticCurve.html"/>
-   <url href = "http://mathworld.wolfram.com/Parabola.html"/></documentation></function></asyxml>*/
-  bqe lbqe = changecoordsys(defaultcoordsys, bqe);
-  real a = lbqe.a[0], b = lbqe.a[1]/2, c = lbqe.a[2], d = lbqe.a[3]/2, f = lbqe.a[4]/2, g = lbqe.a[5];
-  string message = "parabola: the given equation is not an equation of a parabola.";
-  real delta = a * c * g + b * f * d + d * b * f - (b^2 * g + d^2 * c + f^2 * a);
-  if(abs(delta) < 10 * epsgeo || abs(b^2 - a * c) > 10 * epsgeo) abort(message);
-  real dir = abs(b) < epsgeo ? 0 : 0.5 * acot(0.5 * (c - a)/b);
-  if(dir * (c - a) * b < 0) dir = dir < 0 ? dir + pi/2 : dir - pi/2;
-  real cd = cos(dir), sd = sin(dir);
-  real ap = a * cd^2 - 2 * b * cd * sd + c * sd^2;
-  real cp = a * sd^2 + 2 * b * cd * sd + c * cd^2;
-  real dp = d * cd - f * sd;
-  real fp = d * sd + f * cd;
-  real gp = g;
-  parabola op;
-  coordsys R = bqe.coordsys;
-  // The equation of the parabola is ap * x'^2 + cp * y'^2 + 2dp * x'+2fp * y'+gp = 0
-  if (abs(ap) < epsgeo) {/* directrix parallel to the rotated(dir) y-axis
-                            equation: (y-vertex.y)^2 = 4 * a * (x-vertex)
-                         */
-    pair pvertex = rotate(degrees(-dir)) * (0.5(-gp + fp^2/cp)/dp, -fp/cp);
-    real a = -0.5 * dp/cp;
-    point vertex = point(R, pvertex/R);
-    point focus = point(R, (pvertex + a * expi(-dir))/R);
-    op = parabola(focus, vertex);
-
-  } else {/* directrix parallel to the rotated(dir) x-axis
-             equation: (x-vertex)^2 = 4 * a * (y-vertex.y)
-          */
-    pair pvertex = rotate(degrees(-dir)) * (-dp/ap, 0.5 * (-gp + dp^2/ap)/fp);
-    real a = -0.5 * fp/ap;
-    point vertex = point(R, pvertex/R);
-    point focus = point(R, (pvertex + a * expi(pi/2 - dir))/R);
-    op = parabola(focus, vertex);
-  }
-  return op;
-}
-
-/*<asyxml><function type="parabola" signature="parabola(point,point,point,line)"><code></asyxml>*/
-parabola parabola(point M1, point M2, point M3, line l)
-{/*<asyxml></code><documentation>Return the parabola passing through the three points with its directix
-   parallel to the line 'l'.</documentation></function></asyxml>*/
-  coordsys R;
-  pair[] pts;
-  if (samecoordsys(M1, M2, M3)) {
-    R = M1.coordsys;
-  } else {
-    R = defaultcoordsys;
-  }
-  real gle = degrees(l);
-  coordsys Rp = cartesiansystem(R.O, rotate(gle) * R.i, rotate(gle) * R.j);
-  pts = new pair[] {coordinates(changecoordsys(Rp, M1)),
-                    coordinates(changecoordsys(Rp, M2)),
-                    coordinates(changecoordsys(Rp, M3))};
-  real[][] M;
-  real[] x;
-  for (int i = 0; i < 3; ++i) {
-    M[i] = new real[] {pts[i].x, pts[i].y, 1};
-    x[i] = -pts[i].x^2;
-  }
-  real[] coef = solve(M, x);
-  return parabola(changecoordsys(R, bqe(Rp, 1, 0, 0, coef[0], coef[1], coef[2])));
-}
-
-/*<asyxml><function type="parabola" signature="parabola(point,point,point,point,point)"><code></asyxml>*/
-parabola parabola(point M1, point M2, point M3, point M4, point M5)
-{/*<asyxml></code><documentation>Return the parabola passing through the five points.</documentation></function></asyxml>*/
-  return parabola(bqe(M1, M2, M3, M4, M5));
-}
-
-/*<asyxml><function type="hyperbola" signature="hyperbola(point,point,point)"><code></asyxml>*/
-hyperbola hyperbola(point F1, point F2, point M)
-{/*<asyxml></code><documentation>Return the hyperbola passing through 'M' whose the foci are 'F1' and 'F2'.</documentation></function></asyxml>*/
-  real a = abs(abs(F1 - M) - abs(F2 - M));
-  return hyperbola(F1, F2, finite(a) ? a/2 : a);
-}
-
-/*<asyxml><function type="hyperbola" signature="hyperbola(point,real,real,real)"><code></asyxml>*/
-hyperbola hyperbola(point C, real a, real b, real angle = 0)
-{/*<asyxml></code><documentation>Return the hyperbola centered at 'C' with semimajor axis 'a' along C--C + dir(angle),
-   semiminor axis 'b' along the perpendicular.</documentation></function></asyxml>*/
-  hyperbola oh;
-  coordsys R = C.coordsys;
-  angle += degrees(R.i);
-  real c = sqrt(a^2 + b^2);
-  point f1 = point(R, (locate(C) + rotate(angle) * (-c, 0))/R);
-  point f2 = point(R, (locate(C) + rotate(angle) * (c, 0))/R);
-  oh.init(f1, f2, a);
-  return oh;
-}
-
-/*<asyxml><function type="hyperbola" signature="hyperbola(bqe)"><code></asyxml>*/
-hyperbola hyperbola(bqe bqe)
-{/*<asyxml></code><documentation>Return the hyperbola a[0]x^2 + a[1]xy + a[2]y^2 + a[3]x + a[4]y + a[5]] = 0 (a[n] means bqe.a[n]).
-   <url href = "http://mathworld.wolfram.com/QuadraticCurve.html"/>
-   <url href = "http://mathworld.wolfram.com/Hyperbola.html"/></documentation></function></asyxml>*/
-  bqe lbqe = changecoordsys(defaultcoordsys, bqe);
-  real a = lbqe.a[0], b = lbqe.a[1]/2, c = lbqe.a[2], d = lbqe.a[3]/2, f = lbqe.a[4]/2, g = lbqe.a[5];
-  string message = "hyperbola: the given equation is not an equation of a hyperbola.";
-  real delta = a * c * g + b * f * d + d * b * f - (b^2 * g + d^2 * c + f^2 * a);
-  if(abs(delta) < 10 * epsgeo || abs(b^2 - a * c) < 0) abort(message);
-  real dir = abs(b) < epsgeo ? 0 : 0.5 * acot(0.5 * (c - a)/b);
-  real cd = cos(dir), sd = sin(dir);
-  real ap = a * cd^2 - 2 * b * cd * sd + c * sd^2;
-  real cp = a * sd^2 + 2 * b * cd * sd + c * cd^2;
-  real dp = d * cd - f * sd;
-  real fp = d * sd + f * cd;
-  real gp = -g + dp^2/ap + fp^2/cp;
-  hyperbola op;
-  coordsys R = bqe.coordsys;
-  real j = b^2 - a * c;
-  point C = point(R, ((c * d - b * f)/j, (a * f - b * d)/j)/R);
-  real aa = gp/ap, bb = gp/cp;
-  real a = sqrt(abs(aa)), b = sqrt(abs(bb));
-  if(aa < 0) {dir -= pi/2; aa = a; a = b; b = aa;}
-  return hyperbola(C, a, b, degrees(-dir - angle(R.i)));
-}
-
-/*<asyxml><function type="hyperbola" signature="hyperbola(point,point,point,point,point)"><code></asyxml>*/
-hyperbola hyperbola(point M1, point M2, point M3, point M4, point M5)
-{/*<asyxml></code><documentation>Return the hyperbola passing through the five points (if possible).</documentation></function></asyxml>*/
-  return hyperbola(bqe(M1, M2, M3, M4, M5));
-}
-
-/*<asyxml><function type="hyperbola" signature="conj(hyperbola)"><code></asyxml>*/
-hyperbola conj(hyperbola h)
-{/*<asyxml></code><documentation>Conjugate.</documentation></function></asyxml>*/
-  return hyperbola(h.C, h.b, h.a, 90 + h.angle);
-}
-
-/*<asyxml><function type="circle" signature="circle(explicit point,real)"><code></asyxml>*/
-circle circle(explicit point C, real r)
-{/*<asyxml></code><documentation>Circle given by center and radius.</documentation></function></asyxml>*/
-  circle oc = new circle;
-  oc.C = C;
-  oc.r = r;
-  if(!finite(r)) oc.l = line(C, C + vector(C.coordsys, (1, 0)));
-  return oc;
-}
-
-/*<asyxml><function type="circle" signature="circle(point,point)"><code></asyxml>*/
-circle circle(point A, point B)
-{/*<asyxml></code><documentation>Return the circle of diameter AB.</documentation></function></asyxml>*/
-  real r;
-  circle oc;
-  real a = abs(A), b = abs(B);
-  if(finite(a) && finite(b)) {
-    oc = circle((A + B)/2, abs(A - B)/2);
-  } else {
-    oc.r = infinity;
-    if(finite(abs(A))) oc.l = line(A, A + unit(B));
-    else {
-      if(finite(abs(B))) oc.l = line(B, B + unit(A));
-      else if(finite(abs(A - B)/2)) oc = circle((A + B)/2, abs(A - B)/2); else
-        oc.l = line(A, B);
-    }
-  }
-  return oc;
-}
-
-/*<asyxml><function type="circle" signature="circle(segment)"><code></asyxml>*/
-circle circle(segment s)
-{/*<asyxml></code><documentation>Return the circle of diameter 's'.</documentation></function></asyxml>*/
-  return circle(s.A, s.B);
-}
-
-/*<asyxml><function type="point" signature="circumcenter(point,point,point)"><code></asyxml>*/
-point circumcenter(point A, point B, point C)
-{/*<asyxml></code><documentation>Return the circumcenter of triangle ABC.</documentation></function></asyxml>*/
-  point[] P = standardizecoordsys(A, B, C);
-  coordsys R = P[0].coordsys;
-  pair a = A, b = B, c = C;
-  pair mAB = (a + b)/2;
-  pair mAC = (a + c)/2;
-  pair pp = extension(mAB, rotate(90, mAB) * a, mAC, rotate(90, mAC) * c);
-  return point(R, pp/R);
-}
-
-/*<asyxml><function type="circle" signature="circle(point,point,point)"><code></asyxml>*/
-circle circle(point A, point B, point C)
-{/*<asyxml></code><documentation>Return the circumcircle of the triangle ABC.</documentation></function></asyxml>*/
-  if(collinear(A - B, A - C)) {
-    circle oc;
-    oc.r = infinity;
-    oc.C = (A + B + C)/3;
-    oc.l = line(oc.C, oc.C == A ? B : A);
-    return oc;
-  }
-  point c = circumcenter(A, B, C);
-  return circle(c, abs(c - A));
-}
-
-/*<asyxml><function type="circle" signature="circumcircle(point,point,point)"><code></asyxml>*/
-circle circumcircle(point A, point B, point C)
-{/*<asyxml></code><documentation>Return the circumcircle of the triangle ABC.</documentation></function></asyxml>*/
-  return circle(A, B, C);
-}
-
-/*<asyxml><operator type = "circle" signature="*(real,explicit circle)"><code></asyxml>*/
-circle operator *(real x, explicit circle c)
-{/*<asyxml></code><documentation>Multiply the radius of 'c'.</documentation></operator></asyxml>*/
-  return finite(c.r) ? circle(c.C, x * c.r) : c;
-}
-circle operator *(int x, explicit circle c)
-{
-  return finite(c.r) ? circle(c.C, x * c.r) : c;
-}
-/*<asyxml><operator type = "circle" signature="/(explicit circle,real)"><code></asyxml>*/
-circle operator /(explicit circle c, real x)
-{/*<asyxml></code><documentation>Divide the radius of 'c'</documentation></operator></asyxml>*/
-  return finite(c.r) ? circle(c.C, c.r/x) : c;
-}
-circle operator /(explicit circle c, int x)
-{
-  return finite(c.r) ? circle(c.C, c.r/x) : c;
-}
-/*<asyxml><operator type = "circle" signature="+(explicit circle,explicit point)"><code></asyxml>*/
-circle operator +(explicit circle c, explicit point M)
-{/*<asyxml></code><documentation>Translation of 'c'.</documentation></operator></asyxml>*/
-  return circle(c.C + M, c.r);
-}
-/*<asyxml><operator type = "circle" signature="-(explicit circle,explicit point)"><code></asyxml>*/
-circle operator -(explicit circle c, explicit point M)
-{/*<asyxml></code><documentation>Translation of 'c'.</documentation></operator></asyxml>*/
-  return circle(c.C - M, c.r);
-}
-/*<asyxml><operator type = "circle" signature="+(explicit circle,pair)"><code></asyxml>*/
-circle operator +(explicit circle c, pair m)
-{/*<asyxml></code><documentation>Translation of 'c'.
-   'm' represent coordinates in the coordinate system where 'c' is defined.</documentation></operator></asyxml>*/
-  return circle(c.C + m, c.r);
-}
-/*<asyxml><operator type = "circle" signature="-(explicit circle,pair)"><code></asyxml>*/
-circle operator -(explicit circle c, pair m)
-{/*<asyxml></code><documentation>Translation of 'c'.
-   'm' represent coordinates in the coordinate system where 'c' is defined.</documentation></operator></asyxml>*/
-  return circle(c.C - m, c.r);
-}
-/*<asyxml><operator type = "circle" signature="+(explicit circle,vector)"><code></asyxml>*/
-circle operator +(explicit circle c, vector m)
-{/*<asyxml></code><documentation>Translation of 'c'.</documentation></operator></asyxml>*/
-  return circle(c.C + m, c.r);
-}
-/*<asyxml><operator type = "circle" signature="-(explicit circle,vector)"><code></asyxml>*/
-circle operator -(explicit circle c, vector m)
-{/*<asyxml></code><documentation>Translation of 'c'.</documentation></operator></asyxml>*/
-  return circle(c.C - m, c.r);
-}
-/*<asyxml><operator type = "real" signature="^(point,explicit circle)"><code></asyxml>*/
-real operator ^(point M, explicit circle c)
-{/*<asyxml></code><documentation>The power of 'M' with respect to the circle 'c'</documentation></operator></asyxml>*/
-  return xpart((abs(locate(M) - locate(c.C)), c.r)^2);
-}
-/*<asyxml><operator type = "bool" signature="@(point,explicit circle)"><code></asyxml>*/
-bool operator @(point M, explicit circle c)
-{/*<asyxml></code><documentation>Return true iff 'M' is on the circle 'c'.</documentation></operator></asyxml>*/
-  return finite(c.r) ?
-    abs(abs(locate(M) - locate(c.C)) - abs(c.r)) <= 10 * epsgeo :
-    M @ c.l;
-}
-
-/*<asyxml><operator type = "ellipse" signature="cast(circle)"><code></asyxml>*/
-ellipse operator cast(circle c)
-{/*<asyxml></code><documentation></documentation></operator></asyxml>*/
-  return finite(c.r) ? ellipse(c.C, c.r, c.r, 0) : ellipse(c.l.A, c.l.B, infinity);
-}
-
-/*<asyxml><operator type = "circle" signature="cast(ellipse)"><code></asyxml>*/
-circle operator ecast(ellipse el)
-{/*<asyxml></code><documentation></documentation></operator></asyxml>*/
-  circle oc;
-  bool infb = (!finite(el.a) || !finite(el.b));
-  if(!infb && abs(el.a - el.b) > epsgeo)
-    abort("Can not cast ellipse with different axis values to circle");
-  oc = circle(el.C, infb ? infinity : el.a);
-  oc.l = el.l.copy();
-  return oc;
-}
-
-/*<asyxml><operator type = "ellipse" signature="cast(conic)"><code></asyxml>*/
-ellipse operator ecast(conic co)
-{/*<asyxml></code><documentation>Cast a conic to an ellipse (can be a circle).</documentation></operator></asyxml>*/
-  if(degenerate(co) && co.e < 1) return ellipse(co.l[0].A, co.l[0].B, infinity);
-  ellipse oe;
-  if(co.e < 1) {
-    real a = co.p/(1 - co.e^2);
-    real c = co.e * a;
-    vector v = co.D.v;
-    if(!sameside(co.D.A + v, co.F, co.D)) v = -v;
-    point f2 = co.F + 2 * c * v;
-    f2 = changecoordsys(co.F.coordsys, f2);
-    oe = a == 0 ? ellipse(co.F, co.p, co.p, 0) : ellipse(co.F, f2, a);
-  } else
-    abort("casting: The conic section is not an ellipse.");
-  return oe;
-}
-
-/*<asyxml><operator type = "parabola" signature="cast(conic)"><code></asyxml>*/
-parabola operator ecast(conic co)
-{/*<asyxml></code><documentation>Cast a conic to a parabola.</documentation></operator></asyxml>*/
-  parabola op;
-  if(abs(co.e - 1) > epsgeo) abort("casting: The conic section is not a parabola.");
-  op.init(co.F, co.D);
-  return op;
-}
-
-/*<asyxml><operator type = "conic" signature="cast(parabola)"><code></asyxml>*/
-conic operator cast(parabola p)
-{/*<asyxml></code><documentation>Cast a parabola to a conic section.</documentation></operator></asyxml>*/
-  return conic(p.F, p.D, 1);
-}
-
-/*<asyxml><operator type = "hyperbola" signature="cast(conic)"><code></asyxml>*/
-hyperbola operator ecast(conic co)
-{/*<asyxml></code><documentation>Cast a conic section to an hyperbola.</documentation></operator></asyxml>*/
-  hyperbola oh;
-  if(co.e > 1) {
-    real a = co.p/(co.e^2 - 1);
-    real c = co.e * a;
-    vector v = co.D.v;
-    if(sameside(co.D.A + v, co.F, co.D)) v = -v;
-    point f2 = co.F + 2 * c * v;
-    f2 = changecoordsys(co.F.coordsys, f2);
-    oh = hyperbola(co.F, f2, a);
-  } else
-    abort("casting: The conic section is not an hyperbola.");
-  return oh;
-}
-
-/*<asyxml><operator type = "conic" signature="cast(hyperbola)"><code></asyxml>*/
-conic operator cast(hyperbola h)
-{/*<asyxml></code><documentation>Hyperbola to conic section.</documentation></operator></asyxml>*/
-  return conic(h.F1, h.D1, h.e);
-}
-
-/*<asyxml><operator type = "conic" signature="cast(ellipse)"><code></asyxml>*/
-conic operator cast(ellipse el)
-{/*<asyxml></code><documentation>Ellipse to conic section.</documentation></operator></asyxml>*/
-  conic oc;
-  if(abs(el.c) > epsgeo) {
-    real x = el.a^2/el.c;
-    point O = (el.F1 + el.F2)/2;
-    point A = O + x * unit(el.F1 - el.F2);
-    oc = conic(el.F1, perpendicular(A, line(el.F1, el.F2)), el.e);
-  } else {//The ellipse is a circle
-    coordsys R = coordsys(el);
-    point M = el.F1 + point(R, R.polar(el.a, 0));
-    line l = line(rotate(90, M) * el.F1, M);
-    oc = conic(el.F1, l, 0);
-  }
-  if(degenerate(el)) {
-    oc.p = infinity;
-    oc.h = infinity;
-    oc.l = new line[]{el.l};
-  }
-  return oc;
-}
-
-/*<asyxml><operator type = "conic" signature="cast(circle)"><code></asyxml>*/
-conic operator cast(circle c)
-{/*<asyxml></code><documentation>Circle to conic section.</documentation></operator></asyxml>*/
-  return (conic)((ellipse)c);
-}
-
-/*<asyxml><operator type = "circle" signature="cast(conic)"><code></asyxml>*/
-circle operator ecast(conic c)
-{/*<asyxml></code><documentation>Conic section to circle.</documentation></operator></asyxml>*/
-  ellipse el = (ellipse)c;
-  circle oc;
-  if(abs(el.a - el.b) < epsgeo) {
-    oc = circle(el.C, el.a);
-    if(degenerate(c)) oc.l = c.l[0];
-  }
-  else abort("Can not cast this conic to a circle");
-  return oc;
-}
-
-/*<asyxml><operator type = "ellipse" signature="*(transform,ellipse)"><code></asyxml>*/
-ellipse operator *(transform t, ellipse el)
-{/*<asyxml></code><documentation>Provide transform * ellipse.</documentation></operator></asyxml>*/
-  if(!degenerate(el)) {
-    point[] ep;
-    for (int i = 0; i < 360; i += 72) {
-      ep.push(t * angpoint(el, i));
-    }
-    ellipse oe = ellipse(ep[0], ep[1], ep[2], ep[3], ep[4]);
-    if(angpoint(oe, 0) != ep[0]) return ellipse(oe.F2, oe.F1, oe.a);
-    return oe;
-  }
-  return ellipse(t * el.l.A, t * el.l.B, infinity);
-}
-
-/*<asyxml><operator type = "parabola" signature="*(transform,parabola)"><code></asyxml>*/
-parabola operator *(transform t, parabola p)
-{/*<asyxml></code><documentation>Provide transform * parabola.</documentation></operator></asyxml>*/
-  point[] P;
-  P.push(t * angpoint(p, 45));
-  P.push(t * angpoint(p, -45));
-  P.push(t * angpoint(p, 180));
-  parabola op = parabola(P[0], P[1], P[2], t * p.D);
-  op.bmin = p.bmin;
-  op.bmax = p.bmax;
-
-  return op;
-}
-
-/*<asyxml><operator type = "ellipse" signature="*(transform,circle)"><code></asyxml>*/
-ellipse operator *(transform t, circle c)
-{/*<asyxml></code><documentation>Provide transform * circle.
-   For example, 'circle C = scale(2) * circle' and 'ellipse E = xscale(2) * circle' are valid
-   but 'circle C = xscale(2) * circle' is invalid.</documentation></operator></asyxml>*/
-  return t * ((ellipse)c);
-}
-
-/*<asyxml><operator type = "hyperbola" signature="*(transform,hyperbola)"><code></asyxml>*/
-hyperbola operator *(transform t, hyperbola h)
-{/*<asyxml></code><documentation>Provide transform * hyperbola.</documentation></operator></asyxml>*/
-  if (t == identity()) {
-    return h;
-  }
-
-  point[] ep;
-  for (int i = 90; i <= 270; i += 45) {
-    ep.push(t * angpoint(h, i));
-  }
-
-  hyperbola oe = hyperbola(ep[0], ep[1], ep[2], ep[3], ep[4]);
-  if(angpoint(oe, 90) != ep[0]) {
-    oe = hyperbola(oe.F2, oe.F1, oe.a);
-  }
-
-  oe.bmin = h.bmin;
-  oe.bmax = h.bmax;
-
-  return oe;
-}
-
-/*<asyxml><operator type = "conic" signature="*(transform,conic)"><code></asyxml>*/
-conic operator *(transform t, conic co)
-{/*<asyxml></code><documentation>Provide transform * conic.</documentation></operator></asyxml>*/
-  if(co.e < 1) return (t * ((ellipse)co));
-  if(co.e == 1) return (t * ((parabola)co));
-  return (t * ((hyperbola)co));
-}
-
-/*<asyxml><operator type = "ellipse" signature="*(real,ellipse)"><code></asyxml>*/
-ellipse operator *(real x, ellipse el)
-{/*<asyxml></code><documentation>Identical but more efficient (rapid) than 'scale(x, el.C) * el'.</documentation></operator></asyxml>*/
-  return degenerate(el) ? el : ellipse(el.C, x * el.a, x * el.b, el.angle);
-}
-
-/*<asyxml><operator type = "ellipse" signature="/(ellipse,real)"><code></asyxml>*/
-ellipse operator /(ellipse el, real x)
-{/*<asyxml></code><documentation>Identical but more efficient (rapid) than 'scale(1/x, el.C) * el'.</documentation></operator></asyxml>*/
-  return degenerate(el) ? el : ellipse(el.C, el.a/x, el.b/x, el.angle);
-}
-
-/*<asyxml><function type="path" signature="arcfromcenter(ellipse,real,real,int,bool)"><code></asyxml>*/
-path arcfromcenter(ellipse el, real angle1, real angle2,
-                   bool direction=CCW,
-                   int n=ellipsenodesnumber(el.a,el.b,angle1,angle2,direction))
-{/*<asyxml></code><documentation>Return the path of the ellipse 'el' from angle1 to angle2 in degrees,
-   drawing in the given direction, with n nodes.
-   The angles are mesured relatively to the  axis (C,x-axis) where C is
-   the center of the ellipse.</documentation></function></asyxml>*/
-  if(degenerate(el)) abort("arcfromcenter: can not convert degenerated ellipse to path.");
-  if (angle1 > angle2)
-    return reverse(arcfromcenter(el, angle2, angle1, !direction, n));
-
-  guide op;
-  coordsys Rp=coordsys(el);
-  if (n < 1) return op;
-
-  interpolate join = operator ..;
-  real stretch = max(el.a/el.b, el.b/el.a);
-
-  if (stretch > 10) {
-    n *= floor(stretch/5);
-    join = operator --;
-  }
-
-  real a1 = direction ? radians(angle1) : radians(angle2);
-  real a2 = direction ? radians(angle2) : radians(angle1) + 2 * pi;
-  real step=(a2 - a1)/(n != 1 ? n-1 : 1);
-  real a, r;
-  real da = radians(el.angle);
-
-  for (int i=0; i < n; ++i) {
-    a = a1 + i * step;
-    r = el.b/sqrt(1 - (el.e * cos(a))^2);
-    op = join(op, Rp*Rp.polar(r, da + a));
-  }
-
-  return shift(el.C.x*Rp.i + el.C.y*Rp.j) * (direction ? op : reverse(op));
-}
-
-/*<asyxml><function type="path" signature="arcfromcenter(hyperbola,real,real,int,bool)"><code></asyxml>*/
-path arcfromcenter(hyperbola h, real angle1, real angle2,
-                   int n = hyperbolanodesnumber(h, angle1, angle2),
-                   bool direction = CCW)
-{/*<asyxml></code><documentation>Return the path of the hyperbola 'h' from angle1 to angle2 in degrees,
-   drawing in the given direction, with n nodes.
-   The angles are mesured relatively to the axis (C, x-axis) where C is
-   the center of the hyperbola.</documentation></function></asyxml>*/
-  guide op;
-  coordsys Rp = coordsys(h);
-  if (n < 1) return op;
-  if (angle1 > angle2) {
-    path g = reverse(arcfromcenter(h, angle2, angle1, n, !direction));
-    return g == nullpath ? g : reverse(g);
-  }
-  real a1 = direction ? radians(angle1) : radians(angle2);
-  real a2 = direction ? radians(angle2) : radians(angle1) + 2 * pi;
-  real step = (a2 - a1)/(n != 1 ? n - 1 : 1);
-  real a, r;
-  typedef guide interpolate(... guide[]);
-  interpolate join = operator ..;
-  real da = radians(h.angle);
-  for (int i = 0; i < n; ++i) {
-    a = a1 + i * step;
-    r = (h.b * cos(a))^2 - (h.a * sin(a))^2;
-    if(r > epsgeo) {
-      r = sqrt(h.a^2 * h.b^2/r);
-      op = join(op, Rp * Rp.polar(r, a + da));
-      join = operator ..;
-    } else join = operator --;
-  }
-  return shift(h.C.x * Rp.i + h.C.y * Rp.j)*
-    (direction ? op : op == nullpath ? op : reverse(op));
-}
-
-/*<asyxml><function type="path" signature="arcfromcenter(explicit conic,real,real,int,bool)"><code></asyxml>*/
-path arcfromcenter(explicit conic co, real angle1, real angle2,
-                   int n, bool direction = CCW)
-{/*<asyxml></code><documentation>Use arcfromcenter(ellipse, ...) or arcfromcenter(hyperbola, ...) depending of
-   the eccentricity of 'co'.</documentation></function></asyxml>*/
-  path g;
-  if(co.e < 1)
-    g = arcfromcenter((ellipse)co, angle1,
-                      angle2, direction, n);
-  else if(co.e > 1)
-    g = arcfromcenter((hyperbola)co, angle1,
-                      angle2, n, direction);
-  else abort("arcfromcenter: does not exist for a parabola.");
-  return g;
-}
-
-/*<asyxml><constant type = "polarconicroutine" signature="fromCenter"><code></asyxml>*/
-restricted polarconicroutine fromCenter = arcfromcenter;/*<asyxml></code><documentation></documentation></constant></asyxml>*/
-/*<asyxml><constant type = "polarconicroutine" signature="fromFocus"><code></asyxml>*/
-restricted polarconicroutine fromFocus = arcfromfocus;/*<asyxml></code><documentation></documentation></constant></asyxml>*/
-
-/*<asyxml><function type="bqe" signature="equation(ellipse)"><code></asyxml>*/
-bqe equation(ellipse el)
-{/*<asyxml></code><documentation>Return the coefficients of the equation of the ellipse in its coordinate system:
-   bqe.a[0] * x^2 + bqe.a[1] * x * y + bqe.a[2] * y^2 + bqe.a[3] * x + bqe.a[4] * y + bqe.a[5] = 0.
-   One can change the coordinate system of 'bqe' using the routine 'changecoordsys'.</documentation></function></asyxml>*/
-  pair[] pts;
-  for (int i = 0; i < 360; i += 72)
-    pts.push(locate(angpoint(el, i)));
-
-  real[][] M;
-  real[] x;
-  for (int i = 0; i < 5; ++i) {
-    M[i] = new real[] {pts[i].x * pts[i].y, pts[i].y^2, pts[i].x, pts[i].y, 1};
-    x[i] = -pts[i].x^2;
-  }
-  real[] coef = solve(M, x);
-  bqe bqe = changecoordsys(coordsys(el),
-                           bqe(defaultcoordsys,
-                               1, coef[0], coef[1], coef[2], coef[3], coef[4]));
-  bqe.a = approximate(bqe.a);
-  return bqe;
-}
-
-/*<asyxml><function type="bqe" signature="equation(parabola)"><code></asyxml>*/
-bqe equation(parabola p)
-{/*<asyxml></code><documentation>Return the coefficients of the equation of the parabola in its coordinate system.
-   bqe.a[0] * x^2 + bqe.a[1] * x * y + bqe.a[2] * y^2 + bqe.a[3] * x + bqe.a[4] * y + bqe.a[5] = 0
-   One can change the coordinate system of 'bqe' using the routine 'changecoordsys'.</documentation></function></asyxml>*/
-  coordsys R = canonicalcartesiansystem(p);
-  parabola tp = (parabola) changecoordsys(R, p);
-  point A = projection(tp.D) * point(R, (0, 0));
-  real a = abs(A);
-  return changecoordsys(coordsys(p),
-                        bqe(R, 0, 0, 1, -4 * a, 0, 0));
-}
-
-/*<asyxml><function type="bqe" signature="equation(hyperbola)"><code></asyxml>*/
-bqe equation(hyperbola h)
-{/*<asyxml></code><documentation>Return the coefficients of the equation of the hyperbola in its coordinate system.
-   bqe.a[0] * x^2 + bqe.a[1] * x * y + bqe.a[2] * y^2 + bqe.a[3] * x + bqe.a[4] * y + bqe.a[5] = 0
-   One can change the coordinate system of 'bqe' using the routine 'changecoordsys'.</documentation></function></asyxml>*/
-  coordsys R = canonicalcartesiansystem(h);
-  return changecoordsys(coordsys(h),
-                        bqe(R, 1/h.a^2, 0, -1/h.b^2, 0, 0, -1));
-}
-
-/*<asyxml><operator type = "path" signature="cast(ellipse)"><code></asyxml>*/
-path operator cast(ellipse el)
-{/*<asyxml></code><documentation>Cast ellipse to path.</documentation></operator></asyxml>*/
-  if(degenerate(el))
-    abort("Casting degenerated ellipse to path is not possible.");
-  int n = el.e == 0 ? circlenodesnumber(el.a) : ellipsenodesnumber(el.a, el.b);
-  return arcfromcenter(el, 0.0, 360, CCW, n)&cycle;
-}
-
-/*<asyxml><operator type = "path" signature="cast(circle)"><code></asyxml>*/
-path operator cast(circle c)
-{/*<asyxml></code><documentation>Cast circle to path.</documentation></operator></asyxml>*/
-  return (path)((ellipse)c);
-}
-
-/*<asyxml><function type="real[]" signature="bangles(picture,parabola)"><code></asyxml>*/
-real[] bangles(picture pic = currentpicture, parabola p)
-{/*<asyxml></code><documentation>Return the array {ma, Ma} where 'ma' and 'Ma' are respectively
-   the smaller and the larger angles for which the parabola 'p' is included
-   in the bounding box of the picture 'pic'.</documentation></function></asyxml>*/
-  pair bmin, bmax;
-  pair[] b;
-  if (p.bmin == p.bmax) {
-    bmin = pic.userMin();
-    bmax = pic.userMax();
-  } else {
-    bmin = p.bmin;bmax = p.bmax;
-  }
-  if(bmin.x == bmax.x || bmin.y == bmax.y || !finite(abs(bmin)) || !finite(abs(bmax)))
-    return new real[] {0, 0};
-  b[0] = bmin;
-  b[1] = (bmax.x, bmin.y);
-  b[2] = bmax;
-  b[3] = (bmin.x, bmax.y);
-  real[] eq = changecoordsys(defaultcoordsys, equation(p)).a;
-  pair[] inter;
-  for (int i = 0; i < 4; ++i) {
-    pair[] tmp = intersectionpoints(b[i], b[(i + 1)%4], eq);
-    for (int j = 0; j < tmp.length; ++j) {
-      if(dot(b[i]-tmp[j], b[(i + 1)%4]-tmp[j]) <= epsgeo)
-        inter.push(tmp[j]);
-    }
-  }
-  pair F = p.F, V = p.V;
-  real d = degrees(F - V);
-  real[] a = sequence(new real(int n){
-      return (360 - d + degrees(inter[n]-F))%360;
-    }, inter.length);
-  real ma = a.length != 0 ? min(a) : 0, Ma= a.length != 0 ? max(a) : 0;
-  return new real[] {ma, Ma};
-}
-
-/*<asyxml><function type="real[][]" signature="bangles(picture,hyperbola)"><code></asyxml>*/
-real[][] bangles(picture pic = currentpicture, hyperbola h)
-{/*<asyxml></code><documentation>Return the array {{ma1, Ma1}, {ma2, Ma2}} where 'maX' and 'MaX' are respectively
-   the smaller and the bigger angles (from h.FX) for which the hyperbola 'h' is included
-   in the bounding box of the picture 'pic'.</documentation></function></asyxml>*/
-  pair bmin, bmax;
-  pair[] b;
-  if (h.bmin == h.bmax) {
-    bmin = pic.userMin();
-    bmax = pic.userMax();
-  } else {
-    bmin = h.bmin;bmax = h.bmax;
-  }
-  if(bmin.x == bmax.x || bmin.y == bmax.y || !finite(abs(bmin)) || !finite(abs(bmax)))
-    return new real[][] {{0, 0}, {0, 0}};
-  b[0] = bmin;
-  b[1] = (bmax.x, bmin.y);
-  b[2] = bmax;
-  b[3] = (bmin.x, bmax.y);
-  real[] eq = changecoordsys(defaultcoordsys, equation(h)).a;
-  pair[] inter0, inter1;
-  pair C = locate(h.C);
-  pair F1 = h.F1;
-  for (int i = 0; i < 4; ++i) {
-    pair[] tmp = intersectionpoints(b[i], b[(i + 1)%4], eq);
-    for (int j = 0; j < tmp.length; ++j) {
-      if(dot(b[i]-tmp[j], b[(i + 1)%4]-tmp[j]) <= epsgeo) {
-        if(dot(F1 - C, tmp[j]-C) > 0) inter0.push(tmp[j]);
-        else inter1.push(tmp[j]);
-      }
-    }
-  }
-  real d = degrees(F1 - C);
-  real[] ma, Ma;
-  pair[][] inter = new pair[][] {inter0, inter1};
-  for (int i = 0; i < 2; ++i) {
-    real[] a = sequence(new real(int n){
-        return (360 - d + degrees(inter[i][n]-F1))%360;
-      }, inter[i].length);
-    ma[i] = a.length != 0 ? min(a) : 0;
-    Ma[i] = a.length != 0 ? max(a) : 0;
-  }
-  return new real[][] {{ma[0], Ma[0]}, {ma[1], Ma[1]}};
-}
-
-/*<asyxml><operator type = "path" signature="cast(parabola)"><code></asyxml>*/
-path operator cast(parabola p)
-{/*<asyxml></code><documentation>Cast parabola to path.
-   If possible, the returned path is restricted to the actual bounding box
-   of the current picture if the variables 'p.bmin' and 'p.bmax' are not set else
-   the bounding box of box(p.bmin, p.bmax) is used instead.</documentation></operator></asyxml>*/
-  real[] bangles = bangles(p);
-  int n = parabolanodesnumber(p, bangles[0], bangles[1]);
-  return arcfromfocus(p, bangles[0], bangles[1], n, CCW);
-}
-
-
-/*<asyxml><function type="void" signature="draw(picture,Label,circle,align,pen,arrowbar,arrowbar,margin,Label,marker)"><code></asyxml>*/
-void draw(picture pic = currentpicture, Label L = "", circle c,
-          align align = NoAlign, pen p = currentpen,
-          arrowbar arrow = None, arrowbar bar = None,
-          margin margin = NoMargin, Label legend = "", marker marker = nomarker)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  if(degenerate(c)) draw(pic, L, c.l, align, p, arrow, legend, marker);
-  else draw(pic, L, (path)c, align, p, arrow, bar, margin, legend, marker);
-}
-
-void fill(picture pic = currentpicture, circle c, pen p = currentpen)
-{
-  if (!degenerate(c)) fill(pic, (path)c, p);
-}
-
-void filldraw(picture pic = currentpicture, circle c, pen fillpen = currentpen, pen drawpen = currentpen)
-{
-  fill(pic, c, fillpen);
-  draw(pic, c, drawpen);
-}
-
-/*<asyxml><function type="void" signature="draw(picture,Label,ellipse,align,pen,arrowbar,arrowbar,margin,Label,marker)"><code></asyxml>*/
-void draw(picture pic = currentpicture, Label L = "", ellipse el,
-          align align = NoAlign, pen p = currentpen,
-          arrowbar arrow = None, arrowbar bar = None,
-          margin margin = NoMargin, Label legend = "", marker marker = nomarker)
-{/*<asyxml></code><documentation></documentation>Draw the ellipse 'el' if it is not degenerated else draw 'el.l'.</function></asyxml>*/
-  if(degenerate(el)) draw(pic, L, el.l, align, p, arrow, legend, marker);
-  else draw(pic, L, (path)el, align, p, arrow, bar, margin, legend, marker);
-}
-
-void fill(picture pic = currentpicture, ellipse el, pen p = currentpen)
-{
-  if (!degenerate(el)) fill(pic, (path)el, p);
-}
-
-void filldraw(picture pic = currentpicture, ellipse el, pen fillpen = currentpen, pen drawpen = currentpen)
-{
-  fill(pic, el, fillpen);
-  draw(pic, el, drawpen);
-}
-
-/*<asyxml><function type="void" signature="draw(picture,Label,parabola,align,pen,arrowbar,arrowbar,margin,Label,marker)"><code></asyxml>*/
-void draw(picture pic = currentpicture, Label L = "", parabola parabola,
-          align align = NoAlign, pen p = currentpen,
-          arrowbar arrow = None, arrowbar bar = None,
-          margin margin = NoMargin, Label legend = "", marker marker = nomarker)
-{/*<asyxml></code><documentation>Draw the parabola 'p' on 'pic' without (if possible) altering the
-   size of picture pic.</documentation></function></asyxml>*/
-  pic.add(new void (frame f, transform t, transform T, pair m, pair M) {
-      // Reduce the bounds by the size of the pen and the margins.
-      m -= min(p); M -= max(p);
-      parabola.bmin = inverse(t) * m;
-      parabola.bmax = inverse(t) * M;
-      picture tmp;
-      path pp = t * ((path) (T * parabola));
-
-      if (pp != nullpath) {
-        draw(tmp, L, pp, align, p, arrow, bar, NoMargin, legend, marker);
-        add(f, tmp.fit());
-      }
-    }, true);
-
-  pair m = pic.userMin(), M = pic.userMax();
-  if(m != M) {
-    pic.addBox(truepoint(SW), truepoint(NE));
-  }
-}
-
-/*<asyxml><operator type = "path" signature="cast(hyperbola)"><code></asyxml>*/
-path operator cast(hyperbola h)
-{/*<asyxml></code><documentation>Cast hyperbola to path.
-   If possible, the returned path is restricted to the actual bounding box
-   of the current picture unless the variables 'h.bmin' and 'h.bmax'
-   are set; in this case the bounding box of box(h.bmin, h.bmax) is used instead.
-   Only the branch on the side of 'h.F1' is considered.</documentation></operator></asyxml>*/
-  real[][] bangles = bangles(h);
-  int n = hyperbolanodesnumber(h, bangles[0][0], bangles[0][1]);
-  return arcfromfocus(h, bangles[0][0], bangles[0][1], n, CCW);
-}
-
-/*<asyxml><function type="void" signature="draw(picture,Label,hyperbola,align,pen,arrowbar,arrowbar,margin,Label,marker)"><code></asyxml>*/
-void draw(picture pic = currentpicture, Label L = "", hyperbola h,
-          align align = NoAlign, pen p = currentpen,
-          arrowbar arrow = None, arrowbar bar = None,
-          margin margin = NoMargin, Label legend = "", marker marker = nomarker)
-{/*<asyxml></code><documentation>Draw the hyperbola 'h' on 'pic' without (if possible) altering the
-   size of the picture pic.</documentation></function></asyxml>*/
-  pic.add(new void (frame f, transform t, transform T, pair m, pair M) {
-      // Reduce the bounds by the size of the pen and the margins.
-      m -= min(p); M -= max(p);
-      h.bmin = inverse(t) * m;
-      h.bmax = inverse(t) * M;
-      path hp;
-
-      picture tmp;
-      hp = t * ((path) (T * h));
-      if (hp != nullpath) {
-        draw(tmp, L, hp, align, p, arrow, bar, NoMargin, legend, marker);
-      }
-
-      hyperbola ht = hyperbola(h.F2, h.F1, h.a);
-      ht.bmin = h.bmin;
-      ht.bmax = h.bmax;
-
-      hp = t * ((path) (T * ht));
-      if (hp != nullpath) {
-        draw(tmp, "", hp, align, p, arrow, bar, NoMargin, marker);
-      }
-
-      add(f, tmp.fit());
-    }, true);
-
-  pair m = pic.userMin(), M = pic.userMax();
-  if(m != M)
-    pic.addBox(truepoint(SW), truepoint(NE));
-}
-
-/*<asyxml><function type="void" signature="draw(picture,Label,explicit conic,align,pen,arrowbar,arrowbar,margin,Label,marker)"><code></asyxml>*/
-void draw(picture pic = currentpicture, Label L = "", explicit conic co,
-          align align = NoAlign, pen p = currentpen,
-          arrowbar arrow = None, arrowbar bar = None,
-          margin margin = NoMargin, Label legend = "", marker marker = nomarker)
-{/*<asyxml></code><documentation>Use one of the routine 'draw(ellipse, ...)',
-   'draw(parabola, ...)' or 'draw(hyperbola, ...)' depending of the value of eccentricity of 'co'.</documentation></function></asyxml>*/
-  if(co.e == 0)
-    draw(pic, L, (circle)co, align, p, arrow, bar, margin, legend, marker);
-  else
-    if(co.e < 1) draw(pic, L, (ellipse)co, align, p, arrow, bar, margin, legend, marker);
-    else
-      if(co.e == 1) draw(pic, L, (parabola)co, align, p, arrow, bar, margin, legend, marker);
-      else
-        if(co.e > 1) draw(pic, L, (hyperbola)co, align, p, arrow, bar, margin, legend, marker);
-        else abort("draw: unknown conic.");
-}
-
-/*<asyxml><function type="int" signature="conicnodesnumber(conic,real,real)"><code></asyxml>*/
-int conicnodesnumber(conic co, real angle1, real angle2, bool dir = CCW)
-{/*<asyxml></code><documentation>Return the number of node to draw a conic arc.</documentation></function></asyxml>*/
-  int oi;
-  if(co.e == 0) {
-    circle c = (circle)co;
-    oi = circlenodesnumber(c.r, angle1, angle2);
-  } else if(co.e < 1) {
-    ellipse el = (ellipse)co;
-    oi = ellipsenodesnumber(el.a, el.b, angle1, angle2, dir);
-  } else if(co.e == 1) {
-    parabola p = (parabola)co;
-    oi = parabolanodesnumber(p, angle1, angle2);
-  } else {
-    hyperbola h = (hyperbola)co;
-    oi = hyperbolanodesnumber(h, angle1, angle2);
-  }
-  return oi;
-}
-
-/*<asyxml><operator type = "path" signature="cast(conic)"><code></asyxml>*/
-path operator cast(conic co)
-{/*<asyxml></code><documentation>Cast conic section to path.</documentation></operator></asyxml>*/
-  if(co.e < 1) return (path)((ellipse)co);
-  if(co.e == 1) return (path)((parabola)co);
-  return (path)((hyperbola)co);
-}
-
-/*<asyxml><function type="bqe" signature="equation(explicit conic)"><code></asyxml>*/
-bqe equation(explicit conic co)
-{/*<asyxml></code><documentation>Return the coefficients of the equation of conic section in its coordinate system:
-   bqe.a[0] * x^2 + bqe.a[1] * x * y + bqe.a[2] * y^2 + bqe.a[3] * x + bqe.a[4] * y + bqe.a[5] = 0.
-   One can change the coordinate system of 'bqe' using the routine 'changecoordsys'.</documentation></function></asyxml>*/
-  bqe obqe;
-  if(co.e == 0)
-    obqe = equation((circle)co);
-  else
-    if(co.e < 1) obqe = equation((ellipse)co);
-    else
-      if(co.e == 1) obqe = equation((parabola)co);
-      else
-        if(co.e > 1) obqe = equation((hyperbola)co);
-        else abort("draw: unknown conic.");
-  return obqe;
-}
-
-/*<asyxml><function type="string" signature="conictype(bqe)"><code></asyxml>*/
-string conictype(bqe bqe)
-{/*<asyxml></code><documentation>Returned values are "ellipse" or "parabola" or "hyperbola"
-   depending of the conic section represented by 'bqe'.</documentation></function></asyxml>*/
-  bqe lbqe = changecoordsys(defaultcoordsys, bqe);
-  string os = "degenerated";
-  real a = lbqe.a[0], b = lbqe.a[1]/2, c = lbqe.a[2], d = lbqe.a[3]/2, f = lbqe.a[4]/2, g = lbqe.a[5];
-  real delta = a * c * g + b * f * d + d * b * f - (b^2 * g + d^2 * c + f^2 * a);
-  if(abs(delta) < 10 * epsgeo) return os;
-  real J = a * c - b^2;
-  real I = a + c;
-  if(J > epsgeo) {
-    if(delta/I < -epsgeo);
-    os = "ellipse";
-  } else {
-    if(abs(J) < epsgeo) os = "parabola"; else os = "hyperbola";
-  }
-  return os;
-}
-
-/*<asyxml><function type="conic" signature="conic(point,point,point,point,point)"><code></asyxml>*/
-conic conic(point M1, point M2, point M3, point M4, point M5)
-{/*<asyxml></code><documentation>Return the conic passing through 'M1', 'M2', 'M3', 'M4' and 'M5' if the conic is not degenerated.</documentation></function></asyxml>*/
-  bqe bqe = bqe(M1, M2, M3, M4, M5);
-  string ct = conictype(bqe);
-  if(ct == "degenerated") abort("conic: degenerated conic passing through five points.");
-  if(ct == "ellipse") return ellipse(bqe);
-  if(ct == "parabola") return parabola(bqe);
-  return hyperbola(bqe);
-}
-
-/*<asyxml><function type="coordsys" signature="canonicalcartesiansystem(hyperbola)"><code></asyxml>*/
-coordsys canonicalcartesiansystem(explicit conic co)
-{/*<asyxml></code><documentation>Return the canonical cartesian system of the conic 'co'.</documentation></function></asyxml>*/
-  if(co.e < 1) return canonicalcartesiansystem((ellipse)co);
-  else if(co.e == 1) return canonicalcartesiansystem((parabola)co);
-  return canonicalcartesiansystem((hyperbola)co);
-}
-
-/*<asyxml><function type="bqe" signature="canonical(bqe)"><code></asyxml>*/
-bqe canonical(bqe bqe)
-{/*<asyxml></code><documentation>Return the bivariate quadratic equation relative to the
-   canonical coordinate system of the conic section represented by 'bqe'.</documentation></function></asyxml>*/
-  string type = conictype(bqe);
-  if(type == "") abort("canonical: the equation can not be performed.");
-  bqe obqe;
-  if(type == "ellipse") {
-    ellipse el = ellipse(bqe);
-    obqe = changecoordsys(canonicalcartesiansystem(el), equation(el));
-  } else {
-    if(type == "parabola") {
-      parabola p = parabola(bqe);
-      obqe = changecoordsys(canonicalcartesiansystem(p), equation(p));
-    } else {
-      hyperbola h = hyperbola(bqe);
-      obqe = changecoordsys(canonicalcartesiansystem(h), equation(h));
-    }
-  }
-  return obqe;
-}
-
-/*<asyxml><function type="conic" signature="conic(bqe)"><code></asyxml>*/
-conic conic(bqe bqe)
-{/*<asyxml></code><documentation>Return the conic section represented by the bivariate quartic equation 'bqe'.</documentation></function></asyxml>*/
-  string type = conictype(bqe);
-  if(type == "") abort("canonical: the equation can not be performed.");
-  conic oc;
-  if(type == "ellipse") {
-    oc = ellipse(bqe);
-  } else {
-    if(type == "parabola") oc = parabola(bqe); else oc = hyperbola(bqe);
-  }
-  return oc;
-}
-
-/*<asyxml><function type="real" signature="arclength(circle)"><code></asyxml>*/
-real arclength(circle c)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  return c.r * 2 * pi;
-}
-
-/*<asyxml><function type="real" signature="focusToCenter(ellipse,real)"><code></asyxml>*/
-real focusToCenter(ellipse el, real a)
-{/*<asyxml></code><documentation>Return the angle relatively to the center of 'el' for the angle 'a'
-   given relatively to the focus of 'el'.</documentation></function></asyxml>*/
-  pair p = point(fromFocus(el, a, a, 1, CCW), 0);
-  pair c = locate(el.C);
-  real d = degrees(p - c) - el.angle;
-  d = abs(d) < epsgeo ? 0 : d; // Avoid -1e-15
-  return d%(sgnd(a) * 360);
-}
-
-/*<asyxml><function type="real" signature="centerToFocus(ellipse,real)"><code></asyxml>*/
-real centerToFocus(ellipse el, real a)
-{/*<asyxml></code><documentation>Return the angle relatively to the focus of 'el' for the angle 'a'
-   given relatively to the center of 'el'.</documentation></function></asyxml>*/
-  pair P = point(fromCenter(el, a, a, 1, CCW), 0);
-  pair F1 = locate(el.F1);
-  pair F2 = locate(el.F2);
-  real d = degrees(P - F1) - degrees(F2 - F1);
-  d = abs(d) < epsgeo ? 0 : d; // Avoid -1e-15
-  return d%(sgnd(a) * 360);
-}
-
-/*<asyxml><function type="real" signature="arclength(ellipse)"><code></asyxml>*/
-real arclength(ellipse el)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  return degenerate(el) ? infinity : 4 * el.a * elle(pi/2, el.e);
-}
-
-/*<asyxml><function type="real" signature="arclength(ellipse,real,real,bool,polarconicroutine)"><code></asyxml>*/
-real arclength(ellipse el, real angle1, real angle2,
-               bool direction = CCW,
-               polarconicroutine polarconicroutine = currentpolarconicroutine)
-{/*<asyxml></code><documentation>Return the length of the arc of the ellipse between 'angle1'
-   and 'angle2'.
-   'angle1' and 'angle2' must be in the interval ]-360;+oo[ if polarconicroutine = fromFocus,
-   ]-oo;+oo[ if polarconicroutine = fromCenter.</documentation></function></asyxml>*/
-  if(degenerate(el)) return infinity;
-  if(angle1 > angle2) return arclength(el, angle2, angle1, !direction, polarconicroutine);
-  //   path g;int n = 1000;
-  //   if(el.e == 0) g = arcfromcenter(el, angle1, angle2, n, direction);
-  //   if(el.e != 1) g = polarconicroutine(el, angle1, angle2, n, direction);
-  //   write("with path = ", arclength(g));
-  if(polarconicroutine == fromFocus) {
-    //   dot(point(fromFocus(el, angle1, angle1, 1, CCW), 0), 2mm + blue);
-    //   dot(point(fromFocus(el, angle2, angle2, 1, CCW), 0), 2mm + blue);
-    //   write("fromfocus1 = ", angle1);
-    //   write("fromfocus2 = ", angle2);
-    real gle1 = focusToCenter(el, angle1);
-    real gle2 = focusToCenter(el, angle2);
-    if((gle1 - gle2) * (angle1 - angle2) > 0) {
-      angle1 = gle1; angle2 = gle2;
-    } else {
-      angle1 = gle2; angle2 = gle1;
-    }
-    //   dot(point(fromCenter(el, angle1, angle1, 1, CCW), 0), 1mm + red);
-    //   dot(point(fromCenter(el, angle2, angle2, 1, CCW), 0), 1mm + red);
-    //   write("fromcenter1 = ", angle1);
-    //   write("fromcenter2 = ", angle2);
-  }
-  if(angle1 < 0 || angle2 < 0) return arclength(el, 180 + angle1, 180 + angle2, direction, fromCenter);
-  real a1 = direction ? angle1 : angle2;
-  real a2 = direction ? angle2 : angle1 + 360;
-  real elleq = el.a * elle(pi/2, el.e);
-  real S(real a)
-  {//Return the arclength from 0 to the angle 'a' (in degrees)
-    // given form the center of the ellipse.
-    real gle = atan(el.a * tan(radians(a))/el.b)+
-      pi * (((a%90 == 0 && a != 0) ? floor(a/90) - 1 : floor(a/90)) -
-            ((a%180 == 0) ? 0 : floor(a/180)) -
-            (a%360 == 0 ? floor(a/(360)) : 0));
-    /* // Uncomment to visualize the used branches
-       unitsize(2cm, 1cm);
-       import graph;
-
-       real xmin = 0, xmax = 3pi;
-
-       xlimits( xmin, xmax);
-       ylimits( 0, 10);
-       yaxis( "y" , LeftRight(), RightTicks(pTick=.8red, ptick = lightgrey, extend = true));
-       xaxis( "x - value", BottomTop(), Ticks(Label("$%.2f$", red), Step = pi/2, step = pi/4, pTick=.8red, ptick = lightgrey, extend = true));
-
-       real p2 = pi/2;
-       real f(real t)
-       {
-       return atan(0.6 * tan(t))+
-       pi * ((t%p2 == 0 && t != 0) ? floor(t/p2) - 1 : floor(t/p2)) -
-       ((t%pi == 0) ? 0 : pi * floor(t/pi)) - (t%(2pi) == 0 ? pi * floor(t/(2 * pi)) : 0);
-       }
-
-       draw(graph(f, xmin, xmax, 100));
-       write(degrees(f(pi/2)));
-       write(degrees(f(pi)));
-       write(degrees(f(3pi/2)));
-       write(degrees(f(2pi)));
-       draw(graph(new real(real t){return t;}, xmin, xmax, 3));
-    */
-    return elleq - el.a * elle(pi/2 - gle, el.e);
-  }
-  return S(a2) - S(a1);
-}
-
-/*<asyxml><function type="real" signature="arclength(parabola,real)"><code></asyxml>*/
-real arclength(parabola p, real angle)
-{/*<asyxml></code><documentation>Return the arclength from 180 to 'angle' given from focus in the
-   canonical coordinate system of 'p'.</documentation></function></asyxml>*/
-  real a = p.a; /* In canonicalcartesiansystem(p) the equation of p
-                   is x = y^2/(4a) */
-  // integrate(sqrt(1 + (x/(2 * a))^2), x);
-  real S(real t){return 0.5 * t * sqrt(1 + t^2/(4 * a^2)) + a * asinh(t/(2 * a));}
-  real R(real gle){return 2 * a/(1 - Cos(gle));}
-  real t = Sin(angle) * R(angle);
-  return S(t);
-}
-
-/*<asyxml><function type="real" signature="arclength(parabola,real,real)"><code></asyxml>*/
-real arclength(parabola p, real angle1, real angle2)
-{/*<asyxml></code><documentation>Return the arclength from 'angle1' to 'angle2' given from
-   focus in the canonical coordinate system of 'p'</documentation></function></asyxml>*/
-  return arclength(p, angle1) - arclength(p, angle2);
-}
-
-/*<asyxml><function type="real" signature="arclength(parabola p)"><code></asyxml>*/
-real arclength(parabola p)
-{/*<asyxml></code><documentation>Return the length of the arc of the parabola bounded to the bounding
-   box of the current picture.</documentation></function></asyxml>*/
-  real[] b = bangles(p);
-  return arclength(p, b[0], b[1]);
-}
-// *........................CONICS.........................*
-// *=======================================================*
-
-// *=======================================================*
-// *.......................ABSCISSA........................*
-/*<asyxml><struct signature="abscissa"><code></asyxml>*/
-struct abscissa
-{/*<asyxml></code><documentation>Provide abscissa structure on a curve used in the routine-like 'point(object, abscissa)'
-   where object can be 'line','segment','ellipse','circle','conic'...</documentation><property type = "real" signature="x"><code></asyxml>*/
-  real x;/*<asyxml></code><documentation>The abscissa value.</documentation></property><property type = "int" signature="system"><code></asyxml>*/
-  int system;/*<asyxml></code><documentation>0 = relativesystem; 1 = curvilinearsystem; 2 = angularsystem; 3 = nodesystem</documentation></property><property type = "polarconicroutine" signature="polarconicroutine"><code></asyxml>*/
-  polarconicroutine polarconicroutine = fromCenter;/*<asyxml></code><documentation>The routine used with angular system and two foci conic section.
-                                                     Possible values are 'formCenter' and 'formFocus'.</documentation></property></asyxml>*/
-  /*<asyxml><method type = "abscissa" signature="copy()"><code></asyxml>*/
-  abscissa copy()
-  {/*<asyxml></code><documentation>Return a copy of this abscissa.</documentation></method></asyxml>*/
-    abscissa oa = new abscissa;
-    oa.x = this.x;
-    oa.system = this.system;
-    oa.polarconicroutine = this.polarconicroutine;
-    return oa;
-  }
-}/*<asyxml></struct></asyxml>*/
-
-/*<asyxml><constant type = "int" signature="relativesystem,curvilinearsystem,angularsystem,nodesystem"><code></asyxml>*/
-restricted int relativesystem = 0, curvilinearsystem = 1, angularsystem = 2, nodesystem = 3;/*<asyxml></code><documentation>Constant used to set the abscissa system.</documentation></constant></asyxml>*/
-
-/*<asyxml><operator type = "abscissa" signature="cast(explicit position)"><code></asyxml>*/
-abscissa operator cast(explicit position position)
-{/*<asyxml></code><documentation>Cast position to abscissa.
-   If 'position' is relative, the abscissa is relative else it's a curvilinear abscissa.</documentation></operator></asyxml>*/
-  abscissa oarcc;
-  oarcc.x = position.position.x;
-  oarcc.system = position.relative ? relativesystem : curvilinearsystem;
-  return oarcc;
-}
-
-/*<asyxml><operator type = "abscissa" signature="+(real,explicit abscissa)"><code></asyxml>*/
-abscissa operator +(real x, explicit abscissa a)
-{/*<asyxml></code><documentation>Provide 'real + abscissa'.
-   Return abscissa b so that b.x = a.x + x.
-   +(explicit abscissa, real), -(real, explicit abscissa) and -(explicit abscissa, real) are also defined.</documentation></operator></asyxml>*/
-  abscissa oa = a.copy();
-  oa.x = a.x + x;
-  return oa;
-}
-
-abscissa operator +(explicit abscissa a, real x)
-{
-  return x + a;
-}
-abscissa operator +(int x, explicit abscissa a)
-{
-  return ((real)x) + a;
-}
-
-/*<asyxml><operator type = "abscissa" signature="-(explicit abscissa a)"><code></asyxml>*/
-abscissa operator -(explicit abscissa a)
-{/*<asyxml></code><documentation>Return the abscissa b so that b.x = -a.x.</documentation></operator></asyxml>*/
-  abscissa oa;
-  oa.system = a.system;
-  oa.x = -a.x;
-  return oa;
-}
-
-abscissa operator -(real x, explicit abscissa a)
-{
-  abscissa oa;
-  oa.system = a.system;
-  oa.x = x - a.x;
-  return oa;
-}
-abscissa operator -(explicit abscissa a, real x)
-{
-  abscissa oa;
-  oa.system = a.system;
-  oa.x = a.x - x;
-  return oa;
-}
-abscissa operator -(int x, explicit abscissa a)
-{
-  return ((real)x) - a;
-}
-
-/*<asyxml><operator type = "abscissa" signature="*(real,abscissa)"><code></asyxml>*/
-abscissa operator *(real x, explicit abscissa a)
-{/*<asyxml></code><documentation>Provide 'real * abscissa'.
-   Return abscissa b so that b.x = x * a.x.
-   *(explicit abscissa, real), /(real, explicit abscissa) and /(explicit abscissa, real) are also defined.</documentation></operator></asyxml>*/
-  abscissa oa;
-  oa.system = a.system;
-  oa.x = a.x * x;
-  return oa;
-}
-abscissa operator *(explicit abscissa a, real x)
-{
-  return x * a;
-}
-
-abscissa operator /(real x, explicit abscissa a)
-{
-  abscissa oa;
-  oa.system = a.system;
-  oa.x = x/a.x;
-  return oa;
-}
-abscissa operator /(explicit abscissa a, real x)
-{
-  abscissa oa;
-  oa.system = a.system;
-  oa.x = a.x/x;
-  return oa;
-}
-
-abscissa operator /(int x, explicit abscissa a)
-{
-  return ((real)x)/a;
-}
-
-/*<asyxml><function type="abscissa" signature="relabscissa(real)"><code></asyxml>*/
-abscissa relabscissa(real x)
-{/*<asyxml></code><documentation>Return a relative abscissa.</documentation></function></asyxml>*/
-  return (abscissa)(Relative(x));
-}
-abscissa relabscissa(int x)
-{
-  return (abscissa)(Relative(x));
-}
-
-/*<asyxml><function type="abscissa" signature="curabscissa(real)"><code></asyxml>*/
-abscissa curabscissa(real x)
-{/*<asyxml></code><documentation>Return a curvilinear abscissa.</documentation></function></asyxml>*/
-  return (abscissa)((position)x);
-}
-abscissa curabscissa(int x)
-{
-  return (abscissa)((position)x);
-}
-
-/*<asyxml><function type="abscissa" signature="angabscissa(real,polarconicroutine)"><code></asyxml>*/
-abscissa angabscissa(real x, polarconicroutine polarconicroutine = currentpolarconicroutine)
-{/*<asyxml></code><documentation>Return a angular abscissa.</documentation></function></asyxml>*/
-  abscissa oarcc;
-  oarcc.x = x;
-  oarcc.polarconicroutine = polarconicroutine;
-  oarcc.system = angularsystem;
-  return oarcc;
-}
-abscissa angabscissa(int x, polarconicroutine polarconicroutine = currentpolarconicroutine)
-{
-  return angabscissa((real)x, polarconicroutine);
-}
-
-/*<asyxml><function type="abscissa" signature="nodabscissa(real)"><code></asyxml>*/
-abscissa nodabscissa(real x)
-{/*<asyxml></code><documentation>Return an abscissa as time on the path.</documentation></function></asyxml>*/
-  abscissa oarcc;
-  oarcc.x = x;
-  oarcc.system = nodesystem;
-  return oarcc;
-}
-abscissa nodabscissa(int x)
-{
-  return nodabscissa((real)x);
-}
-
-/*<asyxml><operator type = "abscissa" signature="cast(real)"><code></asyxml>*/
-abscissa operator cast(real x)
-{/*<asyxml></code><documentation>Cast real to abscissa, precisely 'nodabscissa'.</documentation></operator></asyxml>*/
-  return nodabscissa(x);
-}
-abscissa operator cast(int x)
-{
-  return nodabscissa((real)x);
-}
-
-/*<asyxml><function type="point" signature="point(circle,abscissa)"><code></asyxml>*/
-point point(circle c, abscissa l)
-{/*<asyxml></code><documentation>Return the point of 'c' which has the abscissa 'l.x'
-   according to the abscissa system 'l.system'.</documentation></function></asyxml>*/
-  coordsys R = c.C.coordsys;
-  if (l.system == nodesystem)
-    return point(R, point((path)c, l.x)/R);
-  if (l.system == relativesystem)
-    return c.C + point(R, R.polar(c.r, 2 * pi * l.x));
-  if (l.system == curvilinearsystem)
-    return c.C + point(R, R.polar(c.r, l.x/c.r));
-  if (l.system == angularsystem)
-    return c.C + point(R, R.polar(c.r, radians(l.x)));
-  abort("point: bad abscissa system.");
-  return (0, 0);
-}
-
-/*<asyxml><function type="point" signature="point(ellipse,abscissa)"><code></asyxml>*/
-point point(ellipse el, abscissa l)
-{/*<asyxml></code><documentation>Return the point of 'el' which has the abscissa 'l.x'
-   according to the abscissa system 'l.system'.</documentation></function></asyxml>*/
-  if(el.e == 0) return point((circle)el, l);
-  coordsys R = coordsys(el);
-  if (l.system == nodesystem)
-    return point(R, point((path)el, l.x)/R);
-  if (l.system == relativesystem) {
-    return point(el, curabscissa((l.x%1) * arclength(el)));
-  }
-  if (l.system == curvilinearsystem) {
-    real a1 = 0, a2 = 360, cx = 0;
-    real aout = a1;
-    real x = abs(l.x)%arclength(el);
-    while (abs(cx - x) > epsgeo) {
-      aout = (a1 + a2)/2;
-      cx = arclength(el, 0, aout, CCW, fromCenter); //fromCenter is speeder
-      if(cx > x) a2 = (a1 + a2)/2; else a1 = (a1 + a2)/2;
-    }
-    path pel = fromCenter(el, sgn(l.x) * aout, sgn(l.x) * aout, 1, CCW);
-    return point(R, point(pel, 0)/R);
-  }
-  if (l.system == angularsystem) {
-    return point(R, point(l.polarconicroutine(el, l.x, l.x, 1, CCW), 0)/R);
-  }
-  abort("point: bad abscissa system.");
-  return (0, 0);
-}
-
-/*<asyxml><function type="point" signature="point(parabola,abscissa)"><code></asyxml>*/
-point point(parabola p, abscissa l)
-{/*<asyxml></code><documentation>Return the point of 'p' which has the abscissa 'l.x'
-   according to the abscissa system 'l.system'.</documentation></function></asyxml>*/
-  coordsys R = coordsys(p);
-  if (l.system == nodesystem)
-    return point(R, point((path)p, l.x)/R);
-  if (l.system == relativesystem) {
-    real[] b = bangles(p);
-    real al = sgn(l.x) > 0 ? arclength(p, 180, b[1]) : arclength(p, 180, b[0]);
-    return point(p, curabscissa(abs(l.x) * al));
-  }
-  if (l.system == curvilinearsystem) {
-    real a1 = 1e-3, a2 = 360 - 1e-3, cx = infinity;
-    while (abs(cx - l.x) > epsgeo) {
-      cx = arclength(p, 180, (a1 + a2)/2);
-      if(cx > l.x) a2 = (a1 + a2)/2; else a1 = (a1 + a2)/2;
-    }
-    path pp = fromFocus(p, a1, a1, 1, CCW);
-    return point(R, point(pp, 0)/R);
-  }
-  if (l.system == angularsystem) {
-    return point(R, point(fromFocus(p, l.x, l.x, 1, CCW), 0)/R);
-  }
-  abort("point: bad abscissa system.");
-  return (0, 0);
-}
-
-/*<asyxml><function type="point" signature="point(hyperbola,abscissa)"><code></asyxml>*/
-point point(hyperbola h, abscissa l)
-{/*<asyxml></code><documentation>Return the point of 'h' which has the abscissa 'l.x'
-   according to the abscissa system 'l.system'.</documentation></function></asyxml>*/
-  coordsys R = coordsys(h);
-  if (l.system == nodesystem)
-    return point(R, point((path)h, l.x)/R);
-  if (l.system == relativesystem) {
-    abort("point(hyperbola, relativeSystem) is not implemented...
-Try relpoint((path)your_hyperbola, x);");
-  }
-  if (l.system == curvilinearsystem) {
-    abort("point(hyperbola, curvilinearSystem) is not implemented...");
-  }
-  if (l.system == angularsystem) {
-    return point(R, point(l.polarconicroutine(h, l.x, l.x, 1, CCW), 0)/R);
-  }
-  abort("point: bad abscissa system.");
-  return (0, 0);
-}
-
-/*<asyxml><function type="abscissa" signature="point(conic,point)"><code></asyxml>*/
-point point(explicit conic co, abscissa l)
-{/*<asyxml></code><documentation>Return the curvilinear abscissa of 'M' on the conic 'co'.</documentation></function></asyxml>*/
-  if(co.e == 0) return point((circle)co, l);
-  if(co.e < 1) return point((ellipse)co, l);
-  if(co.e == 1) return point((parabola)co, l);
-  return point((hyperbola)co, l);
-}
-
-
-/*<asyxml><function type="point" signature="point(line,abscissa)"><code></asyxml>*/
-point point(line l, abscissa x)
-{/*<asyxml></code><documentation>Return the point of 'l' which has the abscissa 'l.x' according to the abscissa system 'l.system'.
-   Note that the origin is l.A, and point(l, relabscissa(x)) returns l.A + x.x * vector(l.B - l.A).</documentation></function></asyxml>*/
-  coordsys R = l.A.coordsys;
-  if (x.system == nodesystem)
-    return l.A + (x.x < 0 ? 0 : x.x > 1 ? 1 : x.x) * vector(l.B - l.A);
-  if (x.system == relativesystem)
-    return l.A + x.x * vector(l.B - l.A);
-  if (x.system == curvilinearsystem)
-    return l.A + x.x * l.u;
-  if (x.system == angularsystem)
-    abort("point: what the meaning of angular abscissa on line ?.");
-  abort("point: bad abscissa system.");
-  return (0, 0);
-}
-
-/*<asyxml><function type="point" signature="point(line,real)"><code></asyxml>*/
-point point(line l, explicit real x)
-{/*<asyxml></code><documentation>Return the point between node l.A and l.B (x <= 0 means l.A, x >=1 means l.B).</documentation></function></asyxml>*/
-  return point(l, nodabscissa(x));
-}
-point point(line l, explicit int x)
-{
-  return point(l, nodabscissa(x));
-}
-
-/*<asyxml><function type="circle" signature="point(explicit circle,explicit real)"><code></asyxml>*/
-point point(explicit circle c, explicit real x)
-{/*<asyxml></code><documentation>Return the point between node floor(x) and floor(x) + 1.</documentation></function></asyxml>*/
-  return point(c, nodabscissa(x));
-}
-point point(explicit circle c, explicit int x)
-{
-  return point(c, nodabscissa(x));
-}
-
-/*<asyxml><function type="point" signature="point(explicit ellipse,explicit real)"><code></asyxml>*/
-point point(explicit ellipse el, explicit real x)
-{/*<asyxml></code><documentation>Return the point between node floor(x) and floor(x) + 1.</documentation></function></asyxml>*/
-  return point(el, nodabscissa(x));
-}
-point point(explicit ellipse el, explicit int x)
-{
-  return point(el, nodabscissa(x));
-}
-
-/*<asyxml><function type="point" signature="point(explicit parabola,explicit real)"><code></asyxml>*/
-point point(explicit parabola p, explicit real x)
-{/*<asyxml></code><documentation>Return the point between node floor(x) and floor(x) + 1.</documentation></function></asyxml>*/
-  return point(p, nodabscissa(x));
-}
-point point(explicit parabola p, explicit int x)
-{
-  return point(p, nodabscissa(x));
-}
-
-/*<asyxml><function type="point" signature="point(explicit hyperbola,explicit real)"><code></asyxml>*/
-point point(explicit hyperbola h, explicit real x)
-{/*<asyxml></code><documentation>Return the point between node floor(x) and floor(x) + 1.</documentation></function></asyxml>*/
-  return point(h, nodabscissa(x));
-}
-point point(explicit hyperbola h, explicit int x)
-{
-  return point(h, nodabscissa(x));
-}
-
-/*<asyxml><function type="point" signature="point(explicit conic,explicit real)"><code></asyxml>*/
-point point(explicit conic co, explicit real x)
-{/*<asyxml></code><documentation>Return the point between node floor(x) and floor(x) + 1.</documentation></function></asyxml>*/
-  point op;
-  if(co.e == 0) op = point((circle)co, nodabscissa(x));
-  else if(co.e < 1) op = point((ellipse)co, nodabscissa(x));
-  else if(co.e == 1) op = point((parabola)co, nodabscissa(x));
-  else op = point((hyperbola)co, nodabscissa(x));
-  return op;
-}
-point point(explicit conic co, explicit int x)
-{
-  return point(co, (real)x);
-}
-
-/*<asyxml><function type="point" signature="relpoint(line,real)"><code></asyxml>*/
-point relpoint(line l, real x)
-{/*<asyxml></code><documentation>Return the relative point of 'l' (0 means l.A,
-   1 means l.B, x means l.A + x * vector(l.B - l.A) ).</documentation></function></asyxml>*/
-  return point(l, Relative(x));
-}
-
-/*<asyxml><function type="point" signature="relpoint(explicit circle,real)"><code></asyxml>*/
-point relpoint(explicit circle c, real x)
-{/*<asyxml></code><documentation>Return the relative point of 'c' (0 means origin, 1 means end).
-   Origin is c.center + c.r * (1, 0).</documentation></function></asyxml>*/
-  return point(c, Relative(x));
-}
-
-/*<asyxml><function type="point" signature="relpoint(explicit ellipse,real)"><code></asyxml>*/
-point relpoint(explicit ellipse el, real x)
-{/*<asyxml></code><documentation>Return the relative point of 'el' (0 means origin, 1 means end).</documentation></function></asyxml>*/
-  return point(el, Relative(x));
-}
-
-/*<asyxml><function type="point" signature="relpoint(explicit parabola,real)"><code></asyxml>*/
-point relpoint(explicit parabola p, real x)
-{/*<asyxml></code><documentation>Return the relative point of the path of the parabola
-   bounded by the bounding box of the current picture.
-   0 means origin, 1 means end, where the origin is the vertex of 'p'.</documentation></function></asyxml>*/
-  return point(p, Relative(x));
-}
-
-/*<asyxml><function type="point" signature="relpoint(explicit hyperbola,real)"><code></asyxml>*/
-point relpoint(explicit hyperbola h, real x)
-{/*<asyxml></code><documentation>Not yet implemented... <look href = "point(hyperbola, abscissa)"/></documentation></function></asyxml>*/
-  return point(h, Relative(x));
-}
-
-/*<asyxml><function type="point" signature="relpoint(explicit conic,explicit real)"><code></asyxml>*/
-point relpoint(explicit conic co, explicit real x)
-{/*<asyxml></code><documentation>Return the relative point of 'co' (0 means origin, 1 means end).</documentation></function></asyxml>*/
-  point op;
-  if(co.e == 0) op = point((circle)co, Relative(x));
-  else if(co.e < 1) op = point((ellipse)co, Relative(x));
-  else if(co.e == 1) op = point((parabola)co, Relative(x));
-  else op = point((hyperbola)co, Relative(x));
-  return op;
-}
-point relpoint(explicit conic co, explicit int x)
-{
-  return relpoint(co, (real)x);
-}
-
-/*<asyxml><function type="point" signature="angpoint(explicit circle,real)"><code></asyxml>*/
-point angpoint(explicit circle c, real x)
-{/*<asyxml></code><documentation>Return the point of 'c' in the direction 'x' measured in degrees.</documentation></function></asyxml>*/
-  return point(c, angabscissa(x));
-}
-
-/*<asyxml><function type="point" signature="angpoint(explicit ellipse,real,polarconicroutine)"><code></asyxml>*/
-point angpoint(explicit ellipse el, real x,
-               polarconicroutine polarconicroutine = currentpolarconicroutine)
-{/*<asyxml></code><documentation>Return the point of 'el' in the direction 'x'
-   measured in degrees according to 'polarconicroutine'.</documentation></function></asyxml>*/
-  return el.e == 0 ? angpoint((circle) el, x) : point(el, angabscissa(x, polarconicroutine));
-}
-
-/*<asyxml><function type="point" signature="angpoint(explicit parabola,real)"><code></asyxml>*/
-point angpoint(explicit parabola p, real x)
-{/*<asyxml></code><documentation>Return the point of 'p' in the direction 'x' measured in degrees.</documentation></function></asyxml>*/
-  return point(p, angabscissa(x));
-}
-
-/*<asyxml><function type="point" signature="angpoint(explicit hyperbola,real,polarconicroutine)"><code></asyxml>*/
-point angpoint(explicit hyperbola h, real x,
-               polarconicroutine polarconicroutine = currentpolarconicroutine)
-{/*<asyxml></code><documentation>Return the point of 'h' in the direction 'x'
-   measured in degrees according to 'polarconicroutine'.</documentation></function></asyxml>*/
-  return point(h, angabscissa(x, polarconicroutine));
-}
-
-/*<asyxml><function type="point" signature="curpoint(line,real)"><code></asyxml>*/
-point curpoint(line l, real x)
-{/*<asyxml></code><documentation>Return the point of 'l' which has the curvilinear abscissa 'x'.
-   Origin is l.A.</documentation></function></asyxml>*/
-  return point(l, curabscissa(x));
-}
-
-/*<asyxml><function type="point" signature="curpoint(explicit circle,real)"><code></asyxml>*/
-point curpoint(explicit circle c, real x)
-{/*<asyxml></code><documentation>Return the point of 'c' which has the curvilinear abscissa 'x'.
-   Origin is c.center + c.r * (1, 0).</documentation></function></asyxml>*/
-  return point(c, curabscissa(x));
-}
-
-/*<asyxml><function type="point" signature="curpoint(explicit ellipse,real)"><code></asyxml>*/
-point curpoint(explicit ellipse el, real x)
-{/*<asyxml></code><documentation>Return the point of 'el' which has the curvilinear abscissa 'el'.</documentation></function></asyxml>*/
-  return point(el, curabscissa(x));
-}
-
-/*<asyxml><function type="point" signature="curpoint(explicit parabola,real)"><code></asyxml>*/
-point curpoint(explicit parabola p, real x)
-{/*<asyxml></code><documentation>Return the point of 'p' which has the curvilinear abscissa 'x'.
-   Origin is the vertex of 'p'.</documentation></function></asyxml>*/
-  return point(p, curabscissa(x));
-}
-
-/*<asyxml><function type="point" signature="curpoint(conic,real)"><code></asyxml>*/
-point curpoint(conic co, real x)
-{/*<asyxml></code><documentation>Return the point of 'co' which has the curvilinear abscissa 'x'.</documentation></function></asyxml>*/
-  point op;
-  if(co.e == 0) op = point((circle)co, curabscissa(x));
-  else if(co.e < 1) op = point((ellipse)co, curabscissa(x));
-  else if(co.e == 1) op = point((parabola)co, curabscissa(x));
-  else op = point((hyperbola)co, curabscissa(x));
-  return op;
-}
-
-/*<asyxml><function type="abscissa" signature="angabscissa(circle,point)"><code></asyxml>*/
-abscissa angabscissa(circle c, point M)
-{/*<asyxml></code><documentation>Return the angular abscissa of 'M' on the circle 'c'.</documentation></function></asyxml>*/
-  if(!(M @ c)) abort("angabscissa: the point is not on the circle.");
-  abscissa oa;
-  oa.system = angularsystem;
-  oa.x = degrees(M - c.C);
-  if(oa.x < 0) oa.x+=360;
-  return oa;
-}
-
-/*<asyxml><function type="abscissa" signature="angabscissa(ellipse,point,polarconicroutine)"><code></asyxml>*/
-abscissa angabscissa(ellipse el, point M,
-                     polarconicroutine polarconicroutine = currentpolarconicroutine)
-{/*<asyxml></code><documentation>Return the angular abscissa of 'M' on the ellipse 'el' according to 'polarconicroutine'.</documentation></function></asyxml>*/
-  if(!(M @ el)) abort("angabscissa: the point is not on the ellipse.");
-  abscissa oa;
-  oa.system = angularsystem;
-  oa.polarconicroutine = polarconicroutine;
-  oa.x = polarconicroutine == fromCenter ? degrees(M - el.C) : degrees(M - el.F1);
-  oa.x -= el.angle;
-  if(oa.x < 0) oa.x += 360;
-  return oa;
-}
-
-/*<asyxml><function type="abscissa" signature="angabscissa(hyperbola,point,polarconicroutine)"><code></asyxml>*/
-abscissa angabscissa(hyperbola h, point M,
-                     polarconicroutine polarconicroutine = currentpolarconicroutine)
-{/*<asyxml></code><documentation>Return the angular abscissa of 'M' on the hyperbola 'h' according to 'polarconicroutine'.</documentation></function></asyxml>*/
-  if(!(M @ h)) abort("angabscissa: the point is not on the hyperbola.");
-  abscissa oa;
-  oa.system = angularsystem;
-  oa.polarconicroutine = polarconicroutine;
-  oa.x = polarconicroutine == fromCenter ? degrees(M - h.C) : degrees(M - h.F1) + 180;
-  oa.x -= h.angle;
-  if(oa.x < 0) oa.x += 360;
-  return oa;
-}
-
-/*<asyxml><function type="abscissa" signature="angabscissa(parabola,point)"><code></asyxml>*/
-abscissa angabscissa(parabola p, point M)
-{/*<asyxml></code><documentation>Return the angular abscissa of 'M' on the parabola 'p'.</documentation></function></asyxml>*/
-  if(!(M @ p)) abort("angabscissa: the point is not on the parabola.");
-  abscissa oa;
-  oa.system = angularsystem;
-  oa.polarconicroutine = fromFocus;// Not used
-  oa.x = degrees(M - p.F);
-  oa.x -= p.angle;
-  if(oa.x < 0) oa.x += 360;
-  return oa;
-}
-
-/*<asyxml><function type="abscissa" signature="angabscissa(conic,point)"><code></asyxml>*/
-abscissa angabscissa(explicit conic co, point M)
-{/*<asyxml></code><documentation>Return the angular abscissa of 'M' on the conic 'co'.</documentation></function></asyxml>*/
-  if(co.e == 0) return angabscissa((circle)co, M);
-  if(co.e < 1) return angabscissa((ellipse)co, M);
-  if(co.e == 1) return angabscissa((parabola)co, M);
-  return angabscissa((hyperbola)co, M);
-}
-
-/*<asyxml><function type="abscissa" signature="curabscissa(line,point)"><code></asyxml>*/
-abscissa curabscissa(line l, point M)
-{/*<asyxml></code><documentation>Return the curvilinear abscissa of 'M' on the line 'l'.</documentation></function></asyxml>*/
-  if(!(M @ extend(l))) abort("curabscissa: the point is not on the line.");
-  abscissa oa;
-  oa.system = curvilinearsystem;
-  oa.x = sgn(dot(M - l.A, l.B - l.A)) * abs(M - l.A);
-  return oa;
-}
-
-/*<asyxml><function type="abscissa" signature="curabscissa(circle,point)"><code></asyxml>*/
-abscissa curabscissa(circle c, point M)
-{/*<asyxml></code><documentation>Return the curvilinear abscissa of 'M' on the circle 'c'.</documentation></function></asyxml>*/
-  if(!(M @ c)) abort("curabscissa: the point is not on the circle.");
-  abscissa oa;
-  oa.system = curvilinearsystem;
-  oa.x = pi * angabscissa(c, M).x * c.r/180;
-  return oa;
-}
-
-/*<asyxml><function type="abscissa" signature="curabscissa(ellipse,point)"><code></asyxml>*/
-abscissa curabscissa(ellipse el, point M)
-{/*<asyxml></code><documentation>Return the curvilinear abscissa of 'M' on the ellipse 'el'.</documentation></function></asyxml>*/
-  if(!(M @ el)) abort("curabscissa: the point is not on the ellipse.");
-  abscissa oa;
-  oa.system = curvilinearsystem;
-  real a = angabscissa(el, M, fromCenter).x;
-  oa.x = arclength(el, 0, a, fromCenter);
-  oa.polarconicroutine = fromCenter;
-  return oa;
-}
-
-/*<asyxml><function type="abscissa" signature="curabscissa(parabola,point)"><code></asyxml>*/
-abscissa curabscissa(parabola p, point M)
-{/*<asyxml></code><documentation>Return the curvilinear abscissa of 'M' on the parabola 'p'.</documentation></function></asyxml>*/
-  if(!(M @ p)) abort("curabscissa: the point is not on the parabola.");
-  abscissa oa;
-  oa.system = curvilinearsystem;
-  real a = angabscissa(p, M).x;
-  oa.x = arclength(p, 180, a);
-  oa.polarconicroutine = fromFocus; // Not used.
-  return oa;
-}
-
-/*<asyxml><function type="abscissa" signature="curabscissa(conic,point)"><code></asyxml>*/
-abscissa curabscissa(conic co, point M)
-{/*<asyxml></code><documentation>Return the curvilinear abscissa of 'M' on the conic 'co'.</documentation></function></asyxml>*/
-  if(co.e > 1) abort("curabscissa: not implemented for this hyperbola.");
-  if(co.e == 0) return curabscissa((circle)co, M);
-  if(co.e < 1) return curabscissa((ellipse)co, M);
-  return curabscissa((parabola)co, M);
-}
-
-/*<asyxml><function type="abscissa" signature="nodabscissa(line,point)"><code></asyxml>*/
-abscissa nodabscissa(line l, point M)
-{/*<asyxml></code><documentation>Return the node abscissa of 'M' on the line 'l'.</documentation></function></asyxml>*/
-  if(!(M @ (segment)l)) abort("nodabscissa: the point is not on the segment.");
-  abscissa oa;
-  oa.system = nodesystem;
-  oa.x = abs(M - l.A)/abs(l.A - l.B);
-  return oa;
-}
-
-/*<asyxml><function type="abscissa" signature="nodabscissa(circle,point)"><code></asyxml>*/
-abscissa nodabscissa(circle c, point M)
-{/*<asyxml></code><documentation>Return the node abscissa of 'M' on the circle 'c'.</documentation></function></asyxml>*/
-  if(!(M @ c)) abort("nodabscissa: the point is not on the circle.");
-  abscissa oa;
-  oa.system = nodesystem;
-  oa.x = intersect((path)c, locate(M))[0];
-  return oa;
-}
-
-/*<asyxml><function type="abscissa" signature="nodabscissa(ellipse,point)"><code></asyxml>*/
-abscissa nodabscissa(ellipse el, point M)
-{/*<asyxml></code><documentation>Return the node abscissa of 'M' on the ellipse 'el'.</documentation></function></asyxml>*/
-  if(!(M @ el)) abort("nodabscissa: the point is not on the ellipse.");
-  abscissa oa;
-  oa.system = nodesystem;
-  oa.x = intersect((path)el, M)[0];
-  return oa;
-}
-
-/*<asyxml><function type="abscissa" signature="nodabscissa(parabola,point)"><code></asyxml>*/
-abscissa nodabscissa(parabola p, point M)
-{/*<asyxml></code><documentation>Return the node abscissa OF 'M' on the parabola 'p'.</documentation></function></asyxml>*/
-  if(!(M @ p)) abort("nodabscissa: the point is not on the parabola.");
-  abscissa oa;
-  oa.system = nodesystem;
-  path pg = p;
-  real[] t = intersect(pg, M, 1e-5);
-  if(t.length == 0) abort("nodabscissa: the point is not on the path of the parabola.");
-  oa.x = t[0];
-  return oa;
-}
-
-/*<asyxml><function type="abscissa" signature="nodabscissa(conic,point)"><code></asyxml>*/
-abscissa nodabscissa(conic co, point M)
-{/*<asyxml></code><documentation>Return the node abscissa of 'M' on the conic 'co'.</documentation></function></asyxml>*/
-  if(co.e > 1) abort("nodabscissa: not implemented for hyperbola.");
-  if(co.e == 0) return nodabscissa((circle)co, M);
-  if(co.e < 1) return nodabscissa((ellipse)co, M);
-  return nodabscissa((parabola)co, M);
-}
-
-
-/*<asyxml><function type="abscissa" signature="relabscissa(line,point)"><code></asyxml>*/
-abscissa relabscissa(line l, point M)
-{/*<asyxml></code><documentation>Return the relative abscissa of 'M' on the line 'l'.</documentation></function></asyxml>*/
-  if(!(M @ extend(l))) abort("relabscissa: the point is not on the line.");
-  abscissa oa;
-  oa.system = relativesystem;
-  oa.x = sgn(dot(M - l.A, l.B - l.A)) * abs(M - l.A)/abs(l.A - l.B);
-  return oa;
-}
-
-/*<asyxml><function type="abscissa" signature="relabscissa(circle,point)"><code></asyxml>*/
-abscissa relabscissa(circle c, point M)
-{/*<asyxml></code><documentation>Return the relative abscissa of 'M' on the circle 'c'.</documentation></function></asyxml>*/
-  if(!(M @ c)) abort("relabscissa: the point is not on the circle.");
-  abscissa oa;
-  oa.system = relativesystem;
-  oa.x = angabscissa(c, M).x/360;
-  return oa;
-}
-
-/*<asyxml><function type="abscissa" signature="relabscissa(ellipse,point)"><code></asyxml>*/
-abscissa relabscissa(ellipse el, point M)
-{/*<asyxml></code><documentation>Return the relative abscissa of 'M' on the ellipse 'el'.</documentation></function></asyxml>*/
-  if(!(M @ el)) abort("relabscissa: the point is not on the ellipse.");
-  abscissa oa;
-  oa.system = relativesystem;
-  oa.x = curabscissa(el, M).x/arclength(el);
-  oa.polarconicroutine = fromFocus;
-  return oa;
-}
-
-/*<asyxml><function type="abscissa" signature="relabscissa(conic,point)"><code></asyxml>*/
-abscissa relabscissa(conic co, point M)
-{/*<asyxml></code><documentation>Return the relative abscissa of 'M'
-   on the conic 'co'.</documentation></function></asyxml>*/
-  if(co.e > 1) abort("relabscissa: not implemented for hyperbola and parabola.");
-  if(co.e == 1) return relabscissa((parabola)co, M);
-  if(co.e == 0) return relabscissa((circle)co, M);
-  return relabscissa((ellipse)co, M);
-}
-// *.......................ABSCISSA........................*
-// *=======================================================*
-
-// *=======================================================*
-// *.........................ARCS..........................*
-/*<asyxml><struct signature="arc"><code></asyxml>*/
-struct arc {
-  /*<asyxml></code><documentation>Implement oriented ellipse (included circle) arcs.
-    All the calculus with this structure will be as exact as Asymptote can do.
-    For a full precision, you must not cast 'arc' to 'path' excepted for drawing routines.
-    </documentation><property type = "ellipse" signature="el"><code></asyxml>*/
-  ellipse el;/*<asyxml></code><documentation>The support of the arc.</documentation></property><property type = "real" signature="angle0"><code></asyxml>*/
-  restricted real angle0 = 0;/*<asyxml></code><documentation>Internal use: rotating a circle does not modify the origin point,this variable stocks the eventual angle rotation. This value is not used for ellipses which are not circles.</documentation></property><property type = "real" signature="angle1,angle2"><code></asyxml>*/
-  restricted  real angle1, angle2;/*<asyxml></code><documentation>Values (in degrees) in ]-360, 360[.</documentation></property><property type = "bool" signature="direction"><code></asyxml>*/
-  bool direction = CCW;/*<asyxml></code><documentation>The arc will be drawn from 'angle1' to 'angle2' rotating in the direction 'direction'.</documentation></property><property type = "polarconicroutine" signature="polarconicroutine"><code></asyxml>*/
-  polarconicroutine polarconicroutine = currentpolarconicroutine;/*<asyxml></code><documentation>The routine to which the angles refer.
-                                                                   If 'el' is a circle 'fromCenter' is always used.</documentation></property></asyxml>*/
-
-  /*<asyxml><method type = "void" signature="setangles(real,real,real)"><code></asyxml>*/
-  void setangles(real a0, real a1, real a2)
-  {/*<asyxml></code><documentation>Set the angles.</documentation></method></asyxml>*/
-    if (a1 < 0 && a2 < 0) {
-      a1 += 360;
-      a2 += 360;
-    }
-    this.angle0 = a0%(sgnd(a0) * 360);
-    this.angle1 = a1%(sgnd(a1) * 360);
-    this.angle2 = a2%(sgnd(2) * 360);
-  }
-
-  /*<asyxml><method type = "void" signature="init(ellipse,real,real,real,polarconicroutine,bool)"><code></asyxml>*/
-  void init(ellipse el, real angle0 = 0, real angle1, real angle2,
-            polarconicroutine polarconicroutine,
-            bool direction = CCW)
-  {/*<asyxml></code><documentation>Constructor.</documentation></method></asyxml>*/
-    if(abs(angle1 - angle2) > 360) abort("arc: |angle1 - angle2| > 360.");
-    this.el = el;
-    this.setangles(angle0, angle1, angle2);
-    this.polarconicroutine = polarconicroutine;
-    this.direction = direction;
-  }
-
-  /*<asyxml><method type = "arc" signature="copy()"><code></asyxml>*/
-  arc copy()
-  {/*<asyxml></code><documentation>Copy the arc.</documentation></method></asyxml>*/
-    arc oa = new arc;
-    oa.el = this.el;
-    oa.direction = this.direction;
-    oa.polarconicroutine = this.polarconicroutine;
-    oa.angle1 = this.angle1;
-    oa.angle2 = this.angle2;
-    oa.angle0 = this.angle0;
-    return oa;
-  }
-}/*<asyxml></struct></asyxml>*/
-
-/*<asyxml><function type="polarconicroutine" signature="polarconicroutine(ellipse)"><code></asyxml>*/
-polarconicroutine polarconicroutine(conic co)
-{/*<asyxml></code><documentation>Return the default routine used to draw a conic.</documentation></function></asyxml>*/
-  if(co.e == 0) return fromCenter;
-  if(co.e == 1) return fromFocus;
-  return currentpolarconicroutine;
-}
-
-/*<asyxml><function type="arc" signature="arc(ellipse,real,real,polarconicroutine,bool)"><code></asyxml>*/
-arc arc(ellipse el, real angle1, real angle2,
-        polarconicroutine polarconicroutine = polarconicroutine(el),
-        bool direction = CCW)
-{/*<asyxml></code><documentation>Return the ellipse arc from 'angle1' to 'angle2' with respect to 'polarconicroutine' and rotating in the direction 'direction'.</documentation></function></asyxml>*/
-  arc oa;
-  oa.init(el, 0, angle1, angle2, polarconicroutine, direction);
-  return oa;
-}
-
-/*<asyxml><function type="arc" signature="complementary(arc)"><code></asyxml>*/
-arc complementary(arc a)
-{/*<asyxml></code><documentation>Return the complementary of 'a'.</documentation></function></asyxml>*/
-  arc oa;
-  oa.init(a.el, a.angle0, a.angle2, a.angle1, a.polarconicroutine, a.direction);
-  return oa;
-}
-
-/*<asyxml><function type="arc" signature="reverse(arc)"><code></asyxml>*/
-arc reverse(arc a)
-{/*<asyxml></code><documentation>Return arc 'a' oriented in reverse direction.</documentation></function></asyxml>*/
-  arc oa;
-  oa.init(a.el, a.angle0, a.angle2, a.angle1, a.polarconicroutine, !a.direction);
-  return oa;
-}
-
-/*<asyxml><function type="real" signature="degrees(arc)"><code></asyxml>*/
-real degrees(arc a)
-{/*<asyxml></code><documentation>Return the measure in degrees of the oriented arc 'a'.</documentation></function></asyxml>*/
-  real or;
-  real da = a.angle2 - a.angle1;
-  if(a.direction) {
-    or = a.angle1 < a.angle2 ? da : 360 + da;
-  } else {
-    or = a.angle1 < a.angle2 ? -360 + da : da;
-  }
-  return or;
-}
-
-/*<asyxml><function type="real" signature="angle(a)"><code></asyxml>*/
-real angle(arc a)
-{/*<asyxml></code><documentation>Return the measure in radians of the oriented arc 'a'.</documentation></function></asyxml>*/
-  return radians(degrees(a));
-}
-
-/*<asyxml><function type="int" signature="arcnodesnumber(explicit arc)"><code></asyxml>*/
-int arcnodesnumber(explicit arc a)
-{/*<asyxml></code><documentation>Return the number of nodes to draw the arc 'a'.</documentation></function></asyxml>*/
-  return ellipsenodesnumber(a.el.a, a.el.b, a.angle1, a.angle2, a.direction);
-}
-
-private path arctopath(arc a, int n)
-{
-  if(a.el.e == 0) return arcfromcenter(a.el, a.angle0 + a.angle1, a.angle0 + a.angle2, a.direction, n);
-  if(a.el.e != 1) return a.polarconicroutine(a.el, a.angle1, a.angle2, n, a.direction);
-  return arcfromfocus(a.el, a.angle1, a.angle2, n, a.direction);
-}
-
-/*<asyxml><function type="point" signature="angpoint(arc,real)"><code></asyxml>*/
-point angpoint(arc a, real angle)
-{/*<asyxml></code><documentation>Return the point given by its angular position (in degrees) relative to the arc 'a'.
-   If 'angle > degrees(a)' or 'angle < 0' the returned point is on the extended arc.</documentation></function></asyxml>*/
-  pair p;
-  if(a.el.e == 0) {
-    real gle = a.angle0 + a.angle1 + (a.direction ? angle : -angle);
-    p = point(arcfromcenter(a.el, gle, gle, CCW, 1), 0);
-  }
-  else {
-    real gle = a.angle1 + (a.direction ? angle : -angle);
-    p = point(a.polarconicroutine(a.el, gle, gle, 1, CCW), 0);
-  }
-  return point(coordsys(a.el), p/coordsys(a.el));
-}
-
-/*<asyxml><operator type = "path" signature="cast(explicit arc)"><code></asyxml>*/
-path operator cast(explicit arc a)
-{/*<asyxml></code><documentation>Cast arc to path.</documentation></operator></asyxml>*/
-  return arctopath(a, arcnodesnumber(a));
-}
-
-/*<asyxml><operator type = "guide" signature="cast(explicit arc)"><code></asyxml>*/
-guide operator cast(explicit arc a)
-{/*<asyxml></code><documentation>Cast arc to guide.</documentation></operator></asyxml>*/
-  return arctopath(a, arcnodesnumber(a));
-}
-
-/*<asyxml><operator type = "arc" signature="*(transform,explicit arc)"><code></asyxml>*/
-arc operator *(transform t, explicit arc a)
-{/*<asyxml></code><documentation>Provide transform * arc.</documentation></operator></asyxml>*/
-  pair[] P, PP;
-  path g = arctopath(a, 3);
-  real a0, a1 = a.angle1, a2 = a.angle2, ap1, ap2;
-  bool dir = a.direction;
-  P[0] = t * point(g, 0);
-  P[1] = t * point(g, 2);
-  ellipse el = t * a.el;
-  arc oa;
-  a0 = (a.angle0 + angle(shiftless(t)))%360;
-  pair C;
-  if(a.polarconicroutine == fromCenter) C = el.C; else C = el.F1;
-  real d = abs(locate(el.F2 - el.F1)) > epsgeo ?
-    degrees(locate(el.F2 - el.F1)) : a0 + degrees(el.C.coordsys.i);
-  ap1 = (degrees(P[0]-C, false) - d)%360;
-  ap2 = (degrees(P[1]-C, false) - d)%360;
-  oa.init(el, a0, ap1, ap2, a.polarconicroutine, dir);
-  g = arctopath(oa, 3);
-  PP[0] = point(g, 0);
-  PP[1] = point(g, 2);
-  if((a1 - a2) * (ap1 - ap2) < 0) {// Handle reflection.
-    dir=!a.direction;
-    oa.init(el, a0, ap1, ap2, a.polarconicroutine, dir);
-  }
-  return oa;
-}
-
-/*<asyxml><operator type = "arc" signature="*(real,explicit arc)"><code></asyxml>*/
-arc operator *(real x, explicit arc a)
-{/*<asyxml></code><documentation>Provide real * arc.
-   Return the arc subtracting and adding '(x - 1) * degrees(a)/2' to 'a.angle1' and 'a.angle2' respectively.</documentation></operator></asyxml>*/
-  real a1, a2, gle;
-  gle = (x - 1) * degrees(a)/2;
-  a1 = a.angle1 - gle;
-  a2 = a.angle2 + gle;
-  arc oa;
-  oa.init(a.el, a.angle0, a1, a2, a.polarconicroutine, a.direction);
-  return oa;
-}
-arc operator *(int x, explicit arc a){return (real)x * a;}
-/*<asyxml><operator type = "arc" signature="/(real,explicit arc)"><code></asyxml>*/
-arc operator /(explicit arc a, real x)
-{/*<asyxml></code><documentation>Provide arc/real.
-   Return the arc subtracting and adding '(1/x - 1) * degrees(a)/2' to 'a.angle1' and 'a.angle2' respectively.</documentation></operator></asyxml>*/
-  return (1/x) * a;
-}
-/*<asyxml><operator type = "arc" signature="+(explicit arc,point)"><code></asyxml>*/
-arc operator +(explicit arc a, point M)
-{/*<asyxml></code><documentation>Provide arc + point.
-   Return shifted arc.
-   'operator +(explicit arc, point)', 'operator +(explicit arc, vector)' and 'operator -(explicit arc, vector)' are also defined.</documentation></operator></asyxml>*/
-  return shift(M) * a;
-}
-arc operator -(explicit arc a, point M){return a + (-M);}
-arc operator +(explicit arc a, vector v){return shift(locate(v)) * a;}
-arc operator -(explicit arc a, vector v){return a + (-v);}
-
-
-/*<asyxml><operator type = "bool" signature="@(point,arc)"><code></asyxml>*/
-bool operator @(point M, arc a)
-{/*<asyxml></code><documentation>Return true iff 'M' is on the arc 'a'.</documentation></operator></asyxml>*/
-  if (!(M @ a.el)) return false;
-  coordsys R = defaultcoordsys;
-  path ap = arctopath(a, 3);
-  line l = line(point(R, point(ap, 0)), point(R, point(ap, 2)));
-  return sameside(M, point(R, point(ap, 1)), l);
-}
-
-/*<asyxml><function type="void" signature="draw(picture,Label,arc,align,pen,arrowbar,arrowbar,margin,Label,marker)"><code></asyxml>*/
-void draw(picture pic = currentpicture, Label L = "", arc a,
-          align align = NoAlign, pen p = currentpen,
-          arrowbar arrow = None, arrowbar bar = None, margin margin = NoMargin,
-          Label legend = "", marker marker = nomarker)
-{/*<asyxml></code><documentation>Draw 'arc' adding the pen returned by 'addpenarc(p)' to the pen 'p'.
-   <look href = "#addpenarc"/></documentation></function></asyxml>*/
-  draw(pic, L, (path)a, align, addpenarc(p), arrow, bar, margin, legend, marker);
-}
-
-/*<asyxml><function type="real" signature="arclength(arc)"><code></asyxml>*/
-real arclength(arc a)
-{/*<asyxml></code><documentation>The arc length of 'a'.</documentation></function></asyxml>*/
-  return arclength(a.el, a.angle1, a.angle2, a.direction, a.polarconicroutine);
-}
-
-private point ppoint(arc a, real x)
-{// Return the point of the arc proportionally to its length.
-  point oP;
-  if(a.el.e == 0) { // Case of circle.
-    oP = angpoint(a, x * abs(degrees(a)));
-  } else { // Ellipse and not circle.
-    if(!a.direction) {
-      transform t = reflect(line(a.el.F1, a.el.F2));
-      return t * ppoint(t * a, x);
-    }
-
-    real angle1 = a.angle1, angle2 = a.angle2;
-    if(a.polarconicroutine == fromFocus) {
-      //       dot(point(fromFocus(a.el, angle1, angle1, 1, CCW), 0), 2mm + blue);
-      //       dot(point(fromFocus(a.el, angle2, angle2, 1, CCW), 0), 2mm + blue);
-      //       write("fromfocus1 = ", angle1);
-      //       write("fromfocus2 = ", angle2);
-      real gle1 = focusToCenter(a.el, angle1);
-      real gle2 = focusToCenter(a.el, angle2);
-      if((gle1 - gle2) * (angle1 - angle2) > 0) {
-        angle1 = gle1; angle2 = gle2;
-      } else {
-        angle1 = gle2; angle2 = gle1;
-      }
-      //       write("fromcenter1 = ", angle1);
-      //       write("fromcenter2 = ", angle2);
-      //       dot(point(fromCenter(a.el, angle1, angle1, 1, CCW), 0), 1mm + red);
-      //       dot(point(fromCenter(a.el, angle2, angle2, 1, CCW), 0), 1mm + red);
-    }
-
-    if(angle1 > angle2) {
-      arc ta = a.copy();
-      ta.polarconicroutine = fromCenter;
-      ta.setangles(a0 = a.angle0, a1 = angle1 - 360, a2 = angle2);
-      return ppoint(ta, x);
-    }
-    ellipse co = a.el;
-    real gle, a1, a2, cx = 0;
-    bool direction;
-    if(x >= 0) {
-      a1 = angle1;
-      a2 = a1 + 360;
-      direction = CCW;
-    } else {
-      a1 = angle1 - 360;
-      a2 = a1 - 360;
-      direction = CW;
-    }
-    gle = a1;
-    real L = arclength(co, angle1, angle2, a.direction, fromCenter);
-    real tx = L * abs(x)%arclength(co);
-    real aout = a1;
-    while(abs(cx - tx) > epsgeo) {
-      aout = (a1 + a2)/2;
-      cx = abs(arclength(co, gle, aout, direction, fromCenter));
-      if(cx > tx) a2 = (a1 + a2)/2 ; else a1 = (a1 + a2)/2;
-    }
-    pair p = point(arcfromcenter(co, aout, aout, CCW, 1), 0);
-    oP = point(coordsys(co), p/coordsys(co));
-  }
-  return oP;
-}
-
-/*<asyxml><function type="point" signature="point(arc,abscissa)"><code></asyxml>*/
-point point(arc a, abscissa l)
-{/*<asyxml></code><documentation>Return the point of 'a' which has the abscissa 'l.x'
-   according to the abscissa system 'l.system'.
-   Note that 'a.polarconicroutine' is used instead of 'l.polarconicroutine'.
-   <look href = "#struct abscissa"/></documentation></function></asyxml>*/
-  real posx;
-  arc ta = a.copy();
-  ellipse co = a.el;
-  if (l.system == relativesystem) {
-    posx = l.x;
-  } else
-    if (l.system == curvilinearsystem) {
-      real tl;
-      if(co.e == 0) {
-        tl = curabscissa(a.el, angpoint(a.el, a.angle0 + a.angle1)).x;
-        return curpoint(a.el, tl + (a.direction ? l.x : -l.x));
-      } else {
-        tl = curabscissa(a.el, angpoint(a.el, a.angle1, a.polarconicroutine)).x;
-        return curpoint(a.el, tl + (a.direction ? l.x : -l.x));
-      }
-    } else
-      if (l.system == nodesystem) {
-        coordsys R = coordsys(co);
-        return point(R, point((path)a, l.x)/R);
-      } else
-        if (l.system == angularsystem) {
-          return angpoint(a, l.x);
-        } else abort("point: bad abscissa system.");
-  return ppoint(ta, posx);
-}
-
-
-/*<asyxml><function type="point" signature="point(arc,real)"><code></asyxml>*/
-point point(arc a, real x)
-{/*<asyxml></code><documentation>Return the point between node floor(t) and floor(t) + 1.</documentation></function></asyxml>*/
-  return point(a, nodabscissa(x));
-}
-pair point(explicit arc a, int x)
-{
-  return point(a, nodabscissa(x));
-}
-
-/*<asyxml><function type="point" signature="relpoint(arc,real)"><code></asyxml>*/
-point relpoint(arc a, real x)
-{/*<asyxml></code><documentation>Return the relative point of 'a'.
-   If x > 1 or x < 0, the returned point is on the extended arc.</documentation></function></asyxml>*/
-  return point(a, relabscissa(x));
-}
-
-/*<asyxml><function type="point" signature="curpoint(arc,real)"><code></asyxml>*/
-point curpoint(arc a, real x)
-{/*<asyxml></code><documentation>Return the point of 'a' which has the curvilinear abscissa 'x'.
-   If x < 0 or x > arclength(a), the returned point is on the extended arc.</documentation></function></asyxml>*/
-  return point(a, curabscissa(x));
-}
-
-/*<asyxml><function type="abscissa" signature="angabscissa(arc,point)"><code></asyxml>*/
-abscissa angabscissa(arc a, point M)
-{/*<asyxml></code><documentation>Return the angular abscissa of 'M' according to the arc 'a'.</documentation></function></asyxml>*/
-  if(!(M @ a.el))
-    abort("angabscissa: the point is not on the extended arc.");
-  abscissa oa;
-  oa.system = angularsystem;
-  oa.polarconicroutine = a.polarconicroutine;
-  real am = angabscissa(a.el, M, a.polarconicroutine).x;
-  oa.x = (am - a.angle1 - (a.el.e == 0 ? a.angle0 : 0))%360;
-  oa.x = a.direction ? oa.x : 360 - oa.x;
-  return oa;
-}
-
-/*<asyxml><function type="abscissa" signature="curabscissa(arc,point)"><code></asyxml>*/
-abscissa curabscissa(arc a, point M)
-{/*<asyxml></code><documentation>Return the curvilinear abscissa according to the arc 'a'.</documentation></function></asyxml>*/
-  ellipse el = a.el;
-  if(!(M @ el))
-    abort("angabscissa: the point is not on the extended arc.");
-  abscissa oa;
-  oa.system = curvilinearsystem;
-  real xm = curabscissa(el, M).x;
-  real a0 = el.e == 0 ? a.angle0 : 0;
-  real am = curabscissa(el, angpoint(el, a.angle1 + a0, a.polarconicroutine)).x;
-  real l = arclength(el);
-  oa.x = (xm - am)%l;
-  oa.x = a.direction ? oa.x : l - oa.x;
-  return oa;
-}
-
-/*<asyxml><function type="abscissa" signature="nodabscissa(arc,point)"><code></asyxml>*/
-abscissa nodabscissa(arc a, point M)
-{/*<asyxml></code><documentation>Return the node abscissa according to the arc 'a'.</documentation></function></asyxml>*/
-  if(!(M @ a))
-    abort("nodabscissa: the point is not on the arc.");
-  abscissa oa;
-  oa.system = nodesystem;
-  oa.x = intersect((path)a, M)[0];
-  return oa;
-}
-
-/*<asyxml><function type="abscissa" signature="relabscissa(arc,point)"><code></asyxml>*/
-abscissa relabscissa(arc a, point M)
-{/*<asyxml></code><documentation>Return the relative abscissa according to the arc 'a'.</documentation></function></asyxml>*/
-  ellipse el = a.el;
-  if(!( M @ el))
-    abort("relabscissa: the point is not on the prolonged arc.");
-  abscissa oa;
-  oa.system = relativesystem;
-  oa.x = curabscissa(a, M).x/arclength(a);
-  return oa;
-}
-
-/*<asyxml><function type="void" signature="markarc(picture,Label,int,real,real,arc,arrowbar,pen,pen,margin,marker)"><code></asyxml>*/
-void markarc(picture pic = currentpicture,
-             Label L = "",
-             int n = 1, real radius = 0, real space = 0,
-             arc a,
-             pen sectorpen = currentpen,
-             pen markpen = sectorpen,
-             margin margin = NoMargin,
-             arrowbar arrow = None,
-             marker marker = nomarker)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  real Da = degrees(a);
-  pair p1 = point(a, 0);
-  pair p2 = relpoint(a, 1);
-  pair c = a.polarconicroutine == fromCenter ? locate(a.el.C) : locate(a.el.F1);
-  if(radius == 0) radius = markangleradius(markpen);
-  if(abs(Da) > 180) radius = -radius;
-  radius = (a.direction ? 1 : -1) * sgnd(Da) * radius;
-  draw(c--p1^^c--p2, sectorpen);
-  markangle(pic = pic, L = L, n = n, radius = radius, space = space,
-            A = p1, O = c, B = p2,
-            arrow = arrow, p = markpen, margin = margin,
-            marker = marker);
-}
-// *.........................ARCS..........................*
-// *=======================================================*
-
-// *=======================================================*
-// *........................MASSES.........................*
-/*<asyxml><struct signature="mass"><code></asyxml>*/
-struct mass {/*<asyxml></code><documentation></documentation><property type = "point" signature="M"><code></asyxml>*/
-  point M;/*<asyxml></code><documentation></documentation></property><property type = "real" signature="m"><code></asyxml>*/
-  real m;/*<asyxml></code><documentation></documentation></property></asyxml>*/
-}/*<asyxml></struct></asyxml>*/
-
-/*<asyxml><function type="mass" signature="mass(point,real)"><code></asyxml>*/
-mass mass(point M, real m)
-{/*<asyxml></code><documentation>Constructor of mass point.</documentation></function></asyxml>*/
-  mass om;
-  om.M = M;
-  om.m = m;
-  return om;
-}
-
-/*<asyxml><operator type = "point" signature="cast(mass)"><code></asyxml>*/
-point operator cast(mass m)
-{/*<asyxml></code><documentation>Cast mass point to point.</documentation></operator></asyxml>*/
-  point op;
-  op = m.M;
-  op.m = m.m;
-  return op;
-}
-/*<asyxml><function type="point" signature="point(explicit mass)"><code></asyxml>*/
-point point(explicit mass m){return m;}/*<asyxml></code><documentation>Cast
-                                         'm' to point</documentation></function></asyxml>*/
-
-/*<asyxml><operator type = "mass" signature="cast(point)"><code></asyxml>*/
-mass operator cast(point M)
-{/*<asyxml></code><documentation>Cast point to mass point.</documentation></operator></asyxml>*/
-  mass om;
-  om.M = M;
-  om.m = M.m;
-  return om;
-}
-/*<asyxml><function type="mass" signature="mass(explicit point)"><code></asyxml>*/
-mass mass(explicit point P)
-{/*<asyxml></code><documentation>Cast 'P' to mass.</documentation></function></asyxml>*/
-  return mass(P, P.m);
-}
-
-/*<asyxml><operator type = "point[]" signature="cast(mass[])"><code></asyxml>*/
-point[] operator cast(mass[] m)
-{/*<asyxml></code><documentation>Cast mass[] to point[].</documentation></operator></asyxml>*/
-  point[] op;
-  for(mass am : m) op.push(point(am));
-  return op;
-}
-
-/*<asyxml><operator type = "mass[]" signature="cast(point[])"><code></asyxml>*/
-mass[] operator cast(point[] P)
-{/*<asyxml></code><documentation>Cast point[] to mass[].</documentation></operator></asyxml>*/
-  mass[] om;
-  for(point op : P) om.push(mass(op));
-  return om;
-}
-
-/*<asyxml><function type="mass" signature="mass(coordsys,explicit pair,real)"><code></asyxml>*/
-mass mass(coordsys R, explicit pair p, real m)
-{/*<asyxml></code><documentation>Return the mass which has coordinates
-   'p' with respect to 'R' and weight 'm'.</documentation></function></asyxml>*/
-  return point(R, p, m);// Using casting.
-}
-
-/*<asyxml><operator type = "mass" signature="cast(pair)"><code></asyxml>*/
-mass operator cast(pair m){return mass((point)m, 1);}/*<asyxml></code><documentation>Cast pair to mass point.</documentation></operator></asyxml>*/
-/*<asyxml><operator type = "path" signature="cast(mass)"><code></asyxml>*/
-path operator cast(mass M){return M.M;}/*<asyxml></code><documentation>Cast mass point to path.</documentation></operator></asyxml>*/
-/*<asyxml><operator type = "guide" signature="cast(mass)"><code></asyxml>*/
-guide operator cast(mass M){return M.M;}/*<asyxml></code><documentation>Cast mass to guide.</documentation></operator></asyxml>*/
-
-/*<asyxml><operator type = "mass" signature="+(mass,mass)"><code></asyxml>*/
-mass operator +(mass M1, mass M2)
-{/*<asyxml></code><documentation>Provide mass + mass.
-   mass - mass is also defined.</documentation></operator></asyxml>*/
-  return mass(M1.M + M2.M, M1.m + M2.m);
-}
-mass operator -(mass M1, mass M2)
-{
-  return mass(M1.M - M2.M, M1.m - M2.m);
-}
-
-/*<asyxml><operator type = "mass" signature="*(real,mass)"><code></asyxml>*/
-mass operator *(real x, explicit mass M)
-{/*<asyxml></code><documentation>Provide real * mass.
-   The resulted mass is the mass of 'M' multiplied by 'x' .
-   mass/real, mass + real and mass - real are also defined.</documentation></operator></asyxml>*/
-  return mass(M.M, x * M.m);
-}
-mass operator *(int x, explicit mass M){return mass(M.M, x * M.m);}
-mass operator /(explicit mass M, real x){return mass(M.M, M.m/x);}
-mass operator /(explicit mass M, int x){return mass(M.M, M.m/x);}
-mass operator +(explicit mass M, real x){return mass(M.M, M.m + x);}
-mass operator +(explicit mass M, int x){return mass(M.M, M.m + x);}
-mass operator -(explicit mass M, real x){return mass(M.M, M.m - x);}
-mass operator -(explicit mass M, int x){return mass(M.M, M.m - x);}
-/*<asyxml><operator type = "mass" signature="*(transform,mass)"><code></asyxml>*/
-mass operator *(transform t, mass M)
-{/*<asyxml></code><documentation>Provide transform * mass.</documentation></operator></asyxml>*/
-  return mass(t * M.M, M.m);
-}
-
-/*<asyxml><function type="mass" signature="masscenter(... mass[])"><code></asyxml>*/
-mass masscenter(... mass[] M)
-{/*<asyxml></code><documentation>Return the center of the masses 'M'.</documentation></function></asyxml>*/
-  point[] P;
-  for (int i = 0; i < M.length; ++i)
-    P.push(M[i].M);
-  P = standardizecoordsys(currentcoordsys, true ... P);
-  real m = M[0].m;
-  point oM = M[0].m * P[0];
-  for (int i = 1; i < M.length; ++i) {
-    oM += M[i].m * P[i];
-    m += M[i].m;
-  }
-  if (m == 0) abort("masscenter: the sum of masses is null.");
-  return mass(oM/m, m);
-}
-
-/*<asyxml><function type="string" signature="massformat(string,string,mass)"><code></asyxml>*/
-string massformat(string format = defaultmassformat,
-                  string s, mass M)
-{/*<asyxml></code><documentation>Return the string formated by 'format' with the mass value.
-   In the parameter 'format', %L will be replaced by 's'.
-   <look href = "#defaultmassformat"/>.</documentation></function></asyxml>*/
-  return format == "" ? s :
-    format(replace(format, "%L", replace(s, "$", "")), M.m);
-}
-
-/*<asyxml><function type="void" signature="label(picture,Label,explicit mass,align,string,pen,filltype)"><code></asyxml>*/
-void label(picture pic = currentpicture, Label L, explicit mass M,
-           align align = NoAlign, string format = defaultmassformat,
-           pen p = nullpen, filltype filltype = NoFill)
-{/*<asyxml></code><documentation>Draw label returned by massformat(format, L, M) at coordinates of M.
-   <look href = "#massformat(string, string, mass)"/>.</documentation></function></asyxml>*/
-  Label lL = L.copy();
-  lL.s = massformat(format, lL.s, M);
-  Label L = Label(lL, M.M, align, p, filltype);
-  add(pic, L);
-}
-
-/*<asyxml><function type="void" signature="dot(picture,Label,explicit mass,align,string,pen)"><code></asyxml>*/
-void dot(picture pic = currentpicture, Label L, explicit mass M, align align = NoAlign,
-         string format = defaultmassformat, pen p = currentpen)
-{/*<asyxml></code><documentation>Draw a dot with label 'L' as
-   label(picture, Label, explicit mass, align, string, pen, filltype) does.
-   <look href = "#label(picture, Label, mass, align, string, pen, filltype)"/>.</documentation></function></asyxml>*/
-  Label lL = L.copy();
-  lL.s = massformat(format, lL.s, M);
-  lL.position(locate(M.M));
-  lL.align(align, E);
-  lL.p(p);
-  dot(pic, M.M, p);
-  add(pic, lL);
-}
-// *........................MASSES.........................*
-// *=======================================================*
-
-// *=======================================================*
-// *.......................TRIANGLES.......................*
-/*<asyxml><function type="point" signature="orthocenter(point,point,point)"><code></asyxml>*/
-point orthocenter(point A, point B, point C)
-{/*<asyxml></code><documentation>Return the orthocenter of the triangle ABC.</documentation></function></asyxml>*/
-  point[] P = standardizecoordsys(A, B, C);
-  coordsys R = P[0].coordsys;
-  pair pp = extension(A, projection(P[1], P[2]) * P[0], B, projection(P[0], P[2]) * P[1]);
-  return point(R, pp/R);
-}
-
-/*<asyxml><function type="point" signature="centroid(point,point,point)"><code></asyxml>*/
-point centroid(point A, point B, point C)
-{/*<asyxml></code><documentation>Return the centroid of the triangle ABC.</documentation></function></asyxml>*/
-  return (A + B + C)/3;
-}
-
-/*<asyxml><function type="point" signature="incenter(point,point,point)"><code></asyxml>*/
-point incenter(point A, point B, point C)
-{/*<asyxml></code><documentation>Return the center of the incircle of the triangle ABC.</documentation></function></asyxml>*/
-  point[] P = standardizecoordsys(A, B, C);
-  coordsys R = P[0].coordsys;
-  pair a = A, b = B, c = C;
-  pair pp = extension(a, a + dir(a--b, a--c), b, b + dir(b--a, b--c));
-  return point(R, pp/R);
-}
-
-/*<asyxml><function type="real" signature="inradius(point,point,point)"><code></asyxml>*/
-real inradius(point A, point B, point C)
-{/*<asyxml></code><documentation>Return the radius of the incircle of the triangle ABC.</documentation></function></asyxml>*/
-  point IC = incenter(A, B, C);
-  return abs(IC - projection(A, B) * IC);
-}
-
-/*<asyxml><function type="circle" signature="incircle(point,point,point)"><code></asyxml>*/
-circle incircle(point A, point B, point C)
-{/*<asyxml></code><documentation>Return the incircle of the triangle ABC.</documentation></function></asyxml>*/
-  point IC = incenter(A, B, C);
-  return circle(IC, abs(IC - projection(A, B) * IC));
-}
-
-/*<asyxml><function type="point" signature="excenter(point,point,point)"><code></asyxml>*/
-point excenter(point A, point B, point C)
-{/*<asyxml></code><documentation>Return the center of the excircle of the triangle tangent with (AB).</documentation></function></asyxml>*/
-  point[] P = standardizecoordsys(A, B, C);
-  coordsys R = P[0].coordsys;
-  pair a = A, b = B, c = C;
-  pair pp = extension(a, a + rotate(90) * dir(a--b, a--c), b, b + rotate(90) * dir(b--a, b--c));
-  return point(R, pp/R);
-}
-
-/*<asyxml><function type="real" signature="exradius(point,point,point)"><code></asyxml>*/
-real exradius(point A, point B, point C)
-{/*<asyxml></code><documentation>Return the radius of the excircle of the triangle ABC with (AB).</documentation></function></asyxml>*/
-  point EC = excenter(A, B, C);
-  return abs(EC - projection(A, B) * EC);
-}
-
-/*<asyxml><function type="circle" signature="excircle(point,point,point)"><code></asyxml>*/
-circle excircle(point A, point B, point C)
-{/*<asyxml></code><documentation>Return the excircle of the triangle ABC tangent with (AB).</documentation></function></asyxml>*/
-  point center = excenter(A, B, C);
-  real radius = abs(center - projection(B, C) * center);
-  return circle(center, radius);
-}
-
-private int[] numarray = {1, 2, 3};
-numarray.cyclic = true;
-
-/*<asyxml><struct signature="triangle"><code></asyxml>*/
-struct triangle {/*<asyxml></code><documentation></documentation></asyxml>*/
-
-  /*<asyxml><struct signature="vertex"><code></asyxml>*/
-  struct vertex {/*<asyxml></code><documentation>Structure used to communicate the vertex of a triangle.</documentation><property type = "int" signature="n"><code></asyxml>*/
-    int n;/*<asyxml></code><documentation>1 means VA,2 means VB,3 means VC,4 means VA etc...</documentation></property><property type = "triangle" signature="triangle"><code></asyxml>*/
-    triangle t;/*<asyxml></code><documentation>The triangle to which the vertex refers.</documentation></property></asyxml>*/
-  }/*<asyxml></struct></asyxml>*/
-
-  /*<asyxml><property type = "point" signature="A,B,C"><code></asyxml>*/
-  restricted point A, B, C;/*<asyxml></code><documentation>The vertices of the triangle (as point).</documentation></property><property type = "vertex" signature="VA, VB, VC"><code></asyxml>*/
-  restricted vertex VA, VB, VC;/*<asyxml></code><documentation>The vertices of the triangle (as vertex).
-                                 Note that the vertex structure contains the triangle to wish it refers.</documentation></property></asyxml>*/
-  VA.n = 1;VB.n = 2;VC.n = 3;
-
-  /*<asyxml><method type = "vertex" signature="vertex(int)"><code></asyxml>*/
-  vertex vertex(int n)
-  {/*<asyxml></code><documentation>Return numbered vertex.
-     'n' is 1 means VA, 2 means VB, 3 means VC, 4 means VA etc...</documentation></method></asyxml>*/
-    n = numarray[n - 1];
-    if(n == 1) return VA;
-    else if(n == 2) return VB;
-    return VC;
-  }
-
-  /*<asyxml><method type = "point" signature="point(int)"><code></asyxml>*/
-  point point(int n)
-  {/*<asyxml></code><documentation>Return numbered point.
-     n is 1 means A, 2 means B, 3 means C, 4 means A etc...</documentation></method></asyxml>*/
-    n = numarray[n - 1];
-    if(n == 1) return A;
-    else if(n == 2) return B;
-    return C;
-  }
-
-  /*<asyxml><method type = "void" signature="init(point,point,point)"><code></asyxml>*/
-  void init(point A, point B, point C)
-  {/*<asyxml></code><documentation>Constructor.</documentation></method></asyxml>*/
-    point[] P = standardizecoordsys(A, B, C);
-    this.A = P[0];
-    this.B = P[1];
-    this.C = P[2];
-    VA.t = this; VB.t = this; VC.t = this;
-  }
-
-  /*<asyxml><method type = "void" signature="operator init(point,point,point)"><code></asyxml>*/
-  void operator init(point A, point B, point C)
-  {/*<asyxml></code><documentation>For backward compatibility.
-     Provide the routine 'triangle(point A, point B, point C)'.</documentation></method></asyxml>*/
-    this.init(A, B, C);
-  }
-
-  /*<asyxml><method type = "void" signature="init(real,real,real,real,point)"><code></asyxml>*/
-  void operator init(real b, real alpha, real c, real angle = 0, point A = (0, 0))
-  {/*<asyxml></code><documentation>For backward compatibility.
-     Provide the routine 'triangle(real b, real alpha, real c, real angle = 0, point A = (0, 0))
-     which returns the triangle ABC rotated by 'angle' (in degrees) and where b = AC, degrees(A) = alpha, AB = c.</documentation></method></asyxml>*/
-    coordsys R = A.coordsys;
-    this.init(A, A + R.polar(c, radians(angle)), A + R.polar(b, radians(angle + alpha)));
-  }
-
-  /*<asyxml><method type = "real" signature="a(),b(),c()"><code></asyxml>*/
-  real a()
-  {/*<asyxml></code><documentation>Return the length BC.
-     b() and c() are also defined and return the length AC and AB respectively.</documentation></method></asyxml>*/
-    return length(C - B);
-  }
-  real b() {return length(A - C);}
-  real c() {return length(B - A);}
-
-  private real det(pair a, pair b) {return a.x * b.y - a.y * b.x;}
-
-  /*<asyxml><method type = "real" signature="area()"><code></asyxml>*/
-  real area()
-  {/*<asyxml></code><documentation></documentation></method></asyxml>*/
-    pair a = locate(A), b = locate(B), c = locate(C);
-    return 0.5 * abs(det(a, b) + det(b, c) + det(c, a));
-  }
-
-  /*<asyxml><method type = "real" signature="alpha(),beta(),gamma()"><code></asyxml>*/
-  real alpha()
-  {/*<asyxml></code><documentation>Return the measure (in degrees) of the angle A.
-     beta() and gamma() are also defined and return the measure of the angles B and C respectively.</documentation></method></asyxml>*/
-    return degrees(acos((b()^2 + c()^2 - a()^2)/(2b() * c())));
-  }
-  real beta()  {return degrees(acos((c()^2 + a()^2 - b()^2)/(2c() * a())));}
-  real gamma() {return degrees(acos((a()^2 + b()^2 - c()^2)/(2a() * b())));}
-
-  /*<asyxml><method type = "path" signature="Path()"><code></asyxml>*/
-  path Path()  // retained for backward compatibility
-  {/*<asyxml></code><documentation>The path of the triangle.</documentation></method></asyxml>*/
-    return A--B--C--cycle;
-  }
-
-  /*<asyxml><struct signature="side"><code></asyxml>*/
-  struct side
-  {/*<asyxml></code><documentation>Structure used to communicate the side of a triangle.</documentation><property type = "int" signature="n"><code></asyxml>*/
-    int n;/*<asyxml></code><documentation>1 or 0 means [AB],-1 means [BA],2 means [BC],-2 means [CB] etc.</documentation></property><property type = "triangle" signature="triangle"><code></asyxml>*/
-    triangle t;/*<asyxml></code><documentation>The triangle to which the side refers.</documentation></property></asyxml>*/
-  }/*<asyxml></struct></asyxml>*/
-
-  /*<asyxml><property type = "side" signature="AB"><code></asyxml>*/
-  side AB;/*<asyxml></code><documentation>For the routines using the structure 'side', triangle.AB means 'side AB'.
-            BA, AC, CA etc are also defined.</documentation></property></asyxml>*/
-  AB.n = 1; AB.t = this;
-  side BA; BA.n = -1; BA.t = this;
-  side BC; BC.n = 2; BC.t = this;
-  side CB; CB.n = -2; CB.t = this;
-  side CA; CA.n = 3; CA.t = this;
-  side AC; AC.n = -3; AC.t = this;
-
-  /*<asyxml><method type = "side" signature="side(int)"><code></asyxml>*/
-  side side(int n)
-  {/*<asyxml></code><documentation>Return numbered side.
-     n is 1 means AB, -1 means BA, 2 means BC, -2 means CB, etc.</documentation></method></asyxml>*/
-    if(n == 0) abort('Invalid side number.');
-    int an = numarray[abs(n)-1];
-    if(an == 1) return n > 0 ? AB : BA;
-    else if(an == 2) return n > 0 ? BC : CB;
-    return n > 0 ? CA : AC;
-  }
-
-  /*<asyxml><method type = "line" signature="line(int)"><code></asyxml>*/
-  line line(int n)
-  {/*<asyxml></code><documentation>Return the numbered line.</documentation></method></asyxml>*/
-    if(n == 0) abort('Invalid line number.');
-    int an = numarray[abs(n)-1];
-    if(an == 1) return n > 0 ? line(A, B) : line(B, A);
-    else if(an == 2) return n > 0 ? line(B, C) : line(C, B);
-    return n > 0 ? line(C, A) : line(A, C);
-  }
-
-}/*<asyxml></struct></asyxml>*/
-
-path operator cast(triangle t) { return t.A -- t.B -- t.C -- cycle; }
-
-from triangle unravel side; // The structure 'side' is now available outside the triangle structure.
-from triangle unravel vertex; // The structure 'vertex' is now available outside the triangle structure.
-
-triangle[] operator ^^(triangle[] t1, triangle t2)
-{
-  triangle[] T;
-  for (int i = 0; i < t1.length; ++i) T.push(t1[i]);
-  T.push(t2);
-  return T;
-}
-
-triangle[] operator ^^(... triangle[] t)
-{
-  triangle[] T;
-  for (int i = 0; i < t.length; ++i) {
-    T.push(t[i]);
-  }
-  return T;
-}
-
-/*<asyxml><operator type = "line" signature="cast(side)"><code></asyxml>*/
-line operator cast(side side)
-{/*<asyxml></code><documentation>Cast side to (infinite) line.
-   Most routine with line parameters works with side parameters.
-   One can use the code 'segment(a_side)' to obtain a line segment.</documentation></operator></asyxml>*/
-  triangle t = side.t;
-  return t.line(side.n);
-}
-
-/*<asyxml><function type="line" signature="line(explicit side)"><code></asyxml>*/
-line line(explicit side side)
-{/*<asyxml></code><documentation>Return 'side' as line.</documentation></function></asyxml>*/
-  return (line)side;
-}
-
-/*<asyxml><function type="segment" signature="segment(explicit side)"><code></asyxml>*/
-segment segment(explicit side side)
-{/*<asyxml></code><documentation>Return 'side' as segment.</documentation></function></asyxml>*/
-  return (segment)(line)side;
-}
-
-/*<asyxml><operator type = "point" signature="cast(vertex)"><code></asyxml>*/
-point operator cast(vertex V)
-{/*<asyxml></code><documentation>Cast vertex to point.
-   Most routine with point parameters works with vertex parameters.</documentation></operator></asyxml>*/
-  return V.t.point(V.n);
-}
-
-/*<asyxml><function type="point" signature="point(explicit vertex)"><code></asyxml>*/
-point point(explicit vertex V)
-{/*<asyxml></code><documentation>Return the point corresponding to the vertex 'V'.</documentation></function></asyxml>*/
-  return (point)V;
-}
-
-/*<asyxml><function type="side" signature="opposite(vertex)"><code></asyxml>*/
-side opposite(vertex V)
-{/*<asyxml></code><documentation>Return the opposite side of vertex 'V'.</documentation></function></asyxml>*/
-  return V.t.side(numarray[abs(V.n)]);
-}
-
-/*<asyxml><function type="vertex" signature="opposite(side)"><code></asyxml>*/
-vertex opposite(side side)
-{/*<asyxml></code><documentation>Return the opposite vertex of side 'side'.</documentation></function></asyxml>*/
-  return side.t.vertex(numarray[abs(side.n) + 1]);
-}
-
-/*<asyxml><function type="point" signature="midpoint(side)"><code></asyxml>*/
-point midpoint(side side)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  return midpoint(segment(side));
-}
-
-/*<asyxml><operator type = "triangle" signature="*(transform,triangle)"><code></asyxml>*/
-triangle operator *(transform T, triangle t)
-{/*<asyxml></code><documentation>Provide transform * triangle.</documentation></operator></asyxml>*/
-  return triangle(T * t.A, T * t.B, T * t.C);
-}
-
-/*<asyxml><function type="triangle" signature="triangleAbc(real,real,real,real,point)"><code></asyxml>*/
-triangle triangleAbc(real alpha, real b, real c, real angle = 0, point A = (0, 0))
-{/*<asyxml></code><documentation>Return the triangle ABC rotated by 'angle' with BAC = alpha, AC = b and AB = c.</documentation></function></asyxml>*/
-  triangle T;
-  coordsys R = A.coordsys;
-  T.init(A, A + R.polar(c, radians(angle)), A + R.polar(b, radians(angle + alpha)));
-  return T;
-}
-
-/*<asyxml><function type="triangle" signature="triangleabc(real,real,real,real,point)"><code></asyxml>*/
-triangle triangleabc(real a, real b, real c, real angle = 0, point A = (0, 0))
-{/*<asyxml></code><documentation>Return the triangle ABC rotated by 'angle' with BC = a, AC = b and AB = c.</documentation></function></asyxml>*/
-  triangle T;
-  coordsys R = A.coordsys;
-  T.init(A, A + R.polar(c, radians(angle)), A + R.polar(b, radians(angle) + acos((b^2 + c^2 - a^2)/(2 * b * c))));
-  return T;
-}
-
-/*<asyxml><function type="triangle" signature="triangle(line,line,line)"><code></asyxml>*/
-triangle triangle(line l1, line l2, line l3)
-{/*<asyxml></code><documentation>Return the triangle defined by three line.</documentation></function></asyxml>*/
-  point P1, P2, P3;
-  P1 = intersectionpoint(l1, l2);
-  P2 = intersectionpoint(l1, l3);
-  P3 = intersectionpoint(l2, l3);
-  if(!(defined(P1) && defined(P2) && defined(P3))) abort("triangle: two lines are parallel.");
-  return triangle(P1, P2, P3);
-}
-
-/*<asyxml><function type="point" signature="foot(vertex)"><code></asyxml>*/
-point foot(vertex V)
-{/*<asyxml></code><documentation>Return the endpoint of the altitude from V.</documentation></function></asyxml>*/
-  return projection((line)opposite(V)) * ((point)V);
-}
-
-/*<asyxml><function type="point" signature="foot(side)"><code></asyxml>*/
-point foot(side side)
-{/*<asyxml></code><documentation>Return the endpoint of the altitude on 'side'.</documentation></function></asyxml>*/
-  return projection((line)side) * point(opposite(side));
-}
-
-/*<asyxml><function type="line" signature="altitude(vertex)"><code></asyxml>*/
-line altitude(vertex V)
-{/*<asyxml></code><documentation>Return the altitude passing through 'V'.</documentation></function></asyxml>*/
-  return line(point(V), foot(V));
-}
-
-/*<asyxml><function type="line" signature="altitude(vertex)"><code></asyxml>*/
-line altitude(side side)
-{/*<asyxml></code><documentation>Return the altitude cutting 'side'.</documentation></function></asyxml>*/
-  return altitude(opposite(side));
-}
-
-/*<asyxml><function type="point" signature="orthocenter(triangle)"><code></asyxml>*/
-point orthocenter(triangle t)
-{/*<asyxml></code><documentation>Return the orthocenter of the triangle t.</documentation></function></asyxml>*/
-  return orthocenter(t.A, t.B, t.C);
-}
-
-/*<asyxml><function type="point" signature="centroid(triangle)"><code></asyxml>*/
-point centroid(triangle t)
-{/*<asyxml></code><documentation>Return the centroid of the triangle 't'.</documentation></function></asyxml>*/
-  return (t.A + t.B + t.C)/3;
-}
-
-/*<asyxml><function type="point" signature="circumcenter(triangle)"><code></asyxml>*/
-point circumcenter(triangle t)
-{/*<asyxml></code><documentation>Return the circumcenter of the triangle 't'.</documentation></function></asyxml>*/
-  return circumcenter(t.A, t.B, t.C);
-}
-
-/*<asyxml><function type="circle" signature="circle(triangle)"><code></asyxml>*/
-circle circle(triangle t)
-{/*<asyxml></code><documentation>Return the circumcircle of the triangle 't'.</documentation></function></asyxml>*/
-  return circle(t.A, t.B, t.C);
-}
-
-/*<asyxml><function type="circle" signature="circumcircle(triangle)"><code></asyxml>*/
-circle circumcircle(triangle t)
-{/*<asyxml></code><documentation>Return the circumcircle of the triangle 't'.</documentation></function></asyxml>*/
-  return circle(t.A, t.B, t.C);
-}
-
-/*<asyxml><function type="point" signature="incenter(triangle)"><code></asyxml>*/
-point incenter(triangle t)
-{/*<asyxml></code><documentation>Return the center of the incircle of the triangle 't'.</documentation></function></asyxml>*/
-  return incenter(t.A, t.B, t.C);
-}
-
-/*<asyxml><function type="real" signature="inradius(triangle)"><code></asyxml>*/
-real inradius(triangle t)
-{/*<asyxml></code><documentation>Return the radius of the incircle of the triangle 't'.</documentation></function></asyxml>*/
-  return inradius(t.A, t.B, t.C);
-}
-
-/*<asyxml><function type="circle" signature="incircle(triangle)"><code></asyxml>*/
-circle incircle(triangle t)
-{/*<asyxml></code><documentation>Return the the incircle of the triangle 't'.</documentation></function></asyxml>*/
-  return incircle(t.A, t.B, t.C);
-}
-
-/*<asyxml><function type="point" signature="excenter(side,triangle)"><code></asyxml>*/
-point excenter(side side)
-{/*<asyxml></code><documentation>Return the center of the excircle tangent with the side 'side' of its triangle.
-   side = 0 means AB, 1 means AC, other means BC.
-   One must use the predefined sides t.AB, t.AC where 't' is a triangle....</documentation></function></asyxml>*/
-  point op;
-  triangle t = side.t;
-  int n = numarray[abs(side.n) - 1];
-  if(n == 1) op = excenter(t.A, t.B, t.C);
-  else  if(n == 2) op = excenter(t.B, t.C, t.A);
-  else op = excenter(t.C, t.A, t.B);
-  return op;
-}
-
-/*<asyxml><function type="real" signature="exradius(side,triangle)"><code></asyxml>*/
-real exradius(side side)
-{/*<asyxml></code><documentation>Return radius of the excircle tangent with the side 'side' of its triangle.
-   side = 0 means AB, 1 means BC, other means CA.
-   One must use the predefined sides t.AB, t.AC where 't' is a triangle....</documentation></function></asyxml>*/
-  real or;
-  triangle t = side.t;
-  int n = numarray[abs(side.n) - 1];
-  if(n == 1) or = exradius(t.A, t.B, t.C);
-  else  if(n == 2) or = exradius(t.B, t.C, t.A);
-  else or = exradius(t.A, t.C, t.B);
-  return or;
-}
-
-/*<asyxml><function type="circle" signature="excircle(side,triangle)"><code></asyxml>*/
-circle excircle(side side)
-{/*<asyxml></code><documentation>Return the excircle tangent with the side 'side' of its triangle.
-   side = 0 means AB, 1 means AC, other means BC.
-   One must use the predefined sides t.AB, t.AC where 't' is a triangle....</documentation></function></asyxml>*/
-  circle oc;
-  int n = numarray[abs(side.n) - 1];
-  triangle t = side.t;
-  if(n == 1) oc = excircle(t.A, t.B, t.C);
-  else  if(n == 2) oc = excircle(t.B, t.C, t.A);
-  else oc = excircle(t.A, t.C, t.B);
-  return oc;
-}
-
-/*<asyxml><struct signature="trilinear"><code></asyxml>*/
-struct trilinear
-{/*<asyxml></code><documentation>Trilinear coordinates 'a:b:c' relative to triangle 't'.
-   <url href = "http://mathworld.wolfram.com/TrilinearCoordinates.html"/></documentation><property type = "real" signature="a,b,c"><code></asyxml>*/
-  real a,b,c;/*<asyxml></code><documentation>The trilinear coordinates.</documentation></property><property type = "triangle" signature="t"><code></asyxml>*/
-  triangle t;/*<asyxml></code><documentation>The reference triangle.</documentation></property></asyxml>*/
-}/*<asyxml></struct></asyxml>*/
-
-/*<asyxml><function type="trilinear" signature="trilinear(triangle,real,real,real)"><code></asyxml>*/
-trilinear trilinear(triangle t, real a, real b, real c)
-{/*<asyxml></code><documentation>Return the trilinear coordinates relative to 't'.
-   <url href = "http://mathworld.wolfram.com/TrilinearCoordinates.html"/></documentation></function></asyxml>*/
-  trilinear ot;
-  ot.a = a; ot.b = b; ot.c = c;
-  ot.t = t;
-  return ot;
-}
-
-/*<asyxml><function type="trilinear" signature="trilinear(triangle,point)"><code></asyxml>*/
-trilinear trilinear(triangle t, point M)
-{/*<asyxml></code><documentation>Return the trilinear coordinates of 'M' relative to 't'.
-   <url href = "http://mathworld.wolfram.com/TrilinearCoordinates.html"/></documentation></function></asyxml>*/
-  trilinear ot;
-  pair m = locate(M);
-  int sameside(pair A, pair B, pair m, pair p)
-  {// Return 1 if 'm' and 'p' are same side of line (AB) else return -1.
-    pair mil = (A + B)/2;
-    pair mA = rotate(90, mil) * A;
-    pair mB = rotate(-90, mil) * A;
-    return (abs(m - mA) <= abs(m - mB)) == (abs(p - mA) <= abs(p - mB)) ? 1 : -1;
-  }
-  real det(pair a, pair b) {return a.x * b.y - a.y * b.x;}
-  real area(pair a, pair b, pair c){return 0.5 * abs(det(a, b) + det(b, c) + det(c, a));}
-  pair A = t.A, B = t.B, C = t.C;
-  real t1 = area(B, C, m), t2 = area(C, A, m), t3 = area(A, B, m);
-  ot.a = sameside(B, C, A, m) * t1/t.a();
-  ot.b = sameside(A, C, B, m) * t2/t.b();
-  ot.c = sameside(A, B, C, m) * t3/t.c();
-  ot.t = t;
-  return ot;
-}
-
-/*<asyxml><function type="void" signature="write(trilinear)"><code></asyxml>*/
-void write(trilinear tri)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  write(format("%f : ", tri.a) + format("%f : ", tri.b) + format("%f", tri.c));
-}
-
-/*<asyxml><function type="point" signature="trilinear(triangle,real,real,real)"><code></asyxml>*/
-point point(trilinear tri)
-{/*<asyxml></code><documentation>Return the trilinear coordinates relative to 't'.
-   <url href = "http://mathworld.wolfram.com/TrilinearCoordinates.html"/></documentation></function></asyxml>*/
-  triangle t = tri.t;
-  return masscenter(0.5 * t.a() * mass(t.A, tri.a),
-                    0.5 * t.b() * mass(t.B, tri.b),
-                    0.5 * t.c() * mass(t.C, tri.c));
-}
-
-/*<asyxml><function type="int[]" signature="tricoef(side)"><code></asyxml>*/
-int[] tricoef(side side)
-{/*<asyxml></code><documentation>Return an array of integer (values are 0 or 1) which represents 'side'.
-   For example, side = t.BC will be represented by {0, 1, 1}.</documentation></function></asyxml>*/
-  int[] oi;
-  int n = numarray[abs(side.n) - 1];
-  oi.push((n == 1 || n == 3) ? 1 : 0);
-  oi.push((n == 1 || n == 2) ? 1 : 0);
-  oi.push((n == 2 || n == 3) ? 1 : 0);
-  return oi;
-}
-
-/*<asyxml><operator type = "point" signature="cast(trilinear)"><code></asyxml>*/
-point operator cast(trilinear tri)
-{/*<asyxml></code><documentation>Cast trilinear to point.
-   One may use the routine 'point(trilinear)' to force the casting.</documentation></operator></asyxml>*/
-  return point(tri);
-}
-
-/*<asyxml><typedef type = "centerfunction" return = "real" params = "real, real, real"><code></asyxml>*/
-typedef real centerfunction(real, real, real);/*<asyxml></code><documentation><url href = "http://mathworld.wolfram.com/TriangleCenterFunction.html"/></documentation></typedef></asyxml>*/
-
-/*<asyxml><function type="trilinear" signature="trilinear(triangle,centerfunction,real,real,real)"><code></asyxml>*/
-trilinear trilinear(triangle t, centerfunction f, real a = t.a(), real b = t.b(), real c = t.c())
-{/*<asyxml></code><documentation><url href = "http://mathworld.wolfram.com/TriangleCenterFunction.html"/></documentation></function></asyxml>*/
-  return trilinear(t, f(a, b, c), f(b, c, a), f(c, a, b));
-}
-
-/*<asyxml><function type="point" signature="symmedian(triangle)"><code></asyxml>*/
-point symmedian(triangle t)
-{/*<asyxml></code><documentation>Return the symmedian point of 't'.</documentation></function></asyxml>*/
-  point A, B, C;
-  real a = t.a(), b = t.b(), c = t.c();
-  A = trilinear(t, 0, b, c);
-  B = trilinear(t, a, 0, c);
-  return intersectionpoint(line(t.A, A), line(t.B, B));
-}
-
-/*<asyxml><function type="point" signature="symmedian(side)"><code></asyxml>*/
-point symmedian(side side)
-{/*<asyxml></code><documentation>The symmedian point on the side 'side'.</documentation></function></asyxml>*/
-  triangle t = side.t;
-  int n = numarray[abs(side.n) - 1];
-  if(n == 1) return trilinear(t, t.a(), t.b(), 0);
-  if(n == 2) return trilinear(t, 0, t.b(), t.c());
-  return trilinear(t, t.a(), 0, t.c());
-}
-
-/*<asyxml><function type="line" signature="symmedian(vertex)"><code></asyxml>*/
-line symmedian(vertex V)
-{/*<asyxml></code><documentation>Return the symmedian passing through 'V'.</documentation></function></asyxml>*/
-  return line(point(V), symmedian(V.t));
-}
-
-/*<asyxml><function type="triangle" signature="cevian(triangle,point)"><code></asyxml>*/
-triangle cevian(triangle t, point P)
-{/*<asyxml></code><documentation>Return the Cevian triangle with respect of 'P'
-   <url href = "http://mathworld.wolfram.com/CevianTriangle.html"/>.</documentation></function></asyxml>*/
-  trilinear tri = trilinear(t, locate(P));
-  point A = point(trilinear(t, 0, tri.b, tri.c));
-  point B = point(trilinear(t, tri.a, 0, tri.c));
-  point C = point(trilinear(t, tri.a, tri.b, 0));
-  return triangle(A, B, C);
-}
-
-/*<asyxml><function type="point" signature="cevian(side,point)"><code></asyxml>*/
-point cevian(side side, point P)
-{/*<asyxml></code><documentation>Return the Cevian point on 'side' with respect of 'P'.</documentation></function></asyxml>*/
-  triangle t = side.t;
-  trilinear tri = trilinear(t, locate(P));
-  int[] s = tricoef(side);
-  return point(trilinear(t, s[0] * tri.a, s[1] * tri.b, s[2] * tri.c));
-}
-
-/*<asyxml><function type="line" signature="cevian(vertex,point)"><code></asyxml>*/
-line cevian(vertex V, point P)
-{/*<asyxml></code><documentation>Return line passing through 'V' and its Cevian image with respect of 'P'.</documentation></function></asyxml>*/
-  return line(point(V), cevian(opposite(V), P));
-}
-
-/*<asyxml><function type="point" signature="gergonne(triangle)"><code></asyxml>*/
-point gergonne(triangle t)
-{/*<asyxml></code><documentation>Return the Gergonne point of 't'.</documentation></function></asyxml>*/
-  real f(real a, real b, real c){return 1/(a * (b + c - a));}
-  return point(trilinear(t, f));
-}
-
-/*<asyxml><function type="point[]" signature="fermat(triangle)"><code></asyxml>*/
-point[] fermat(triangle t)
-{/*<asyxml></code><documentation>Return the Fermat points of 't'.</documentation></function></asyxml>*/
-  point[] P;
-  real A = t.alpha(), B = t.beta(), C = t.gamma();
-  P.push(point(trilinear(t, 1/Sin(A + 60), 1/Sin(B + 60), 1/Sin(C + 60))));
-  P.push(point(trilinear(t, 1/Sin(A - 60), 1/Sin(B - 60), 1/Sin(C - 60))));
-  return P;
-}
-
-/*<asyxml><function type="point" signature="isotomicconjugate(triangle,point)"><code></asyxml>*/
-point isotomicconjugate(triangle t, point M)
-{/*<asyxml></code><documentation><url href = "http://mathworld.wolfram.com/IsotomicConjugate.html"/></documentation></function></asyxml>*/
-  if(!inside(t.Path(), locate(M))) abort("isotomic: the point must be inside the triangle.");
-  trilinear tr = trilinear(t, M);
-  return point(trilinear(t, 1/(t.a()^2 * tr.a), 1/(t.b()^2 * tr.b), 1/(t.c()^2 * tr.c)));
-}
-
-/*<asyxml><function type="line" signature="isotomic(vertex,point)"><code></asyxml>*/
-line isotomic(vertex V, point M)
-{/*<asyxml></code><documentation><url href = "http://mathworld.wolfram.com/IsotomicConjugate.html"/>.</documentation></function></asyxml>*/
-  side op = opposite(V);
-  return line(V, rotate(180, midpoint(op)) * cevian(op, M));
-}
-
-/*<asyxml><function type="point" signature="isotomic(side,point)"><code></asyxml>*/
-point isotomic(side side, point M)
-{/*<asyxml></code><documentation><url href = "http://mathworld.wolfram.com/IsotomicConjugate.html"/></documentation></function></asyxml>*/
-  return intersectionpoint(isotomic(opposite(side), M), side);
-}
-
-/*<asyxml><function type="triangle" signature="isotomic(triangle,point)"><code></asyxml>*/
-triangle isotomic(triangle t, point M)
-{/*<asyxml></code><documentation><url href = "http://mathworld.wolfram.com/IsotomicConjugate.html"/></documentation></function></asyxml>*/
-  return triangle(isotomic(t.BC, M), isotomic(t.CA, M), isotomic(t.AB, M));
-}
-
-/*<asyxml><function type="point" signature="isogonalconjugate(triangle,point)"><code></asyxml>*/
-point isogonalconjugate(triangle t, point M)
-{/*<asyxml></code><documentation><url href = "http://mathworld.wolfram.com/IsogonalConjugate.html"/></documentation></function></asyxml>*/
-  trilinear tr = trilinear(t, M);
-  return point(trilinear(t, 1/tr.a, 1/tr.b, 1/tr.c));
-}
-
-/*<asyxml><function type="point" signature="isogonal(side,point)"><code></asyxml>*/
-point isogonal(side side, point M)
-{/*<asyxml></code><documentation><url href = "http://mathworld.wolfram.com/IsogonalConjugate.html"/></documentation></function></asyxml>*/
-  return cevian(side, isogonalconjugate(side.t, M));
-}
-
-/*<asyxml><function type="line" signature="isogonal(vertex,point)"><code></asyxml>*/
-line isogonal(vertex V, point M)
-{/*<asyxml></code><documentation><url href = "http://mathworld.wolfram.com/IsogonalConjugate.html"/></documentation></function></asyxml>*/
-  return line(V, isogonal(opposite(V), M));
-}
-
-/*<asyxml><function type="triangle" signature="isogonal(triangle,point)"><code></asyxml>*/
-triangle isogonal(triangle t, point M)
-{/*<asyxml></code><documentation><url href = "http://mathworld.wolfram.com/IsogonalConjugate.html"/></documentation></function></asyxml>*/
-  return triangle(isogonal(t.BC, M), isogonal(t.CA, M), isogonal(t.AB, M));
-}
-
-/*<asyxml><function type="triangle" signature="pedal(triangle,point)"><code></asyxml>*/
-triangle pedal(triangle t, point M)
-{/*<asyxml></code><documentation>Return the pedal triangle of 'M' in 't'.
-   <url href = "http://mathworld.wolfram.com/PedalTriangle.html"/></documentation></function></asyxml>*/
-  return triangle(projection(t.BC) * M, projection(t.AC) * M, projection(t.AB) * M);
-}
-
-/*<asyxml><function type="triangle" signature="pedal(triangle,point)"><code></asyxml>*/
-line pedal(side side, point M)
-{/*<asyxml></code><documentation>Return the pedal line of 'M' cutting 'side'.
-   <url href = "http://mathworld.wolfram.com/PedalTriangle.html"/></documentation></function></asyxml>*/
-  return line(M, projection(side) * M);
-}
-
-/*<asyxml><function type="triangle" signature="antipedal(triangle,point)"><code></asyxml>*/
-triangle antipedal(triangle t, point M)
-{/*<asyxml></code><documentation><url href = "http://mathworld.wolfram.com/AntipedalTriangle.html"/></documentation></function></asyxml>*/
-  trilinear Tm = trilinear(t, M);
-  real a = Tm.a, b = Tm.b, c = Tm.c;
-  real CA = Cos(t.alpha()), CB = Cos(t.beta()), CC = Cos(t.gamma());
-  point A = trilinear(t, -(b + a * CC) * (c + a * CB), (c + a * CB) * (a + b * CC), (b + a * CC) * (a + c * CB));
-  point B = trilinear(t, (c + b * CA) * (b + a * CC), -(c + b * CA) * (a + b * CC), (a + b * CC) * (b + c * CA));
-  point C = trilinear(t, (b + c * CA) * (c + a * CB), (a + c * CB) * (c + b * CA), -(a + c * CB) * (b + c * CA));
-  return triangle(A, B, C);
-}
-
-/*<asyxml><function type="triangle" signature="extouch(triangle)"><code></asyxml>*/
-triangle extouch(triangle t)
-{/*<asyxml></code><documentation>Return the extouch triangle of the triangle 't'.
-   The extouch triangle of 't' is the triangle formed by the points
-   of tangency of a triangle 't' with its excircles.</documentation></function></asyxml>*/
-  point A, B, C;
-  real a = t.a(), b = t.b(), c = t.c();
-  A = trilinear(t, 0, (a - b + c)/b, (a + b - c)/c);
-  B = trilinear(t, (-a + b + c)/a, 0, (a + b - c)/c);
-  C = trilinear(t, (-a + b + c)/a, (a - b + c)/b, 0);
-  return triangle(A, B, C);
-}
-
-/*<asyxml><function type="triangle" signature="incentral(triangle)"><code></asyxml>*/
-triangle incentral(triangle t)
-{/*<asyxml></code><documentation>Return the incentral triangle of the triangle 't'.
-   It is the triangle whose vertices are determined by the intersections of the
-   reference triangle's angle bisectors with the respective opposite sides.</documentation></function></asyxml>*/
-  point A, B, C;
-  // real a = t.a(), b = t.b(), c = t.c();
-  A = trilinear(t, 0, 1, 1);
-  B = trilinear(t, 1, 0, 1);
-  C = trilinear(t, 1, 1, 0);
-  return triangle(A, B, C);
-}
-
-/*<asyxml><function type="triangle" signature="extouch(side)"><code></asyxml>*/
-triangle extouch(side side)
-{/*<asyxml></code><documentation>Return the triangle formed by the points of tangency of the triangle referenced by 'side' with its excircles.
-   One vertex of the returned triangle is on the segment 'side'.</documentation></function></asyxml>*/
-  triangle t = side.t;
-  transform p1 = projection((line)t.AB);
-  transform p2 = projection((line)t.AC);
-  transform p3 = projection((line)t.BC);
-  point EP = excenter(side);
-  return triangle(p3 * EP, p2 * EP, p1 * EP);
-}
-
-/*<asyxml><function type="point" signature="bisectorpoint(side)"><code></asyxml>*/
-point bisectorpoint(side side)
-{/*<asyxml></code><documentation>The intersection point of the angle bisector from the
-   opposite point of 'side' with the side 'side'.</documentation></function></asyxml>*/
-  triangle t = side.t;
-  int n = numarray[abs(side.n) - 1];
-  if(n == 1) return trilinear(t, 1, 1, 0);
-  if(n == 2) return trilinear(t, 0, 1, 1);
-  return trilinear(t, 1, 0, 1);
-}
-
-/*<asyxml><function type="line" signature="bisector(vertex,real)"><code></asyxml>*/
-line bisector(vertex V, real angle = 0)
-{/*<asyxml></code><documentation>Return the interior bisector passing through 'V' rotated by angle (in degrees)
-   around 'V'.</documentation></function></asyxml>*/
-  return rotate(angle, point(V)) * line(point(V), incenter(V.t));
-}
-
-/*<asyxml><function type="line" signature="bisector(side)"><code></asyxml>*/
-line bisector(side side)
-{/*<asyxml></code><documentation>Return the bisector of the line segment 'side'.</documentation></function></asyxml>*/
-  return bisector(segment(side));
-}
-
-/*<asyxml><function type="point" signature="intouch(side)"><code></asyxml>*/
-point intouch(side side)
-{/*<asyxml></code><documentation>The point of tangency on the side 'side' of its incircle.</documentation></function></asyxml>*/
-  triangle t = side.t;
-  real a = t.a(), b = t.b(), c = t.c();
-  int n = numarray[abs(side.n) - 1];
-  if(n == 1) return trilinear(t, b * c/(-a + b + c), a * c/(a - b + c), 0);
-  if(n == 2) return trilinear(t, 0, a * c/(a - b + c), a * b/(a + b - c));
-  return trilinear(t, b * c/(-a + b + c), 0, a * b/(a + b - c));
-}
-
-/*<asyxml><function type="triangle" signature="intouch(triangle)"><code></asyxml>*/
-triangle intouch(triangle t)
-{/*<asyxml></code><documentation>Return the intouch triangle of the triangle 't'.
-   The intouch triangle of 't' is the triangle formed by the points
-   of tangency of a triangle 't' with its incircles.</documentation></function></asyxml>*/
-  point A, B, C;
-  real a = t.a(), b = t.b(), c = t.c();
-  A = trilinear(t, 0, a * c/(a - b + c), a * b/(a + b - c));
-  B = trilinear(t, b * c/(-a + b + c), 0, a * b/(a + b - c));
-  C = trilinear(t, b * c/(-a + b + c), a * c/(a - b + c), 0);
-  return triangle(A, B, C);
-}
-
-/*<asyxml><function type="triangle" signature="tangential(triangle)"><code></asyxml>*/
-triangle tangential(triangle t)
-{/*<asyxml></code><documentation>Return the tangential triangle of the triangle 't'.
-   The tangential triangle of 't' is the triangle formed by the lines
-   tangent to the circumcircle of the given triangle 't' at its vertices.</documentation></function></asyxml>*/
-  point A, B, C;
-  real a = t.a(), b = t.b(), c = t.c();
-  A = trilinear(t, -a, b, c);
-  B = trilinear(t, a, -b, c);
-  C = trilinear(t, a, b, -c);
-  return triangle(A, B, C);
-}
-
-/*<asyxml><function type="triangle" signature="medial(triangle t)"><code></asyxml>*/
-triangle medial(triangle t)
-{/*<asyxml></code><documentation>Return the triangle whose vertices are midpoints of the sides of 't'.</documentation></function></asyxml>*/
-  return triangle(midpoint(t.BC), midpoint(t.AC), midpoint(t.AB));
-}
-
-/*<asyxml><function type="line" signature="median(vertex)"><code></asyxml>*/
-line median(vertex V)
-{/*<asyxml></code><documentation>Return median from 'V'.</documentation></function></asyxml>*/
-  return line(point(V), midpoint(segment(opposite(V))));
-}
-
-/*<asyxml><function type="line" signature="median(side)"><code></asyxml>*/
-line median(side side)
-{/*<asyxml></code><documentation>Return median from the opposite vertex of 'side'.</documentation></function></asyxml>*/
-  return median(opposite(side));
-}
-
-/*<asyxml><function type="triangle" signature="orthic(triangle)"><code></asyxml>*/
-triangle orthic(triangle t)
-{/*<asyxml></code><documentation>Return the triangle whose vertices are endpoints of the altitudes from each of the vertices of 't'.</documentation></function></asyxml>*/
-  return triangle(foot(t.BC), foot(t.AC), foot(t.AB));
-}
-
-/*<asyxml><function type="triangle" signature="symmedial(triangle)"><code></asyxml>*/
-triangle symmedial(triangle t)
-{/*<asyxml></code><documentation>Return the symmedial triangle of 't'.</documentation></function></asyxml>*/
-  point A, B, C;
-  real a = t.a(), b = t.b(), c = t.c();
-  A = trilinear(t, 0, b, c);
-  B = trilinear(t, a, 0, c);
-  C = trilinear(t, a, b, 0);
-  return triangle(A, B, C);
-}
-
-/*<asyxml><function type="triangle" signature="anticomplementary(triangle)"><code></asyxml>*/
-triangle anticomplementary(triangle t)
-{/*<asyxml></code><documentation>Return the triangle which has the given triangle 't' as its medial triangle.</documentation></function></asyxml>*/
-  real a = t.a(), b = t.b(), c = t.c();
-  real ab = a * b, bc = b * c, ca = c * a;
-  point A = trilinear(t, -bc, ca, ab);
-  point B = trilinear(t, bc, -ca, ab);
-  point C = trilinear(t, bc, ca, -ab);
-  return triangle(A, B, C);
-}
-
-/*<asyxml><function type="point[]" signature="intersectionpoints(triangle,line,bool)"><code></asyxml>*/
-point[] intersectionpoints(triangle t, line l, bool extended = false)
-{/*<asyxml></code><documentation>Return the intersection points.
-   If 'extended' is true, the sides are lines else the sides are segments.
-   intersectionpoints(line, triangle, bool) is also defined.</documentation></function></asyxml>*/
-  point[] OP;
-  void addpoint(point P)
-  {
-    if(defined(P)) {
-      bool exist = false;
-      for (int i = 0; i < OP.length; ++i) {
-        if(P == OP[i]) {exist = true; break;}
-      }
-      if(!exist) OP.push(P);
-    }
-  }
-  if(extended) {
-    for (int i = 1; i <= 3; ++i) {
-      addpoint(intersectionpoint(t.line(i), l));
-    }
-  } else {
-    for (int i = 1; i <= 3; ++i) {
-      addpoint(intersectionpoint((segment)t.line(i), l));
-    }
-  }
-  return OP;
-}
-
-point[] intersectionpoints(line l, triangle t, bool extended = false)
-{
-  return intersectionpoints(t, l, extended);
-}
-
-/*<asyxml><function type="vector" signature="dir(vertex)"><code></asyxml>*/
-vector dir(vertex V)
-{/*<asyxml></code><documentation>The direction (towards the outside of the triangle) of the interior angle bisector of 'V'.</documentation></function></asyxml>*/
-  triangle t = V.t;
-  if(V.n == 1) return vector(defaultcoordsys, (-dir(t.A--t.B, t.A--t.C)));
-  if(V.n == 2) return vector(defaultcoordsys, (-dir(t.B--t.A, t.B--t.C)));
-  return vector(defaultcoordsys, (-dir(t.C--t.A, t.C--t.B)));
-}
-
-/*<asyxml><function type="void" signature="lvoid label(picture,Label,vertex,pair,real,pen,filltype)"><code></asyxml>*/
-void label(picture pic = currentpicture, Label L, vertex V,
-           pair align = dir(V),
-           real alignFactor = 1,
-           pen p = nullpen, filltype filltype = NoFill)
-{/*<asyxml></code><documentation>Draw 'L' on picture 'pic' at vertex 'V' aligned by 'alignFactor * align'.</documentation></function></asyxml>*/
-  label(pic, L, locate(point(V)), alignFactor * align, p, filltype);
-}
-
-/*<asyxml><function type="void" signature="label(picture,Label,Label,Label,triangle,real,real,pen,filltype)"><code></asyxml>*/
-void label(picture pic = currentpicture, Label LA = "$A$",
-           Label LB = "$B$", Label LC = "$C$",
-           triangle t,
-           real alignAngle = 0,
-           real alignFactor = 1,
-           pen p = nullpen, filltype filltype = NoFill)
-{/*<asyxml></code><documentation>Draw labels LA, LB and LC aligned in the rotated (by 'alignAngle' in degrees) direction
-   (towards the outside of the triangle) of the interior angle bisector of vertices.
-   One can  individually modify the alignment by setting the Label parameter 'align'.</documentation></function></asyxml>*/
-  Label lla = LA.copy();
-  lla.align(lla.align, rotate(alignAngle) * locate(dir(t.VA)));
-  label(pic, LA, t.VA, align = lla.align.dir, alignFactor = alignFactor, p, filltype);
-  Label llb = LB.copy();
-  llb.align(llb.align, rotate(alignAngle) * locate(dir(t.VB)));
-  label(pic, llb, t.VB, align = llb.align.dir, alignFactor = alignFactor, p, filltype);
-  Label llc = LC.copy();
-  llc.align(llc.align, rotate(alignAngle) * locate(dir(t.VC)));
-  label(pic, llc, t.VC, align = llc.align.dir, alignFactor = alignFactor, p, filltype);
-}
-
-/*<asyxml><function type="void" signature="show(picture,Label,Label,Label,Label,Label,Label,triangle,pen,filltype)"><code></asyxml>*/
-void show(picture pic = currentpicture,
-          Label LA = "$A$", Label LB = "$B$", Label LC = "$C$",
-          Label La = "$a$", Label Lb = "$b$", Label Lc = "$c$",
-          triangle t, pen p = currentpen, filltype filltype = NoFill)
-{/*<asyxml></code><documentation>Draw triangle and labels of sides and vertices.</documentation></function></asyxml>*/
-  pair a = locate(t.A), b = locate(t.B), c = locate(t.C);
-  draw(pic, a--b--c--cycle, p);
-  label(pic, LA, a, -dir(a--b, a--c), p, filltype);
-  label(pic, LB, b, -dir(b--a, b--c), p, filltype);
-  label(pic, LC, c, -dir(c--a, c--b), p, filltype);
-  pair aligna = I * unit(c - b), alignb = I * unit(c - a), alignc = I * unit(b - a);
-  pair mAB = locate(midpoint(t.AB)), mAC = locate(midpoint(t.AC)), mBC = locate(midpoint(t.BC));
-  label(pic, La, b--c, align = rotate(dot(a - mBC, aligna) > 0 ? 180 :0) * aligna, p);
-  label(pic, Lb, a--c, align = rotate(dot(b - mAC, alignb) > 0 ? 180 :0) * alignb, p);
-  label(pic, Lc, a--b, align = rotate(dot(c - mAB, alignc) > 0 ? 180 :0) * alignc, p);
-}
-
-/*<asyxml><function type="void" signature="draw(picture,triangle,pen,marker)"><code></asyxml>*/
-void draw(picture pic = currentpicture, triangle t, pen p = currentpen, marker marker = nomarker)
-{/*<asyxml></code><documentation>Draw sides of the triangle 't' on picture 'pic' using pen 'p'.</documentation></function></asyxml>*/
-  draw(pic, (path)t, p, marker);
-}
-
-void fill(picture pic = currentpicture, triangle t, pen p = currentpen)
-{
-  fill(pic, (path)t, p);
-}
-
-void filldraw(picture pic = currentpicture, triangle t, pen fillpen = currentpen, pen drawpen = currentpen)
-{
-  fill(pic, t, fillpen);
-  draw(pic, t, drawpen);
-}
-
-/*<asyxml><function type="void" signature="draw(picture,triangle[],pen,marker)"><code></asyxml>*/
-void draw(picture pic = currentpicture, triangle[] ts, pen p = currentpen, marker marker = nomarker)
-{/*<asyxml></code><documentation>Draw sides of the triangles 't' on picture 'pic' using pen 'p'.</documentation></function></asyxml>*/
-  for(triangle t: ts) draw(pic, t, p, marker);
-}
-
-void fill(picture pic = currentpicture, triangle[] ts, pen p = currentpen)
-{
-  for(triangle t: ts) fill(pic, t, p);
-}
-
-void filldraw(picture pic = currentpicture, triangle[] ts, pen fillpen = currentpen, pen drawpen = currentpen)
-{
-  for(triangle t: ts) filldraw(pic, t, fillpen, drawpen);
-}
-
-/*<asyxml><function type="void" signature="drawline(picture,triangle,pen)"><code></asyxml>*/
-void drawline(picture pic = currentpicture, triangle t, pen p = currentpen)
-{/*<asyxml></code><documentation>Draw lines of the triangle 't' on picture 'pic' using pen 'p'.</documentation></function></asyxml>*/
-  draw(t, p);
-  draw(pic, line(t.A, t.B), p);
-  draw(pic, line(t.A, t.C), p);
-  draw(pic, line(t.B, t.C), p);
-}
-
-/*<asyxml><function type="void" signature="dot(picture,triangle,pen)"><code></asyxml>*/
-void dot(picture pic = currentpicture, triangle t, pen p = currentpen)
-{/*<asyxml></code><documentation>Draw a dot at each vertex of 't'.</documentation></function></asyxml>*/
-  dot(pic, t.A^^t.B^^t.C, p);
-}
-// *.......................TRIANGLES.......................*
-// *=======================================================*
-
-// *=======================================================*
-// *.......................INVERSIONS......................*
-/*<asyxml><function type="point" signature="inverse(real k,point,point)"><code></asyxml>*/
-point inverse(real k, point A, point M)
-{/*<asyxml></code><documentation>Return the inverse point of 'M' with respect to point A and inversion radius 'k'.</documentation></function></asyxml>*/
-  return A + k/conj(M - A);
-}
-
-/*<asyxml><function type="point" signature="radicalcenter(circle,circle)"><code></asyxml>*/
-point radicalcenter(circle c1, circle c2)
-{/*<asyxml></code><documentation><url href = "http://fr.wikipedia.org/wiki/Puissance_d'un_point_par_rapport_%C3%A0_un_cercle"/></documentation></function></asyxml>*/
-  point[] P = standardizecoordsys(c1.C, c2.C);
-  real k = c1.r^2 - c2.r^2;
-  pair C1 = locate(c1.C);
-  pair C2 = locate(c2.C);
-  pair oop = C2 - C1;
-  pair K = (abs(oop) == 0) ?
-    (infinity, infinity) :
-    midpoint(C1--C2) + 0.5 * k * oop/dot(oop, oop);
-  return point(P[0].coordsys, K/P[0].coordsys);
-}
-
-/*<asyxml><function type="line" signature="radicalline(circle,circle)"><code></asyxml>*/
-line radicalline(circle c1, circle c2)
-{/*<asyxml></code><documentation><url href = "http://fr.wikipedia.org/wiki/Puissance_d'un_point_par_rapport_%C3%A0_un_cercle"/></documentation></function></asyxml>*/
-  if (c1.C == c2.C) abort("radicalline: the centers must be distinct");
-  return perpendicular(radicalcenter(c1, c2), line(c1.C, c2.C));
-}
-
-/*<asyxml><function type="point" signature="radicalcenter(circle,circle,circle)"><code></asyxml>*/
-point radicalcenter(circle c1, circle c2, circle c3)
-{/*<asyxml></code><documentation><url href = "http://fr.wikipedia.org/wiki/Puissance_d'un_point_par_rapport_%C3%A0_un_cercle"/></documentation></function></asyxml>*/
-  return intersectionpoint(radicalline(c1, c2), radicalline(c1, c3));
-}
-
-/*<asyxml><struct signature="inversion"><code></asyxml>*/
-struct inversion
-{/*<asyxml></code><documentation>http://mathworld.wolfram.com/Inversion.html</documentation></asyxml>*/
-  point C;
-  real k;
-}/*<asyxml></struct></asyxml>*/
-
-/*<asyxml><function type="inversion" signature="inversion(real,point)"><code></asyxml>*/
-inversion inversion(real k, point C)
-{/*<asyxml></code><documentation>Return the inversion with respect to 'C' having inversion radius 'k'.</documentation></function></asyxml>*/
-  inversion oi;
-  oi.k = k;
-  oi.C = C;
-  return oi;
-}
-/*<asyxml><function type="inversion" signature="inversion(real,point)"><code></asyxml>*/
-inversion inversion(point C, real k)
-{/*<asyxml></code><documentation>Return the inversion with respect to 'C' having inversion radius 'k'.</documentation></function></asyxml>*/
-  return inversion(k, C);
-}
-
-/*<asyxml><function type="inversion" signature="inversion(circle,circle)"><code></asyxml>*/
-inversion inversion(circle c1, circle c2, real sgn = 1)
-{/*<asyxml></code><documentation>Return the inversion which transforms 'c1' to
-   . 'c2' and positive inversion radius if 'sgn > 0';
-   . 'c2' and negative inversion radius if 'sgn < 0';
-   . 'c1' and 'c2' to 'c2' if 'sgn = 0'.</documentation></function></asyxml>*/
-  if(sgn == 0) {
-    point O = radicalcenter(c1, c2);
-    return inversion(O^c1, O);
-  }
-  real a = abs(c1.r/c2.r);
-  if(sgn > 0) {
-    point O = c1.C + a/abs(1 - a) * (c2.C - c1.C);
-    return inversion(a * abs(abs(O - c2.C)^2 - c2.r^2), O);
-  }
-  point O = c1.C + a/abs(1 + a) * (c2.C - c1.C);
-  return inversion(-a * abs(abs(O - c2.C)^2 - c2.r^2), O);
-}
-
-/*<asyxml><function type="inversion" signature="inversion(circle,circle,circle)"><code></asyxml>*/
-inversion inversion(circle c1, circle c2, circle c3)
-{/*<asyxml></code><documentation>Return the inversion which transform 'c1' to 'c1', 'c2' to 'c2' and 'c3' to 'c3'.</documentation></function></asyxml>*/
-  point Rc = radicalcenter(c1, c2, c3);
-  return inversion(Rc, Rc^c1);
-}
-
-circle operator cast(inversion i){return circle(i.C, sgn(i.k) * sqrt(abs(i.k)));}
-/*<asyxml><function type="circle" signature="circle(inversion)"><code></asyxml>*/
-circle circle(inversion i)
-{/*<asyxml></code><documentation>Return the inversion circle of 'i'.</documentation></function></asyxml>*/
-  return i;
-}
-
-inversion operator cast(circle c)
-{
-  return inversion(sgn(c.r) * c.r^2, c.C);
-}
-/*<asyxml><function type="inversion" signature="inversion(circle)"><code></asyxml>*/
-inversion inversion(circle c)
-{/*<asyxml></code><documentation>Return the inversion represented by the circle of 'c'.</documentation></function></asyxml>*/
-  return c;
-}
-
-/*<asyxml><operator type = "point" signature="*(inversion,point)"><code></asyxml>*/
-point operator *(inversion i, point P)
-{/*<asyxml></code><documentation>Provide inversion * point.</documentation></operator></asyxml>*/
-  return inverse(i.k, i.C, P);
-}
-
-void lineinversion()
-{
-  warning("lineinversion", "the inversion of the line is not a circle.
-The returned circle has an infinite radius, circle.l has been set.");
-}
-
-
-/*<asyxml><function type="circle" signature="inverse(real,point,line)"><code></asyxml>*/
-circle inverse(real k, point A, line l)
-{/*<asyxml></code><documentation>Return the inverse circle of 'l' with
-   respect to point 'A' and inversion radius 'k'.</documentation></function></asyxml>*/
-  if(A @ l) {
-    lineinversion();
-    circle C = circle(A, infinity);
-    C.l = l;
-    return C;
-  }
-  point Ap = inverse(k, A, l.A), Bp = inverse(k, A, l.B);
-  return circle(A, Ap, Bp);
-}
-
-/*<asyxml><operator type = "circle" signature="*(inversion,line)"><code></asyxml>*/
-circle operator *(inversion i, line l)
-{/*<asyxml></code><documentation>Provide inversion * line for lines that don't pass through the inversion center.</documentation></operator></asyxml>*/
-  return inverse(i.k, i.C, l);
-}
-
-/*<asyxml><function type="circle" signature="inverse(real,point,circle)"><code></asyxml>*/
-circle inverse(real k, point A, circle c)
-{/*<asyxml></code><documentation>Return the inverse circle of 'c' with
-   respect to point A and inversion radius 'k'.</documentation></function></asyxml>*/
-  if(degenerate(c)) return inverse(k, A, c.l);
-  if(A @ c) {
-    lineinversion();
-    point M = rotate(180, c.C) * A, Mp = rotate(90, c.C) * A;
-    circle oc = circle(A, infinity);
-    oc.l = line(inverse(k, A, M), inverse(k, A, Mp));
-    return oc;
-  }
-  point[] P = standardizecoordsys(A, c.C);
-  real s = k/((P[1].x - P[0].x)^2 + (P[1].y - P[0].y)^2 - c.r^2);
-  return circle(P[0] + s * (P[1]-P[0]), abs(s) * c.r);
-}
-
-/*<asyxml><operator type = "circle" signature="*(inversion,circle)"><code></asyxml>*/
-circle operator *(inversion i, circle c)
-{/*<asyxml></code><documentation>Provide inversion * circle.</documentation></operator></asyxml>*/
-  return inverse(i.k, i.C, c);
-}
-// *.......................INVERSIONS......................*
-// *=======================================================*
-
-// *=======================================================*
-// *........................FOOTER.........................*
-/*<asyxml><function type="point[]" signature="intersectionpoints(line,circle)"><code></asyxml>*/
-point[] intersectionpoints(line l, circle c)
-{/*<asyxml></code><documentation>Note that the line 'l' may be a segment by casting.
-   intersectionpoints(circle, line) is also defined.</documentation></function></asyxml>*/
-  if(degenerate(c)) return new point[]{intersectionpoint(l, c.l)};
-  point[] op;
-  coordsys R = samecoordsys(l.A, c.C) ?
-    l.A.coordsys : defaultcoordsys;
-  coordsys Rp = defaultcoordsys;
-  circle cc = circle(changecoordsys(Rp, c.C), c.r);
-  point proj = projection(l) * c.C;
-  if(proj @ cc) { // The line is a tangente of the circle.
-    if(proj @ l) op.push(proj);// line may be a segement...
-  } else {
-    coordsys Rc = cartesiansystem(c.C, (1, 0), (0, 1));
-    line ll = changecoordsys(Rc, l);
-    pair[] P = intersectionpoints(ll.A.coordinates, ll.B.coordinates,
-                                  1, 0, 1, 0, 0, -c.r^2);
-    for (int i = 0; i < P.length; ++i) {
-      point inter = changecoordsys(R, point(Rc, P[i]));
-      if(inter @ l) op.push(inter);
-    }
-  }
-  return op;
-}
-
-point[] intersectionpoints(circle c, line l)
-{
-  return intersectionpoints(l, c);
-}
-
-/*<asyxml><function type="point[]" signature="intersectionpoints(line,ellipse)"><code></asyxml>*/
-point[] intersectionpoints(line l, ellipse el)
-{/*<asyxml></code><documentation>Note that the line 'l' may be a segment by casting.
-   intersectionpoints(ellipse, line) is also defined.</documentation></function></asyxml>*/
-  if(el.e == 0) return intersectionpoints(l, (circle)el);
-  if(degenerate(el)) return new point[]{intersectionpoint(l, el.l)};
-  point[] op;
-  coordsys R = samecoordsys(l.A, el.C) ? l.A.coordsys : defaultcoordsys;
-  coordsys Rp = defaultcoordsys;
-  line ll = changecoordsys(Rp, l);
-  ellipse ell = (ellipse) changecoordsys(Rp, el);
-  circle C = circle(ell.C, ell.a);
-  point[] Ip = intersectionpoints(ll, C);
-  if (Ip.length > 0 &&
-      (perpendicular(ll, line(ell.F1, Ip[0])) ||
-       perpendicular(ll, line(ell.F2, Ip[0])))) {
-    // http://www.mathcurve.com/courbes2d/ellipse/ellipse.shtml
-    // Definition of the tangent at the antipodal point on the circle.
-    // 'l' is a tangent of 'el'
-    transform t = scale(el.a/el.b, el.F1, el.F2, el.C, rotate(90, el.C) * el.F1);
-    point inter = inverse(t) * intersectionpoints(C, t * ll)[0];
-    if(inter @ l) op.push(inter);
-  } else {
-    coordsys Rc = canonicalcartesiansystem(el);
-    line ll = changecoordsys(Rc, l);
-    pair[] P = intersectionpoints(ll.A.coordinates, ll.B.coordinates,
-                                  1/el.a^2, 0, 1/el.b^2, 0, 0, -1);
-    for (int i = 0; i < P.length; ++i) {
-      point inter = changecoordsys(R, point(Rc, P[i]));
-      if(inter @ l) op.push(inter);
-    }
-  }
-  return op;
-}
-
-point[] intersectionpoints(ellipse el, line l)
-{
-  return intersectionpoints(l, el);
-}
-
-/*<asyxml><function type="point[]" signature="intersectionpoints(line,parabola)"><code></asyxml>*/
-point[] intersectionpoints(line l, parabola p)
-{/*<asyxml></code><documentation>Note that the line 'l' may be a segment by casting.
-   intersectionpoints(parabola, line) is also defined.</documentation></function></asyxml>*/
-  point[] op;
-  coordsys R = coordsys(p);
-  bool tgt = false;
-  line ll = changecoordsys(R, l),
-    lv = parallel(p.V, p.D);
-  point M = intersectionpoint(lv, ll), tgtp;
-  if(finite(M)) {// Test if 'l' is tangent to 'p'
-    line l1 = bisector(line(M, p.F));
-    line l2 = rotate(90, M) * lv;
-    point P = intersectionpoint(l1, l2);
-    tgtp = rotate(180, P) * p.F;
-    tgt = (tgtp @ l);
-  }
-  if(tgt) {
-    if(tgtp @ l) op.push(tgtp);
-  } else {
-    real[] eq = changecoordsys(defaultcoordsys, equation(p)).a;
-    pair[] tp = intersectionpoints(locate(l.A), locate(l.B), eq);
-    point inter;
-    for (int i = 0; i < tp.length; ++i) {
-      inter = point(R, tp[i]/R);
-      if(inter @ l) op.push(inter);
-    }
-  }
-  return op;
-}
-
-point[] intersectionpoints(parabola p, line l)
-{
-  return intersectionpoints(l, p);
-}
-
-/*<asyxml><function type="point[]" signature="intersectionpoints(line,hyperbola)"><code></asyxml>*/
-point[] intersectionpoints(line l, hyperbola h)
-{/*<asyxml></code><documentation>Note that the line 'l' may be a segment by casting.
-   intersectionpoints(hyperbola, line) is also defined.</documentation></function></asyxml>*/
-  point[] op;
-  coordsys R = coordsys(h);
-  point A = intersectionpoint(l, h.A1), B = intersectionpoint(l, h.A2);
-  point M = 0.5*(A + B);
-  bool tgt = Finite(M) ? M @ h : false;
-  if(tgt) {
-    if(M @ l) op.push(M);
-  } else {
-    real[] eq = changecoordsys(defaultcoordsys, equation(h)).a;
-    pair[] tp = intersectionpoints(locate(l.A), locate(l.B), eq);
-    point inter;
-    for (int i = 0; i < tp.length; ++i) {
-      inter = point(R, tp[i]/R);
-      if(inter @ l) op.push(inter);
-    }
-  }
-  return op;
-}
-
-point[] intersectionpoints(hyperbola h, line l)
-{
-  return intersectionpoints(l, h);
-}
-
-/*<asyxml><function type="point[]" signature="intersectionpoints(line,conic)"><code></asyxml>*/
-point[] intersectionpoints(line l, conic co)
-{/*<asyxml></code><documentation>Note that the line 'l' may be a segment by casting.
-   intersectionpoints(conic, line) is also defined.</documentation></function></asyxml>*/
-  point[] op;
-  if(co.e < 1) op = intersectionpoints((ellipse)co, l);
-  else
-    if(co.e == 1) op = intersectionpoints((parabola)co, l);
-    else op = intersectionpoints((hyperbola)co, l);
-  return op;
-}
-
-point[] intersectionpoints(conic co, line l)
-{
-  return intersectionpoints(l, co);
-}
-
-/*<asyxml><function type="point[]" signature="intersectionpoints(bqe,bqe)"><code></asyxml>*/
-point[] intersectionpoints(bqe bqe1, bqe bqe2)
-{/*<asyxml></code><documentation>Return the intersection of the two conic sections whose equations are 'bqe1' and 'bqe2'.</documentation></function></asyxml>*/
-  coordsys R=canonicalcartesiansystem(conic(bqe1));
-  real[] a=changecoordsys(R,bqe1).a;
-  real[] b=changecoordsys(R,bqe2).a;
-
-  static real e=100 * sqrt(realEpsilon);
-  real[] x,y,c;
-  point[] P;
-  if(abs(a[0]-b[0]) > e || abs(a[1]-b[1]) > e || abs(a[2]-b[2]) > e) {
-    c=new real[] {a[0]*a[2]*(-2*b[0]*b[2]+b[1]^2)+a[0]^2*b[2]^2+a[2]^2*b[0]^2,
-
-                  2*a[0]*a[2]*b[1]*b[4]-2*a[2]*a[3]*b[0]*b[2]
-                  -2*a[0]*a[2]*b[2]*b[3]+a[2]*a[3]*b[1]^2+2*a[2]^2*b[0]*b[3],
-
-                  a[2]*a[5]*b[1]^2-2*a[2]*a[3]*b[2]*b[3]+2*a[2]^2*b[0]*b[5]
-                  +2*a[0]*a[5]*b[2]^2+a[3]^2*b[2]^2-2*a[2]*a[5]*b[0]*b[2]
-                  -2*a[0]*a[2]*b[2]*b[5]+a[2]^2*b[3]^2+2*a[2]*a[3]*b[1]*b[4]
-                  +a[0]*a[2]*b[4]^2,
-
-                  a[2]*a[3]*b[4]^2+2*a[2]^2*b[3]*b[5]-2*a[2]*a[3]*b[2]*b[5]
-                  -2*a[2]*a[5]*b[2]*b[3]+2*a[2]*a[5]*b[1]*b[4],
-
-                  -2*a[2]*a[5]*b[2]*b[5]+a[5]^2*b[2]^2+a[2]*a[5]*b[4]^2
-                  +a[2]^2*b[5]^2};
-    x=realquarticroots(c[0],c[1],c[2],c[3],c[4]);
-  } else {
-    if(abs(b[4]) > e) {
-      real D=b[4]^2;
-      c=new real[] {(a[0]*b[4]^2+a[2]*b[3]^2+
-                     (-2*a[2]*a[3])*b[3]+a[2]*a[3]^2)/D,
-                    -((-2*a[2]*b[3]+2*a[2]*a[3])*b[5]-a[3]*b[4]^2+
-                      (2*a[2]*a[5])*b[3])/D,a[2]*(a[5]-b[5])^2/D+a[5]};
-      x=quadraticroots(c[0],c[1],c[2]);
-    } else {
-      if(abs(a[3]-b[3]) > e) {
-        real D=b[3]-a[3];
-        c=new real[] {a[2],0,a[0]*(a[5]-b[5])^2/D^2-a[3]*b[5]/D+a[5]};
-        y=quadraticroots(c[0],c[1],c[2]);
-        for(int i=0; i < y.length; ++i) {
-          c=new real[] {a[0],a[3],a[2]*y[i]^2+a[5]};
-          x=quadraticroots(c[0],c[1],c[2]);
-          for(int j=0; j < x.length; ++j) {
-            if(abs(b[0]*x[j]^2+b[1]*x[j]*y[i]+b[2]*y[i]^2+b[3]*x[j]
-                   +b[4]*y[i]+b[5]) < 1e-5)
-              P.push(changecoordsys(currentcoordsys,point(R,(x[j],y[i]))));
-          }
-        }
-        return P;
-      } else {
-        if(abs(a[5]-b[5]) < e)
-          abort("intersectionpoints: intersection of identical conics.");
-      }
-    }
-  }
-  for(int i=0; i < x.length; ++i) {
-    c=new real[] {a[2],0,a[0]*x[i]^2+a[3]*x[i]+a[5]};
-    y=quadraticroots(c[0],c[1],c[2]);
-    for(int j=0; j < y.length; ++j) {
-      if(abs(b[0]*x[i]^2+b[1]*x[i]*y[j]+b[2]*y[j]^2+b[3]*x[i]+b[4]*y[j]+b[5])
-         < 1e-5)
-        P.push(changecoordsys(currentcoordsys,point(R,(x[i],y[j]))));
-    }
-  }
-  return P;
-}
-
-/*<asyxml><function type="point[]" signature="intersectionpoints(conic,conic)"><code></asyxml>*/
-point[] intersectionpoints(conic co1, conic co2)
-{/*<asyxml></code><documentation>Return the intersection points of the two conics.</documentation></function></asyxml>*/
-  if(degenerate(co1)) return intersectionpoints(co1.l[0], co2);
-  if(degenerate(co2)) return intersectionpoints(co1, co2.l[0]);
-  return intersectionpoints(equation(co1), equation(co2));
-}
-
-/*<asyxml><function type="point[]" signature="intersectionpoints(triangle,conic,bool)"><code></asyxml>*/
-point[] intersectionpoints(triangle t, conic co, bool extended = false)
-{/*<asyxml></code><documentation>Return the intersection points.
-   If 'extended' is true, the sides are lines else the sides are segments.
-   intersectionpoints(conic, triangle, bool) is also defined.</documentation></function></asyxml>*/
-  if(degenerate(co)) return intersectionpoints(t, co.l[0], extended);
-  point[] OP;
-  void addpoint(point P[])
-  {
-    for (int i = 0; i < P.length; ++i) {
-      if(defined(P[i])) {
-        bool exist = false;
-        for (int j = 0; j < OP.length; ++j) {
-          if(P[i] == OP[j]) {exist = true; break;}
-        }
-        if(!exist) OP.push(P[i]);
-      }}}
-  if(extended) {
-    for (int i = 1; i <= 3; ++i) {
-      addpoint(intersectionpoints(t.line(i), co));
-    }
-  } else {
-    for (int i = 1; i <= 3; ++i) {
-      addpoint(intersectionpoints((segment)t.line(i), co));
-    }
-  }
-  return OP;
-}
-
-point[] intersectionpoints(conic co, triangle t, bool extended = false)
-{
-  return intersectionpoints(t, co, extended);
-}
-
-/*<asyxml><function type="point[]" signature="intersectionpoints(ellipse,ellipse)"><code></asyxml>*/
-point[] intersectionpoints(ellipse a, ellipse b)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  // if(degenerate(a)) return intersectionpoints(a.l, b);
-  // if(degenerate(b)) return intersectionpoints(a, b.l);;
-  return intersectionpoints((conic)a, (conic)b);
-}
-/*<asyxml><function type="point[]" signature="intersectionpoints(ellipse,circle)"><code></asyxml>*/
-point[] intersectionpoints(ellipse a, circle b)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  // if(degenerate(a)) return intersectionpoints(a.l, b);
-  // if(degenerate(b)) return intersectionpoints(a, b.l);;
-  return intersectionpoints((conic)a, (conic)b);
-}
-/*<asyxml><function type="point[]" signature="intersectionpoints(circle,ellipse)"><code></asyxml>*/
-point[] intersectionpoints(circle a, ellipse b)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  return intersectionpoints(b, a);
-}
-/*<asyxml><function type="point[]" signature="intersectionpoints(ellipse,parabola)"><code></asyxml>*/
-point[] intersectionpoints(ellipse a, parabola b)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  // if(degenerate(a)) return intersectionpoints(a.l, b);
-  return intersectionpoints((conic)a, (conic)b);
-}
-/*<asyxml><function type="point[]" signature="intersectionpoints(parabola,ellipse)"><code></asyxml>*/
-point[] intersectionpoints(parabola a, ellipse b)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  return intersectionpoints(b, a);
-}
-/*<asyxml><function type="point[]" signature="intersectionpoints(ellipse,hyperbola)"><code></asyxml>*/
-point[] intersectionpoints(ellipse a, hyperbola b)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  // if(degenerate(a)) return intersectionpoints(a.l, b);
-  return intersectionpoints((conic)a, (conic)b);
-}
-/*<asyxml><function type="point[]" signature="intersectionpoints(hyperbola,ellipse)"><code></asyxml>*/
-point[] intersectionpoints(hyperbola a, ellipse b)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  return intersectionpoints(b, a);
-}
-
-/*<asyxml><function type="point[]" signature="intersectionpoints(circle,parabola)"><code></asyxml>*/
-point[] intersectionpoints(circle a, parabola b)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  return intersectionpoints((conic)a, (conic)b);
-}
-/*<asyxml><function type="point[]" signature="intersectionpoints(parabola,circle)"><code></asyxml>*/
-point[] intersectionpoints(parabola a, circle b)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  return intersectionpoints((conic)a, (conic)b);
-}
-/*<asyxml><function type="point[]" signature="intersectionpoints(circle,hyperbola)"><code></asyxml>*/
-point[] intersectionpoints(circle a, hyperbola b)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  return intersectionpoints((conic)a, (conic)b);
-}
-/*<asyxml><function type="point[]" signature="intersectionpoints(hyperbola,circle)"><code></asyxml>*/
-point[] intersectionpoints(hyperbola a, circle b)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  return intersectionpoints((conic)a, (conic)b);
-}
-
-/*<asyxml><function type="point[]" signature="intersectionpoints(parabola,parabola)"><code></asyxml>*/
-point[] intersectionpoints(parabola a, parabola b)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  return intersectionpoints((conic)a, (conic)b);
-}
-/*<asyxml><function type="point[]" signature="intersectionpoints(parabola,hyperbola)"><code></asyxml>*/
-point[] intersectionpoints(parabola a, hyperbola b)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  return intersectionpoints((conic)a, (conic)b);
-}
-/*<asyxml><function type="point[]" signature="intersectionpoints(hyperbola,parabola)"><code></asyxml>*/
-point[] intersectionpoints(hyperbola a, parabola b)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  return intersectionpoints((conic)a, (conic)b);
-}
-/*<asyxml><function type="point[]" signature="intersectionpoints(hyperbola,hyperbola)"><code></asyxml>*/
-point[] intersectionpoints(hyperbola a, hyperbola b)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  return intersectionpoints((conic)a, (conic)b);
-}
-
-/*<asyxml><function type="point[]" signature="intersectionpoints(circle,circle)"><code></asyxml>*/
-point[] intersectionpoints(circle c1, circle c2)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  if(degenerate(c1))
-    return degenerate(c2) ?
-      new point[]{intersectionpoint(c1.l, c2.l)} : intersectionpoints(c1.l, c2);
-  if(degenerate(c2)) return intersectionpoints(c1, c2.l);
-  return (c1.C == c2.C) ?
-    new point[] :
-    intersectionpoints(radicalline(c1, c2), c1);
-}
-
-/*<asyxml><function type="line" signature="tangent(circle,abscissa)"><code></asyxml>*/
-line tangent(circle c, abscissa x)
-{/*<asyxml></code><documentation>Return the tangent of 'c' at 'point(c, x)'.</documentation></function></asyxml>*/
-  if(c.r == 0) abort("tangent: a circle with a radius equals zero has no tangent.");
-  point M = point(c, x);
-  return line(rotate(90, M) * c.C, M);
-}
-
-/*<asyxml><function type="line[]" signature="tangents(circle,point)"><code></asyxml>*/
-line[] tangents(circle c, point M)
-{/*<asyxml></code><documentation>Return the tangents of 'c' passing through 'M'.</documentation></function></asyxml>*/
-  line[] ol;
-  if(inside(c, M)) return ol;
-  if(M @ c) {
-    ol.push(tangent(c, relabscissa(c, M)));
-  } else {
-    circle cc = circle(c.C, M);
-    point[] inter = intersectionpoints(c, cc);
-    for (int i = 0; i < inter.length; ++i)
-      ol.push(tangents(c, inter[i])[0]);
-  }
-  return ol;
-}
-
-/*<asyxml><function type="point" signature="point(circle,point)"><code></asyxml>*/
-point point(circle c, point M)
-{/*<asyxml></code><documentation>Return the intersection point of 'c'
-   with the half-line '[c.C M)'.</documentation></function></asyxml>*/
-  return intersectionpoints(c, line(c.C, false, M))[0];
-}
-
-/*<asyxml><function type="line" signature="tangent(circle,point)"><code></asyxml>*/
-line tangent(circle c, point M)
-{/*<asyxml></code><documentation>Return the tangent of 'c' at the
-   intersection point of the half-line'[c.C M)'.</documentation></function></asyxml>*/
-  return tangents(c, point(c, M))[0];
-}
-
-/*<asyxml><function type="point" signature="point(circle,explicit vector)"><code></asyxml>*/
-point point(circle c, explicit vector v)
-{/*<asyxml></code><documentation>Return the intersection point of 'c'
-   with the half-line '[c.C v)'.</documentation></function></asyxml>*/
-  return point(c, c.C + v);
-}
-
-/*<asyxml><function type="line" signature="tangent(circle,explicit vector)"><code></asyxml>*/
-line tangent(circle c, explicit vector v)
-{/*<asyxml></code><documentation>Return the tangent of 'c' at the
-   point M so that vec(c.C M) is collinear to 'v' with the same sense.</documentation></function></asyxml>*/
-  line ol = tangent(c, c.C + v);
-  return dot(ol.v, v) > 0 ? ol : reverse(ol);
-}
-
-/*<asyxml><function type="line" signature="tangent(ellipse,abscissa)"><code></asyxml>*/
-line tangent(ellipse el, abscissa x)
-{/*<asyxml></code><documentation>Return the tangent of 'el' at 'point(el, x)'.</documentation></function></asyxml>*/
-  point M = point(el, x);
-  line l1 = line(el.F1, M);
-  line l2 = line(el.F2, M);
-  line ol = (l1 == l2) ? perpendicular(M, l1) : bisector(l1, l2, 90, false);
-  return ol;
-}
-
-/*<asyxml><function type="line[]" signature="tangents(ellipse,point)"><code></asyxml>*/
-line[] tangents(ellipse el, point M)
-{/*<asyxml></code><documentation>Return the tangents of 'el' passing through 'M'.</documentation></function></asyxml>*/
-  line[] ol;
-  if(inside(el, M)) return ol;
-  if(M @ el) {
-    ol.push(tangent(el, relabscissa(el, M)));
-  } else {
-    point Mp = samecoordsys(M, el.F2) ?
-      M : changecoordsys(el.F2.coordsys, M);
-    circle c = circle(Mp, abs(el.F1 - Mp));
-    circle cc = circle(el.F2, 2 * el.a);
-    point[] inter = intersectionpoints(c, cc);
-    for (int i = 0; i < inter.length; ++i) {
-      line tl = line(inter[i], el.F2, false);
-      point[] P = intersectionpoints(tl, el);
-      ol.push(line(Mp, P[0]));
-    }
-  }
-  return ol;
-}
-
-/*<asyxml><function type="line" signature="tangent(parabola,abscissa)"><code></asyxml>*/
-line tangent(parabola p, abscissa x)
-{/*<asyxml></code><documentation>Return the tangent of 'p' at 'point(p, x)' (use the Wells method).</documentation></function></asyxml>*/
-  line lt = rotate(90, p.V) * line(p.V, p.F);
-  point P = point(p, x);
-  if(P == p.V) return lt;
-  point M = midpoint(segment(P, p.F));
-  line l = rotate(90, M) * line(P, p.F);
-  return line(P, projection(lt) * M);
-}
-
-/*<asyxml><function type="line[]" signature="tangents(parabola,point)"><code></asyxml>*/
-line[] tangents(parabola p, point M)
-{/*<asyxml></code><documentation>Return the tangent of 'p' at 'M' (use the Wells method).</documentation></function></asyxml>*/
-  line[] ol;
-  if(inside(p, M)) return ol;
-  if(M @ p) {
-    ol.push(tangent(p, angabscissa(p, M)));
-  }
-  else {
-    point Mt = changecoordsys(coordsys(p), M);
-    circle c = circle(Mt, p.F);
-    line l = rotate(90, p.V) * line(p.V, p.F);
-    point[] R = intersectionpoints(l, c);
-    for (int i = 0; i < R.length; ++i) {
-      ol.push(line(Mt, R[i]));
-    }
-    // An other method: http://www.du.edu/~jcalvert/math/parabola.htm
-    //   point[] R = intersectionpoints(p.directrix, c);
-    //   for (int i = 0; i < R.length; ++i) {
-    //     ol.push(bisector(segment(p.F, R[i])));
-    //   }
-  }
-  return ol;
-}
-
-/*<asyxml><function type="line" signature="tangent(hyperbola,abscissa)"><code></asyxml>*/
-line tangent(hyperbola h, abscissa x)
-{/*<asyxml></code><documentation>Return the tangent of 'h' at 'point(p, x)'.</documentation></function></asyxml>*/
-  point M = point(h, x);
-  line ol = bisector(line(M, h.F1), line(M, h.F2));
-  if(sameside(h.F1, h.F2, ol) || ol == line(h.F1, h.F2)) ol = rotate(90, M) * ol;
-  return ol;
-}
-
-/*<asyxml><function type="line[]" signature="tangents(hyperbola,point)"><code></asyxml>*/
-line[] tangents(hyperbola h, point M)
-{/*<asyxml></code><documentation>Return the tangent of 'h' at 'M'.</documentation></function></asyxml>*/
-  line[] ol;
-  if(M @ h) {
-    ol.push(tangent(h, angabscissa(h, M, fromCenter)));
-  } else {
-    coordsys cano = canonicalcartesiansystem(h);
-    bqe bqe = changecoordsys(cano, equation(h));
-    real a = abs(1/(bqe.a[5] * bqe.a[0])), b = abs(1/(bqe.a[5] * bqe.a[2]));
-    point Mp = changecoordsys(cano, M);
-    real x0 = Mp.x, y0 = Mp.y;
-    if(abs(x0) > epsgeo) {
-      real c0 = a * y0^2/(b * x0)^2 - 1/b,
-        c1 = 2 * a * y0/(b * x0^2), c2 = a/x0^2 - 1;
-      real[] sol = quadraticroots(c0, c1, c2);
-      for (real y:sol) {
-        point tmp = changecoordsys(coordsys(h), point(cano, (a * (1 + y * y0/b)/x0, y)));
-        ol.push(line(M, tmp));
-      }
-    } else if(abs(y0) > epsgeo) {
-      real y = -b/y0, x = sqrt(a * (1 + b/y0^2));
-      ol.push(line(M, changecoordsys(coordsys(h), point(cano, (x, y)))));
-      ol.push(line(M, changecoordsys(coordsys(h), point(cano, (-x, y)))));
-    }}
-  return ol;
-}
-
-/*<asyxml><function type="point[]" signature="intersectionpoints(conic,arc)"><code></asyxml>*/
-point[] intersectionpoints(conic co, arc a)
-{/*<asyxml></code><documentation>intersectionpoints(arc, circle) is also defined.</documentation></function></asyxml>*/
-  point[] op;
-  point[] tp = intersectionpoints(co, (conic)a.el);
-  for (int i = 0; i < tp.length; ++i)
-    if(tp[i] @ a) op.push(tp[i]);
-  return op;
-}
-
-point[] intersectionpoints(arc a, conic co)
-{
-  return intersectionpoints(co, a);
-}
-
-/*<asyxml><function type="point[]" signature="intersectionpoints(arc,arc)"><code></asyxml>*/
-point[] intersectionpoints(arc a1, arc a2)
-{/*<asyxml></code><documentation></documentation></function></asyxml>*/
-  point[] op;
-  point[] tp = intersectionpoints(a1.el, a2.el);
-  for (int i = 0; i < tp.length; ++i)
-    if(tp[i] @ a1 && tp[i] @ a2) op.push(tp[i]);
-  return op;
-}
-
-
-/*<asyxml><function type="point[]" signature="intersectionpoints(line,arc)"><code></asyxml>*/
-point[] intersectionpoints(line l, arc a)
-{/*<asyxml></code><documentation>intersectionpoints(arc, line) is also defined.</documentation></function></asyxml>*/
-  point[] op;
-  point[] tp = intersectionpoints(a.el, l);
-  for (int i = 0; i < tp.length; ++i)
-    if(tp[i] @ a && tp[i] @ l) op.push(tp[i]);
-  return op;
-}
-
-point[] intersectionpoints(arc a, line l)
-{
-  return intersectionpoints(l, a);
-}
-
-/*<asyxml><function type="point" signature="arcsubtendedcenter(point,point,real)"><code></asyxml>*/
-point arcsubtendedcenter(point A, point B, real angle)
-{/*<asyxml></code><documentation>Return the center of the arc retuned
-   by the 'arcsubtended' routine.</documentation></function></asyxml>*/
-  point OM;
-  point[] P = standardizecoordsys(A, B);
-  angle = angle%(sgnd(angle) * 180);
-  line bis = bisector(P[0], P[1]);
-  line AB = line(P[0], P[1]);
-  return intersectionpoint(bis, rotate(90 - angle, A) * AB);
-}
-
-/*<asyxml><function type="arc" signature="arcsubtended(point,point,real)"><code></asyxml>*/
-arc arcsubtended(point A, point B, real angle)
-{/*<asyxml></code><documentation>Return the arc circle from which the segment AB is saw with
-   the angle 'angle'.
-   If the point 'M' is on this arc, the oriented angle (MA, MB) is
-   equal to 'angle'.</documentation></function></asyxml>*/
-  point[] P = standardizecoordsys(A, B);
-  line AB = line(P[0], P[1]);
-  angle = angle%(sgnd(angle) * 180);
-  point C = arcsubtendedcenter(P[0], P[1], angle);
-  real BC = degrees(B - C)%360;
-  real AC = degrees(A - C)%360;
-  return arc(circle(C, abs(B - C)), BC, AC, angle > 0 ? CCW : CW);
-}
-
-/*<asyxml><function type="arc" signature="arccircle(point,point,point)"><code></asyxml>*/
-arc arccircle(point A, point M, point B)
-{/*<asyxml></code><documentation>Return the CCW arc circle 'AB' passing through 'M'.</documentation></function></asyxml>*/
-  circle tc = circle(A, M, B);
-  real a = degrees(A - tc.C);
-  real b = degrees(B - tc.C);
-  real m = degrees(M - tc.C);
-
-  arc oa = arc(tc, a, b);
-  // TODO: use cross product to determine CWW or CW
-  if (!(M @ oa)) {
-    oa.direction = !oa.direction;
-  }
-
-  return oa;
-}
-
-/*<asyxml><function type="arc" signature="arc(ellipse,abscissa,abscissa,bool)"><code></asyxml>*/
-arc arc(ellipse el, explicit abscissa x1, explicit abscissa x2, bool direction = CCW)
-{/*<asyxml></code><documentation>Return the arc from 'point(c, x1)' to 'point(c, x2)' in the direction 'direction'.</documentation></function></asyxml>*/
-  real a = degrees(point(el, x1) - el.C);
-  real b = degrees(point(el, x2) - el.C);
-  arc oa = arc(el, a - el.angle, b - el.angle, fromCenter, direction);
-  return oa;
-}
-
-/*<asyxml><function type="arc" signature="arc(ellipse,point,point,bool)"><code></asyxml>*/
-arc arc(ellipse el, point M, point N, bool direction = CCW)
-{/*<asyxml></code><documentation>Return the arc from 'M' to 'N' in the direction 'direction'.
-   The points 'M' and 'N' must belong to the ellipse 'el'.</documentation></function></asyxml>*/
-  return arc(el, relabscissa(el, M), relabscissa(el, N), direction);
-}
-
-/*<asyxml><function type="arc" signature="arccircle(point,point,real,bool)"><code></asyxml>*/
-arc arccircle(point A, point B, real angle, bool direction = CCW)
-{/*<asyxml></code><documentation>Return the arc circle centered on A
-   from B to rotate(angle, A) * B in the direction 'direction'.</documentation></function></asyxml>*/
-  point M = rotate(angle, A) * B;
-  return arc(circle(A, abs(A - B)), B, M, direction);
-}
-
-/*<asyxml><function type="arc" signature="arc(explicit arc,abscissa,abscissa)"><code></asyxml>*/
-arc arc(explicit arc a, abscissa x1, abscissa x2)
-{/*<asyxml></code><documentation>Return the arc from 'point(a, x1)' to 'point(a, x2)' traversed in the direction of the arc direction.</documentation></function></asyxml>*/
-  real a1 = angabscissa(a.el, point(a, x1), a.polarconicroutine).x;
-  real a2 = angabscissa(a.el, point(a, x2), a.polarconicroutine).x;
-  return arc(a.el, a1, a2, a.polarconicroutine, a.direction);
-}
-
-/*<asyxml><function type="arc" signature="arc(explicit arc,point,point)"><code></asyxml>*/
-arc arc(explicit arc a, point M, point N)
-{/*<asyxml></code><documentation>Return the arc from 'M' to 'N'.
-   The points 'M' and 'N' must belong to the arc 'a'.</documentation></function></asyxml>*/
-  return arc(a, relabscissa(a, M), relabscissa(a, N));
-}
-
-/*<asyxml><function type="arc" signature="inverse(real,point,segment)"><code></asyxml>*/
-arc inverse(real k, point A, segment s)
-{/*<asyxml></code><documentation>Return the inverse arc circle of 's'
-   with respect to point A and inversion radius 'k'.</documentation></function></asyxml>*/
-  point Ap = inverse(k, A, s.A), Bp = inverse(k, A, s.B),
-    M = inverse(k, A, midpoint(s));
-  return arccircle(Ap, M, Bp);
-}
-
-/*<asyxml><operator type = "arc" signature="*(inversion,segment)"><code></asyxml>*/
-arc operator *(inversion i, segment s)
-{/*<asyxml></code><documentation>Provide
-   inversion * segment.</documentation></operator></asyxml>*/
-  return inverse(i.k, i.C, s);
-}
-
-/*<asyxml><operator type = "path" signature="*(inversion,triangle)"><code></asyxml>*/
-path operator *(inversion i, triangle t)
-{/*<asyxml></code><documentation>Provide inversion * triangle.</documentation></operator></asyxml>*/
-  return (path)(i * segment(t.AB))--
-    (path)(i * segment(t.BC))--
-    (path)(i * segment(t.CA))&cycle;
-}
-
-/*<asyxml><function type="path" signature="compassmark(pair,pair,real,real)"><code></asyxml>*/
-path compassmark(pair O, pair A, real position, real angle = 10)
-{/*<asyxml></code><documentation>Return an arc centered on O with the angle 'angle' so that the position
-   of 'A' on this arc makes an angle 'position * angle'.</documentation></function></asyxml>*/
-  real a = degrees(A - O);
-  real pa = (a - position * angle)%360,
-    pb = (a - (position - 1) * angle)%360;
-  real t1 = intersect(unitcircle, (0, 0)--2 * dir(pa))[0];
-  real t2 = intersect(unitcircle, (0, 0)--2 * dir(pb))[0];
-  int n = length(unitcircle);
-  if(t1 >= t2) t1 -= n;
-  return shift(O) * scale(abs(O - A)) * subpath(unitcircle, t1, t2);
-}
-
-/*<asyxml><function type="line" signature="tangent(explicit arc,abscissa)"><code></asyxml>*/
-line tangent(explicit arc a, abscissa x)
-{/*<asyxml></code><documentation>Return the tangent of 'a' at 'point(a, x)'.</documentation></function></asyxml>*/
-  abscissa ag = angabscissa(a, point(a, x));
-  return tangent(a.el, ag + a.angle1 + (a.el.e == 0 ? a.angle0 : 0));
-}
-
-/*<asyxml><function type="line" signature="tangent(explicit arc,point)"><code></asyxml>*/
-line tangent(explicit arc a, point M)
-{/*<asyxml></code><documentation>Return the tangent of 'a' at 'M'.
-   The points 'M' must belong to the arc 'a'.</documentation></function></asyxml>*/
-  return tangent(a, angabscissa(a, M));
-}
-
-// *=======================================================*
-// *.......Routines for compatibility with original geometry module........*
-
-path square(pair z1, pair z2)
-{
-  pair v = z2 - z1;
-  pair z3 = z2 + I * v;
-  pair z4 = z3 - v;
-  return z1--z2--z3--z4--cycle;
-}
-
-// Draw a perpendicular symbol at z aligned in the direction align
-// relative to the path z--z + dir.
-void perpendicular(picture pic = currentpicture, pair z, pair align,
-                   pair dir = E, real size = 0, pen p = currentpen,
-                   margin margin = NoMargin, filltype filltype = NoFill)
-{
-  perpendicularmark(pic, (point) z, align, dir, size, p, margin, filltype);
-}
-
-
-// Draw a perpendicular symbol at z aligned in the direction align
-// relative to the path z--z + dir(g, 0)
-void perpendicular(picture pic = currentpicture, pair z, pair align, path g,
-                   real size = 0, pen p = currentpen, margin margin = NoMargin,
-                   filltype filltype = NoFill)
-{
-  perpendicularmark(pic, (point) z, align, dir(g, 0), size, p, margin, filltype);
-}
-
-// Return an interior arc BAC of triangle ABC, given a radius r > 0.
-// If r < 0, return the corresponding exterior arc of radius |r|.
-path arc(explicit pair B, explicit pair A, explicit pair C, real r)
-{
-  real BA = degrees(B - A);
-  real CA = degrees(C - A);
-  return arc(A, abs(r), BA, CA, (r < 0) ^ ((BA-CA) % 360 < 180) ? CW : CCW);
-}
-
-point orthocentercenter(point A, point B, point C)
-{
-    return orthocenter(A, B, C);
-}
-
-point orthocentercenter(triangle t)
-{
-  return orthocenter(t.A, t.B, t.C);
-}
-
-// *.......End of compatibility routines........*
-// *=======================================================*
-
-// *........................FOOTER.........................*
-// *=======================================================*
+  </style>
+
+    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/primer-primitives-dc7ca6859caf.css" />
+    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/primer-e11b50dc0d94.css" />
+    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/global-9ebbc23a0518.css" />
+    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/github-1936c2fb5b22.css" />
+  <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/repository-06e1b367189c.css" />
+<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/code-4643063f5efb.css" />
+
+  
+
+
+  <script type="application/json" id="client-env">{"locale":"en","featureFlags":["alternate_user_config_repo","api_insights_show_missing_data_banner","attestations_filtering","attestations_sorting","cca_create_session_from_front_end","client_version_header","code_scanning_security_configuration_ternary_state","codespaces_prebuild_region_target_update","contact_requests_implicit_opt_in","contentful_lp_copilot_extensions","contentful_lp_flex_features","contentful_lp_footnotes","copilot_chat_attach_multiple_images","copilot_chat_file_redirect","copilot_chat_group_notifications","copilot_chat_reduce_quota_checks","copilot_chat_search_bar_redirect","copilot_chat_vision_in_claude","copilot_chat_vision_skip_thread_create","copilot_chat_wholearea_dd","copilot_chat_wholearea_dd_overlay","copilot_custom_copilots_feature_preview","copilot_custom_copilots_images","copilot_duplicate_thread","copilot_free_to_paid_telem","copilot_ftp_hyperspace_upgrade_prompt","copilot_ftp_settings_upgrade","copilot_ftp_upgrade_to_pro_from_models","copilot_ftp_your_copilot_settings","copilot_gpt5_promotion_banner","copilot_immersive_agent_branch_selection","copilot_immersive_draft_issue_consolidated_create_handler","copilot_immersive_draft_issue_tree_validation","copilot_immersive_structured_model_picker","copilot_no_floating_button","copilot_read_shared_conversation","copilot_spaces_input_menu_select","copilot_spaces_permissions_tab","copilot_spaces_upsert_reload_in_background","copilot_spark_allow_empty_commit","copilot_spark_single_user_iteration","copilot_spark_use_billing_headers","copilot_spark_write_iteration_history_to_git","copilot_task_oriented_assistive_prompts","copilot_workbench_agent_seed_tool","copilot_workbench_cache","copilot_workbench_connection_reload_banner","copilot_workbench_preview_analytics","copilot_workbench_ratelimit_fallback","copilot_workbench_refresh_on_wsod","copilot_workbench_synthetic_generation","custom_copilots_128k_window","custom_copilots_capi_mode","custom_copilots_file_uploads","direct_to_salesforce","dotcom_chat_client_side_skills","failbot_report_error_react_apps_on_page","ghost_pilot_confidence_truncation_25","ghost_pilot_confidence_truncation_40","hpc_improve_dom_insertion_observer","insert_before_patch","issue_dependencies_issue_index_pill_click","issue_fields_report_usage","issues_preserve_tokens_in_urls","issues_react_blur_item_picker_on_close","issues_react_bots_timeline_pagination","issues_react_prohibit_title_fallback","issues_react_remove_placeholders","lifecycle_label_name_updates","link_contact_sales_swp_marketo","marketing_fullstory_sampling","marketing_pages_search_explore_provider","memex_mwl_filter_field_delimiter","migrate_toasts_to_banners_web_notifications","primer_react_segmented_control_tooltip","record_sso_banner_metrics","remove_child_patch","sample_network_conn_type","scheduled_reminders_updated_limits","site_copilot_plans_emphasize_pro","site_homepage_contentful","site_msbuild_hide_integrations","site_msbuild_launch","site_msbuild_webgl_hero","spark_commit_on_default_branch","spark_sync_repository_after_iteration","swp_enterprise_contact_form","viewscreen_sandbox","workbench_default_sonnet4","workbench_store_readonly"],"copilotApiOverrideUrl":null}</script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/high-contrast-cookie-43044cc98e23.js"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/wp-runtime-a79ac419ec43.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_oddbird_popover-polyfill_dist_popover-fn_js-a8c266e5f126.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_github_mini-throttle_dist_index_js-node_modules_stacktrace-parser_dist_s-1d3d52-63979392733d.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/ui_packages_failbot_failbot_ts-290ee401187e.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/environment-60434be97762.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_primer_behaviors_dist_esm_index_mjs-c44edfed7f0d.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_github_selector-observer_dist_index_esm_js-3bc735efc2fb.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_github_relative-time-element_dist_index_js-e43198c9c229.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_github_auto-complete-element_dist_index_js-node_modules_github_catalyst_-0d7d60-e7c651f2037f.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_github_text-expander-element_dist_index_js-e50fb7a5fe8c.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_github_filter-input-element_dist_index_js-node_modules_github_remote-inp-665e70-03ac9ce9c364.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_github_markdown-toolbar-element_dist_index_js-6a8c7d9a08fe.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_github_file-attachment-element_dist_index_js-node_modules_primer_view-co-777ce2-1dd746215ae3.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/github-elements-2643398ab71f.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/element-registry-877ecebc5a51.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_braintree_browser-detection_dist_browser-detection_js-node_modules_githu-bb80ec-422a87d68b40.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_lit-html_lit-html_js-b93a87060d31.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_morphdom_dist_morphdom-esm_js-node_modules_swc_helpers_esm__define_property_js-457369b2bc79.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_github_turbo_dist_turbo_es2017-esm_js-595819d3686f.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_github_remote-form_dist_index_js-node_modules_delegated-events_dist_inde-893f9f-8351bc3b1582.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_github_quote-selection_dist_index_js-node_modules_github_session-resume_-d3ee0b-54a0d20a9ae1.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/ui_packages_updatable-content_updatable-content_ts-19a9ffc8367b.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/app_assets_modules_github_behaviors_task-list_ts-app_assets_modules_github_sso_ts-ui_packages-900dde-eef525613171.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/app_assets_modules_github_sticky-scroll-into-view_ts-c9618dd6662a.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/app_assets_modules_github_behaviors_ajax-error_ts-app_assets_modules_github_behaviors_include-d0d0a6-ae4e94096a62.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/app_assets_modules_github_behaviors_commenting_edit_ts-app_assets_modules_github_behaviors_ht-83c235-54f5b4a90315.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/behaviors-2d3e59e1d65e.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_delegated-events_dist_index_js-node_modules_github_catalyst_lib_index_js-ef6d0f-3a56c06b9620.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/notifications-global-7ffad2685363.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_github_mini-throttle_dist_index_js-node_modules_github_catalyst_lib_inde-96937f-2ad733430a10.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/code-menu-79d2a08c0653.js" defer="defer"></script>
+  
+  <script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/primer-react-e4492b80a191.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/react-lib-a96d55f9fe4a.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/react-core-3713dc6a693f.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/octicons-react-d5df7319196a.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_emotion_is-prop-valid_dist_emotion-is-prop-valid_esm_js-node_modules_emo-1fff13-da98e83d4f04.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_tanstack_query-core_build_modern_queryClient_js-e7ffcb92fd6f.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_primer_live-region-element_dist_esm_index_js-node_modules_swc_helpers_es-b6e71e-3acc36dc1fd6.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_dompurify_dist_purify_es_mjs-47957619ebc4.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_lodash-es__Stack_js-node_modules_lodash-es__Uint8Array_js-node_modules_l-4faaa6-16c4e2c524de.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_tanstack_react-virtual_dist_esm_index_js-3b0a8b97c1d9.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_github_hydro-analytics-client_dist_analytics-client_js-node_modules_gith-bf9589-0bd7bb61d8df.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_github_catalyst_lib_index_js-node_modules_swc_helpers_esm__class_static_-b16468-abeea03bd6c1.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_focus-visible_dist_focus-visible_js-node_modules_fzy_js_index_js-node_mo-3ac6ae-764d8fd3fc8a.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/ui_packages_paths_index_ts-ff54d797aa05.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/ui_packages_app-uuid_app-uuid_ts-ui_packages_document-metadata_document-metadata_ts-ui_packag-2ad9d6-0701c4ee0c22.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/ui_packages_ref-selector_RefSelector_tsx-f6ba0fffc42d.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/ui_packages_commit-attribution_index_ts-ui_packages_commit-checks-status_index_ts-ui_packages-762eaa-d77abb8aad1b.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/ui_packages_code-view-shared_hooks_use-canonical-object_ts-ui_packages_code-view-shared_hooks-2170c0-8d0398416433.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/ui_packages_repos-file-tree-view_repos-file-tree-view_ts-ui_packages_use-analytics_use-analyt-c7d72e-81fc1b769a04.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/ui_packages_diffs_diff-parts_ts-21b2322bf20d.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/app_assets_modules_react-code-view_utilities_lines_ts-b0b8401e2965.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/ui_packages_code-nav_code-nav_ts-ui_packages_filter-sort_filter-sort_ts-ui_packages_fuzzy-fil-1f9dbe-4a8c765637aa.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/react-code-view-071c5891ab37.js" defer="defer"></script>
+<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/primer-react.b2a80302b2912cf742ec.module.css" />
+<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/react-code-view.f5c491dd673a3883a993.module.css" />
+
+  <script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/ui_packages_document-metadata_document-metadata_ts-ui_packages_notifications-subscriptions-me-5cc838-f6d6065acf18.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/notifications-subscriptions-menu-5d202b3b1901.js" defer="defer"></script>
+<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/primer-react.b2a80302b2912cf742ec.module.css" />
+<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/notifications-subscriptions-menu.4c58e19e87a9dd1b1dfd.module.css" />
+
+
+  <title>asymptote/base/geometry.asy at master · vectorgraphics/asymptote · GitHub</title>
+
+
+
+  <meta name="route-pattern" content="/:user_id/:repository/blob/*name(/*path)" data-turbo-transient>
+  <meta name="route-controller" content="blob" data-turbo-transient>
+  <meta name="route-action" content="show" data-turbo-transient>
+  <meta name="fetch-nonce" content="v2:0bbfd4a3-ba26-6421-8782-a199c1d5743b">
+
+    
+  <meta name="current-catalog-service-hash" content="f3abb0cc802f3d7b95fc8762b94bdcb13bf39634c40c357301c4aa1d67a256fb">
+
+
+  <meta name="request-id" content="BA66:3E4706:44FE954:5C6E9BA:689B0FF0" data-pjax-transient="true"/><meta name="html-safe-nonce" content="ac006b1170ef55e2af8e1a0181fee5b6846ef98d68d2529d40295998654a4fc5" data-pjax-transient="true"/><meta name="visitor-payload" content="eyJyZWZlcnJlciI6IiIsInJlcXVlc3RfaWQiOiJCQTY2OjNFNDcwNjo0NEZFOTU0OjVDNkU5QkE6Njg5QjBGRjAiLCJ2aXNpdG9yX2lkIjoiNDkxNzUwOTMzODI5Mjc1MjM2OCIsInJlZ2lvbl9lZGdlIjoiaWFkIiwicmVnaW9uX3JlbmRlciI6ImlhZCJ9" data-pjax-transient="true"/><meta name="visitor-hmac" content="02bfb6c6ee0ce74059b60fc5f2c3c0ddb8085cee98acfdfcd564201b44b1d561" data-pjax-transient="true"/>
+
+
+    <meta name="hovercard-subject-tag" content="repository:40128816" data-turbo-transient>
+
+
+  <meta name="github-keyboard-shortcuts" content="repository,source-code,file-tree,copilot" data-turbo-transient="true" />
+  
+
+  <meta name="selected-link" value="repo_source" data-turbo-transient>
+  <link rel="assets" href="https://github.githubassets.com/">
+
+    <meta name="google-site-verification" content="Apib7-x98H0j5cPqHWwSMm6dNU4GmODRoqxLiDzdx9I">
+
+<meta name="octolytics-url" content="https://collector.github.com/github/collect" />
+
+  <meta name="analytics-location" content="/&lt;user-name&gt;/&lt;repo-name&gt;/blob/show" data-turbo-transient="true" />
+
+  
+
+
+
+
+    <meta name="user-login" content="">
+
+  
+
+    <meta name="viewport" content="width=device-width">
+
+    
+
+      <meta name="description" content="2D &amp; 3D TeX-Aware Vector Graphics Language. Contribute to vectorgraphics/asymptote development by creating an account on GitHub.">
+
+      <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="GitHub">
+
+    <link rel="fluid-icon" href="https://github.com/fluidicon.png" title="GitHub">
+    <meta property="fb:app_id" content="1401488693436528">
+    <meta name="apple-itunes-app" content="app-id=1477376905, app-argument=https://github.com/vectorgraphics/asymptote/blob/master/base/geometry.asy" />
+
+      <meta name="twitter:image" content="https://opengraph.githubassets.com/e61e4623adf36ee431d1c5443df85e7a234dccce39bdf92a426bda341d54a9e7/vectorgraphics/asymptote" /><meta name="twitter:site" content="@github" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content="asymptote/base/geometry.asy at master · vectorgraphics/asymptote" /><meta name="twitter:description" content="2D &amp; 3D TeX-Aware Vector Graphics Language. Contribute to vectorgraphics/asymptote development by creating an account on GitHub." />
+  <meta property="og:image" content="https://opengraph.githubassets.com/e61e4623adf36ee431d1c5443df85e7a234dccce39bdf92a426bda341d54a9e7/vectorgraphics/asymptote" /><meta property="og:image:alt" content="2D &amp; 3D TeX-Aware Vector Graphics Language. Contribute to vectorgraphics/asymptote development by creating an account on GitHub." /><meta property="og:image:width" content="1200" /><meta property="og:image:height" content="600" /><meta property="og:site_name" content="GitHub" /><meta property="og:type" content="object" /><meta property="og:title" content="asymptote/base/geometry.asy at master · vectorgraphics/asymptote" /><meta property="og:url" content="https://github.com/vectorgraphics/asymptote/blob/master/base/geometry.asy" /><meta property="og:description" content="2D &amp; 3D TeX-Aware Vector Graphics Language. Contribute to vectorgraphics/asymptote development by creating an account on GitHub." />
+  
+
+
+
+
+      <meta name="hostname" content="github.com">
+
+
+
+        <meta name="expected-hostname" content="github.com">
+
+
+  <meta http-equiv="x-pjax-version" content="25879fdf21ee5bf07ba186704b30f5d330bb76408b471f7690ef35adcb7c3a74" data-turbo-track="reload">
+  <meta http-equiv="x-pjax-csp-version" content="8fba9c9418de26103e6176951dd0c38780be21b972f2019085dee08622fdb843" data-turbo-track="reload">
+  <meta http-equiv="x-pjax-css-version" content="5077ce2c41f703ef35176df01e1b09994eb09a7dccfa0a9b1c43f13740ee0630" data-turbo-track="reload">
+  <meta http-equiv="x-pjax-js-version" content="efa7658a9964d323125f943ac75bb7ecdb042a5462627f62bc2fb7bb42a038fa" data-turbo-track="reload">
+
+  <meta name="turbo-cache-control" content="no-preview" data-turbo-transient="">
+
+      <meta name="turbo-cache-control" content="no-cache" data-turbo-transient>
+
+    <meta data-hydrostats="publish">
+
+  <meta name="go-import" content="github.com/vectorgraphics/asymptote git https://github.com/vectorgraphics/asymptote.git">
+
+  <meta name="octolytics-dimension-user_id" content="13317638" /><meta name="octolytics-dimension-user_login" content="vectorgraphics" /><meta name="octolytics-dimension-repository_id" content="40128816" /><meta name="octolytics-dimension-repository_nwo" content="vectorgraphics/asymptote" /><meta name="octolytics-dimension-repository_public" content="true" /><meta name="octolytics-dimension-repository_is_fork" content="false" /><meta name="octolytics-dimension-repository_network_root_id" content="40128816" /><meta name="octolytics-dimension-repository_network_root_nwo" content="vectorgraphics/asymptote" />
+
+
+
+    
+
+    <meta name="turbo-body-classes" content="logged-out env-production page-responsive">
+
+
+  <meta name="browser-stats-url" content="https://api.github.com/_private/browser/stats">
+
+  <meta name="browser-errors-url" content="https://api.github.com/_private/browser/errors">
+
+  <meta name="release" content="984c6cea61ca8271f764e741e5ee5dfb9a9717b8">
+  <meta name="ui-target" content="full">
+
+  <link rel="mask-icon" href="https://github.githubassets.com/assets/pinned-octocat-093da3e6fa40.svg" color="#000000">
+  <link rel="alternate icon" class="js-site-favicon" type="image/png" href="https://github.githubassets.com/favicons/favicon.png">
+  <link rel="icon" class="js-site-favicon" type="image/svg+xml" href="https://github.githubassets.com/favicons/favicon.svg" data-base-href="https://github.githubassets.com/favicons/favicon">
+
+<meta name="theme-color" content="#1e2327">
+<meta name="color-scheme" content="light dark" />
+
+
+  <link rel="manifest" href="/manifest.json" crossOrigin="use-credentials">
+
+  </head>
+
+  <body class="logged-out env-production page-responsive" style="word-wrap: break-word;">
+    <div data-turbo-body class="logged-out env-production page-responsive" style="word-wrap: break-word;">
+      
+
+
+
+    <div class="position-relative header-wrapper js-header-wrapper ">
+      <a href="#start-of-content" data-skip-target-assigned="false" class="px-2 py-4 color-bg-accent-emphasis color-fg-on-emphasis show-on-focus js-skip-to-content">Skip to content</a>
+
+      <span data-view-component="true" class="progress-pjax-loader Progress position-fixed width-full">
+    <span style="width: 0%;" data-view-component="true" class="Progress-item progress-pjax-loader-bar left-0 top-0 color-bg-accent-emphasis"></span>
+</span>      
+      
+      <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/primer-react.b2a80302b2912cf742ec.module.css" />
+<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/keyboard-shortcuts-dialog.f8fba3bd67fe74f9227b.module.css" />
+
+<react-partial
+  partial-name="keyboard-shortcuts-dialog"
+  data-ssr="false"
+  data-attempted-ssr="false"
+  data-react-profiling="false"
+>
+  
+  <script type="application/json" data-target="react-partial.embeddedData">{"props":{"docsUrl":"https://docs.github.com/get-started/accessibility/keyboard-shortcuts"}}</script>
+  <div data-target="react-partial.reactRoot"></div>
+</react-partial>
+
+
+
+
+
+      
+
+          
+
+              
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_gsap_index_js-028cb2a18f5a.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/vendors-node_modules_github_remote-form_dist_index_js-node_modules_delegated-events_dist_inde-94fd67-5a370a947905.js" defer="defer"></script>
+<script crossorigin="anonymous" type="application/javascript" src="https://github.githubassets.com/assets/sessions-993c483b0f4e.js" defer="defer"></script>
+<header class="HeaderMktg header-logged-out js-details-container js-header Details f4 py-3" role="banner" data-is-top="true" data-color-mode=light data-light-theme=light data-dark-theme=dark>
+  <h2 class="sr-only">Navigation Menu</h2>
+
+  <button type="button" class="HeaderMktg-backdrop d-lg-none border-0 position-fixed top-0 left-0 width-full height-full js-details-target" aria-label="Toggle navigation">
+    <span class="d-none">Toggle navigation</span>
+  </button>
+
+  <div class="d-flex flex-column flex-lg-row flex-items-center px-3 px-md-4 px-lg-5 height-full position-relative z-1">
+    <div class="d-flex flex-justify-between flex-items-center width-full width-lg-auto">
+      <div class="flex-1">
+        <button aria-label="Toggle navigation" aria-expanded="false" type="button" data-view-component="true" class="js-details-target js-nav-padding-recalculate js-header-menu-toggle Button--link Button--medium Button d-lg-none color-fg-inherit p-1">  <span class="Button-content">
+    <span class="Button-label"><div class="HeaderMenu-toggle-bar rounded my-1"></div>
+            <div class="HeaderMenu-toggle-bar rounded my-1"></div>
+            <div class="HeaderMenu-toggle-bar rounded my-1"></div></span>
+  </span>
+</button>
+      </div>
+
+      <a class="mr-lg-3 color-fg-inherit flex-order-2 js-prevent-focus-on-mobile-nav"
+        href="/"
+        aria-label="Homepage"
+        data-analytics-event="{&quot;category&quot;:&quot;Marketing nav&quot;,&quot;action&quot;:&quot;click to go to homepage&quot;,&quot;label&quot;:&quot;ref_page:Marketing;ref_cta:Logomark;ref_loc:Header&quot;}">
+        <svg height="32" aria-hidden="true" viewBox="0 0 24 24" version="1.1" width="32" data-view-component="true" class="octicon octicon-mark-github">
+    <path d="M12 1C5.923 1 1 5.923 1 12c0 4.867 3.149 8.979 7.521 10.436.55.096.756-.233.756-.522 0-.262-.013-1.128-.013-2.049-2.764.509-3.479-.674-3.699-1.292-.124-.317-.66-1.293-1.127-1.554-.385-.207-.936-.715-.014-.729.866-.014 1.485.797 1.691 1.128.99 1.663 2.571 1.196 3.204.907.096-.715.385-1.196.701-1.471-2.448-.275-5.005-1.224-5.005-5.432 0-1.196.426-2.186 1.128-2.956-.111-.275-.496-1.402.11-2.915 0 0 .921-.288 3.024 1.128a10.193 10.193 0 0 1 2.75-.371c.936 0 1.871.123 2.75.371 2.104-1.43 3.025-1.128 3.025-1.128.605 1.513.221 2.64.111 2.915.701.77 1.127 1.747 1.127 2.956 0 4.222-2.571 5.157-5.019 5.432.399.344.743 1.004.743 2.035 0 1.471-.014 2.654-.014 3.025 0 .289.206.632.756.522C19.851 20.979 23 16.854 23 12c0-6.077-4.922-11-11-11Z"></path>
+</svg>
+      </a>
+
+      <div class="d-flex flex-1 flex-order-2 text-right d-lg-none gap-2 flex-justify-end">
+          <a
+            href="/login?return_to=https%3A%2F%2Fgithub.com%2Fvectorgraphics%2Fasymptote%2Fblob%2Fmaster%2Fbase%2Fgeometry.asy"
+            class="HeaderMenu-link HeaderMenu-button d-inline-flex f5 no-underline border color-border-default rounded-2 px-2 py-1 color-fg-inherit js-prevent-focus-on-mobile-nav"
+            data-hydro-click="{&quot;event_type&quot;:&quot;authentication.click&quot;,&quot;payload&quot;:{&quot;location_in_page&quot;:&quot;site header menu&quot;,&quot;repository_id&quot;:null,&quot;auth_type&quot;:&quot;SIGN_UP&quot;,&quot;originating_url&quot;:&quot;https://github.com/vectorgraphics/asymptote/blob/master/base/geometry.asy&quot;,&quot;user_id&quot;:null}}" data-hydro-click-hmac="86721a14483fbde45a6cefe2619f24bda33d70defa38b9a321ce48c0397660a7"
+            data-analytics-event="{&quot;category&quot;:&quot;Marketing nav&quot;,&quot;action&quot;:&quot;click to Sign in&quot;,&quot;label&quot;:&quot;ref_page:Marketing;ref_cta:Sign in;ref_loc:Header&quot;}"
+          >
+            Sign in
+          </a>
+              <div class="AppHeader-appearanceSettings">
+    <react-partial-anchor>
+      <button data-target="react-partial-anchor.anchor" id="icon-button-bdf35191-a458-4cf6-9bf8-1706b2c5a917" aria-labelledby="tooltip-f19a7b66-fbd0-4b10-95f9-2a6970377ed1" type="button" disabled="disabled" data-view-component="true" class="Button Button--iconOnly Button--invisible Button--medium AppHeader-button HeaderMenu-link border cursor-wait">  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-sliders Button-visual">
+    <path d="M15 2.75a.75.75 0 0 1-.75.75h-4a.75.75 0 0 1 0-1.5h4a.75.75 0 0 1 .75.75Zm-8.5.75v1.25a.75.75 0 0 0 1.5 0v-4a.75.75 0 0 0-1.5 0V2H1.75a.75.75 0 0 0 0 1.5H6.5Zm1.25 5.25a.75.75 0 0 0 0-1.5h-6a.75.75 0 0 0 0 1.5h6ZM15 8a.75.75 0 0 1-.75.75H11.5V10a.75.75 0 1 1-1.5 0V6a.75.75 0 0 1 1.5 0v1.25h2.75A.75.75 0 0 1 15 8Zm-9 5.25v-2a.75.75 0 0 0-1.5 0v1.25H1.75a.75.75 0 0 0 0 1.5H4.5v1.25a.75.75 0 0 0 1.5 0v-2Zm9 0a.75.75 0 0 1-.75.75h-6a.75.75 0 0 1 0-1.5h6a.75.75 0 0 1 .75.75Z"></path>
+</svg>
+</button><tool-tip id="tooltip-f19a7b66-fbd0-4b10-95f9-2a6970377ed1" for="icon-button-bdf35191-a458-4cf6-9bf8-1706b2c5a917" popover="manual" data-direction="s" data-type="label" data-view-component="true" class="sr-only position-absolute">Appearance settings</tool-tip>
+
+      <template data-target="react-partial-anchor.template">
+        <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/primer-react.b2a80302b2912cf742ec.module.css" />
+<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/appearance-settings.76259b61ecc822265749.module.css" />
+
+<react-partial
+  partial-name="appearance-settings"
+  data-ssr="false"
+  data-attempted-ssr="false"
+  data-react-profiling="false"
+>
+  
+  <script type="application/json" data-target="react-partial.embeddedData">{"props":{}}</script>
+  <div data-target="react-partial.reactRoot"></div>
+</react-partial>
+
+
+      </template>
+    </react-partial-anchor>
+  </div>
+
+      </div>
+    </div>
+
+
+    <div class="HeaderMenu js-header-menu height-fit position-lg-relative d-lg-flex flex-column flex-auto top-0">
+      <div class="HeaderMenu-wrapper d-flex flex-column flex-self-start flex-lg-row flex-auto rounded rounded-lg-0">
+          <nav class="HeaderMenu-nav" aria-label="Global">
+            <ul class="d-lg-flex list-style-none">
+
+
+                <li class="HeaderMenu-item position-relative flex-wrap flex-justify-between flex-items-center d-block d-lg-flex flex-lg-nowrap flex-lg-items-center js-details-container js-header-menu-item">
+      <button type="button" class="HeaderMenu-link border-0 width-full width-lg-auto px-0 px-lg-2 py-lg-2 no-wrap d-flex flex-items-center flex-justify-between js-details-target" aria-expanded="false">
+        Product
+        <svg opacity="0.5" aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-chevron-down HeaderMenu-icon ml-1">
+    <path d="M12.78 5.22a.749.749 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.06 0L3.22 6.28a.749.749 0 1 1 1.06-1.06L8 8.939l3.72-3.719a.749.749 0 0 1 1.06 0Z"></path>
+</svg>
+      </button>
+
+      <div class="HeaderMenu-dropdown dropdown-menu rounded m-0 p-0 pt-2 pt-lg-4 position-relative position-lg-absolute left-0 left-lg-n3 pb-2 pb-lg-4 d-lg-flex flex-wrap dropdown-menu-wide">
+          <div class="HeaderMenu-column pl-lg-4 px-lg-4">
+              <div class="">
+
+                <ul class="list-style-none f5" >
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary d-flex flex-items-center Link--has-description pb-lg-3" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;github_copilot&quot;,&quot;context&quot;:&quot;product&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;github_copilot_link_product_navbar&quot;}" href="https://github.com/features/copilot">
+      <svg aria-hidden="true" height="24" viewBox="0 0 24 24" version="1.1" width="24" data-view-component="true" class="octicon octicon-copilot color-fg-subtle mr-3">
+    <path d="M23.922 16.992c-.861 1.495-5.859 5.023-11.922 5.023-6.063 0-11.061-3.528-11.922-5.023A.641.641 0 0 1 0 16.736v-2.869a.841.841 0 0 1 .053-.22c.372-.935 1.347-2.292 2.605-2.656.167-.429.414-1.055.644-1.517a10.195 10.195 0 0 1-.052-1.086c0-1.331.282-2.499 1.132-3.368.397-.406.89-.717 1.474-.952 1.399-1.136 3.392-2.093 6.122-2.093 2.731 0 4.767.957 6.166 2.093.584.235 1.077.546 1.474.952.85.869 1.132 2.037 1.132 3.368 0 .368-.014.733-.052 1.086.23.462.477 1.088.644 1.517 1.258.364 2.233 1.721 2.605 2.656a.832.832 0 0 1 .053.22v2.869a.641.641 0 0 1-.078.256ZM12.172 11h-.344a4.323 4.323 0 0 1-.355.508C10.703 12.455 9.555 13 7.965 13c-1.725 0-2.989-.359-3.782-1.259a2.005 2.005 0 0 1-.085-.104L4 11.741v6.585c1.435.779 4.514 2.179 8 2.179 3.486 0 6.565-1.4 8-2.179v-6.585l-.098-.104s-.033.045-.085.104c-.793.9-2.057 1.259-3.782 1.259-1.59 0-2.738-.545-3.508-1.492a4.323 4.323 0 0 1-.355-.508h-.016.016Zm.641-2.935c.136 1.057.403 1.913.878 2.497.442.544 1.134.938 2.344.938 1.573 0 2.292-.337 2.657-.751.384-.435.558-1.15.558-2.361 0-1.14-.243-1.847-.705-2.319-.477-.488-1.319-.862-2.824-1.025-1.487-.161-2.192.138-2.533.529-.269.307-.437.808-.438 1.578v.021c0 .265.021.562.063.893Zm-1.626 0c.042-.331.063-.628.063-.894v-.02c-.001-.77-.169-1.271-.438-1.578-.341-.391-1.046-.69-2.533-.529-1.505.163-2.347.537-2.824 1.025-.462.472-.705 1.179-.705 2.319 0 1.211.175 1.926.558 2.361.365.414 1.084.751 2.657.751 1.21 0 1.902-.394 2.344-.938.475-.584.742-1.44.878-2.497Z"></path><path d="M14.5 14.25a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0v-2a1 1 0 0 1 1-1Zm-5 0a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0v-2a1 1 0 0 1 1-1Z"></path>
+</svg>
+      <div>
+          <div class="color-fg-default h4">
+            GitHub Copilot
+          </div>
+        Write better code with AI
+      </div>
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary d-flex flex-items-center Link--has-description pb-lg-3" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;github_spark&quot;,&quot;context&quot;:&quot;product&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;github_spark_link_product_navbar&quot;}" href="https://github.com/features/spark">
+      <svg aria-hidden="true" height="24" viewBox="0 0 24 24" version="1.1" width="24" data-view-component="true" class="octicon octicon-sparkle-fill color-fg-subtle mr-3">
+    <path d="M11.296 1.924c.24-.656 1.168-.656 1.408 0l.717 1.958a11.25 11.25 0 0 0 6.697 6.697l1.958.717c.657.24.657 1.168 0 1.408l-1.958.717a11.25 11.25 0 0 0-6.697 6.697l-.717 1.958c-.24.657-1.168.657-1.408 0l-.717-1.958a11.25 11.25 0 0 0-6.697-6.697l-1.958-.717c-.656-.24-.656-1.168 0-1.408l1.958-.717a11.25 11.25 0 0 0 6.697-6.697l.717-1.958Z"></path>
+</svg>
+      <div>
+          <div class="color-fg-default h4">
+            GitHub Spark
+              <span class="HeaderMenu-label">
+                New
+              </span>
+          </div>
+        Build and deploy intelligent apps
+      </div>
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary d-flex flex-items-center Link--has-description pb-lg-3" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;github_models&quot;,&quot;context&quot;:&quot;product&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;github_models_link_product_navbar&quot;}" href="https://github.com/features/models">
+      <svg aria-hidden="true" height="24" viewBox="0 0 24 24" version="1.1" width="24" data-view-component="true" class="octicon octicon-ai-model color-fg-subtle mr-3">
+    <path d="M19.375 8.5a3.25 3.25 0 1 1-3.163 4h-3a3.252 3.252 0 0 1-4.443 2.509L7.214 17.76a3.25 3.25 0 1 1-1.342-.674l1.672-2.957A3.238 3.238 0 0 1 6.75 12c0-.907.371-1.727.97-2.316L6.117 6.846A3.253 3.253 0 0 1 1.875 3.75a3.25 3.25 0 1 1 5.526 2.32l1.603 2.836A3.25 3.25 0 0 1 13.093 11h3.119a3.252 3.252 0 0 1 3.163-2.5ZM10 10.25a1.75 1.75 0 1 0-.001 3.499A1.75 1.75 0 0 0 10 10.25ZM5.125 2a1.75 1.75 0 1 0 0 3.5 1.75 1.75 0 0 0 0-3.5Zm12.5 9.75a1.75 1.75 0 1 0 3.5 0 1.75 1.75 0 0 0-3.5 0Zm-14.25 8.5a1.75 1.75 0 1 0 3.501-.001 1.75 1.75 0 0 0-3.501.001Z"></path>
+</svg>
+      <div>
+          <div class="color-fg-default h4">
+            GitHub Models
+              <span class="HeaderMenu-label">
+                New
+              </span>
+          </div>
+        Manage and compare prompts
+      </div>
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary d-flex flex-items-center Link--has-description pb-lg-3" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;github_advanced_security&quot;,&quot;context&quot;:&quot;product&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;github_advanced_security_link_product_navbar&quot;}" href="https://github.com/security/advanced-security">
+      <svg aria-hidden="true" height="24" viewBox="0 0 24 24" version="1.1" width="24" data-view-component="true" class="octicon octicon-shield-check color-fg-subtle mr-3">
+    <path d="M16.53 9.78a.75.75 0 0 0-1.06-1.06L11 13.19l-1.97-1.97a.75.75 0 0 0-1.06 1.06l2.5 2.5a.75.75 0 0 0 1.06 0l5-5Z"></path><path d="m12.54.637 8.25 2.675A1.75 1.75 0 0 1 22 4.976V10c0 6.19-3.771 10.704-9.401 12.83a1.704 1.704 0 0 1-1.198 0C5.77 20.705 2 16.19 2 10V4.976c0-.758.489-1.43 1.21-1.664L11.46.637a1.748 1.748 0 0 1 1.08 0Zm-.617 1.426-8.25 2.676a.249.249 0 0 0-.173.237V10c0 5.46 3.28 9.483 8.43 11.426a.199.199 0 0 0 .14 0C17.22 19.483 20.5 15.461 20.5 10V4.976a.25.25 0 0 0-.173-.237l-8.25-2.676a.253.253 0 0 0-.154 0Z"></path>
+</svg>
+      <div>
+          <div class="color-fg-default h4">
+            GitHub Advanced Security
+          </div>
+        Find and fix vulnerabilities
+      </div>
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary d-flex flex-items-center Link--has-description pb-lg-3" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;actions&quot;,&quot;context&quot;:&quot;product&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;actions_link_product_navbar&quot;}" href="https://github.com/features/actions">
+      <svg aria-hidden="true" height="24" viewBox="0 0 24 24" version="1.1" width="24" data-view-component="true" class="octicon octicon-workflow color-fg-subtle mr-3">
+    <path d="M1 3a2 2 0 0 1 2-2h6.5a2 2 0 0 1 2 2v6.5a2 2 0 0 1-2 2H7v4.063C7 16.355 7.644 17 8.438 17H12.5v-2.5a2 2 0 0 1 2-2H21a2 2 0 0 1 2 2V21a2 2 0 0 1-2 2h-6.5a2 2 0 0 1-2-2v-2.5H8.437A2.939 2.939 0 0 1 5.5 15.562V11.5H3a2 2 0 0 1-2-2Zm2-.5a.5.5 0 0 0-.5.5v6.5a.5.5 0 0 0 .5.5h6.5a.5.5 0 0 0 .5-.5V3a.5.5 0 0 0-.5-.5ZM14.5 14a.5.5 0 0 0-.5.5V21a.5.5 0 0 0 .5.5H21a.5.5 0 0 0 .5-.5v-6.5a.5.5 0 0 0-.5-.5Z"></path>
+</svg>
+      <div>
+          <div class="color-fg-default h4">
+            Actions
+          </div>
+        Automate any workflow
+      </div>
+
+    
+</a></li>
+
+                    
+                </ul>
+              </div>
+          </div>
+          <div class="HeaderMenu-column pl-lg-4 px-lg-4 pb-3 pb-lg-0">
+              <div class="border-bottom border-lg-bottom-0 pb-3">
+
+                <ul class="list-style-none f5" >
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary d-flex flex-items-center Link--has-description pb-lg-3" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;codespaces&quot;,&quot;context&quot;:&quot;product&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;codespaces_link_product_navbar&quot;}" href="https://github.com/features/codespaces">
+      <svg aria-hidden="true" height="24" viewBox="0 0 24 24" version="1.1" width="24" data-view-component="true" class="octicon octicon-codespaces color-fg-subtle mr-3">
+    <path d="M3.5 3.75C3.5 2.784 4.284 2 5.25 2h13.5c.966 0 1.75.784 1.75 1.75v7.5A1.75 1.75 0 0 1 18.75 13H5.25a1.75 1.75 0 0 1-1.75-1.75Zm-2 12c0-.966.784-1.75 1.75-1.75h17.5c.966 0 1.75.784 1.75 1.75v4a1.75 1.75 0 0 1-1.75 1.75H3.25a1.75 1.75 0 0 1-1.75-1.75ZM5.25 3.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h13.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Zm-2 12a.25.25 0 0 0-.25.25v4c0 .138.112.25.25.25h17.5a.25.25 0 0 0 .25-.25v-4a.25.25 0 0 0-.25-.25Z"></path><path d="M10 17.75a.75.75 0 0 1 .75-.75h6.5a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1-.75-.75Zm-4 0a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1-.75-.75Z"></path>
+</svg>
+      <div>
+          <div class="color-fg-default h4">
+            Codespaces
+          </div>
+        Instant dev environments
+      </div>
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary d-flex flex-items-center Link--has-description pb-lg-3" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;issues&quot;,&quot;context&quot;:&quot;product&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;issues_link_product_navbar&quot;}" href="https://github.com/features/issues">
+      <svg aria-hidden="true" height="24" viewBox="0 0 24 24" version="1.1" width="24" data-view-component="true" class="octicon octicon-issue-opened color-fg-subtle mr-3">
+    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1ZM2.5 12a9.5 9.5 0 0 0 9.5 9.5 9.5 9.5 0 0 0 9.5-9.5A9.5 9.5 0 0 0 12 2.5 9.5 9.5 0 0 0 2.5 12Zm9.5 2a2 2 0 1 1-.001-3.999A2 2 0 0 1 12 14Z"></path>
+</svg>
+      <div>
+          <div class="color-fg-default h4">
+            Issues
+          </div>
+        Plan and track work
+      </div>
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary d-flex flex-items-center Link--has-description pb-lg-3" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;code_review&quot;,&quot;context&quot;:&quot;product&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;code_review_link_product_navbar&quot;}" href="https://github.com/features/code-review">
+      <svg aria-hidden="true" height="24" viewBox="0 0 24 24" version="1.1" width="24" data-view-component="true" class="octicon octicon-code-review color-fg-subtle mr-3">
+    <path d="M10.3 6.74a.75.75 0 0 1-.04 1.06l-2.908 2.7 2.908 2.7a.75.75 0 1 1-1.02 1.1l-3.5-3.25a.75.75 0 0 1 0-1.1l3.5-3.25a.75.75 0 0 1 1.06.04Zm3.44 1.06a.75.75 0 1 1 1.02-1.1l3.5 3.25a.75.75 0 0 1 0 1.1l-3.5 3.25a.75.75 0 1 1-1.02-1.1l2.908-2.7-2.908-2.7Z"></path><path d="M1.5 4.25c0-.966.784-1.75 1.75-1.75h17.5c.966 0 1.75.784 1.75 1.75v12.5a1.75 1.75 0 0 1-1.75 1.75h-9.69l-3.573 3.573A1.458 1.458 0 0 1 5 21.043V18.5H3.25a1.75 1.75 0 0 1-1.75-1.75ZM3.25 4a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h2.5a.75.75 0 0 1 .75.75v3.19l3.72-3.72a.749.749 0 0 1 .53-.22h10a.25.25 0 0 0 .25-.25V4.25a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <div>
+          <div class="color-fg-default h4">
+            Code Review
+          </div>
+        Manage code changes
+      </div>
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary d-flex flex-items-center Link--has-description pb-lg-3" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;discussions&quot;,&quot;context&quot;:&quot;product&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;discussions_link_product_navbar&quot;}" href="https://github.com/features/discussions">
+      <svg aria-hidden="true" height="24" viewBox="0 0 24 24" version="1.1" width="24" data-view-component="true" class="octicon octicon-comment-discussion color-fg-subtle mr-3">
+    <path d="M1.75 1h12.5c.966 0 1.75.784 1.75 1.75v9.5A1.75 1.75 0 0 1 14.25 14H8.061l-2.574 2.573A1.458 1.458 0 0 1 3 15.543V14H1.75A1.75 1.75 0 0 1 0 12.25v-9.5C0 1.784.784 1 1.75 1ZM1.5 2.75v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25Z"></path><path d="M22.5 8.75a.25.25 0 0 0-.25-.25h-3.5a.75.75 0 0 1 0-1.5h3.5c.966 0 1.75.784 1.75 1.75v9.5A1.75 1.75 0 0 1 22.25 20H21v1.543a1.457 1.457 0 0 1-2.487 1.03L15.939 20H10.75A1.75 1.75 0 0 1 9 18.25v-1.465a.75.75 0 0 1 1.5 0v1.465c0 .138.112.25.25.25h5.5a.75.75 0 0 1 .53.22l2.72 2.72v-2.19a.75.75 0 0 1 .75-.75h2a.25.25 0 0 0 .25-.25v-9.5Z"></path>
+</svg>
+      <div>
+          <div class="color-fg-default h4">
+            Discussions
+          </div>
+        Collaborate outside of code
+      </div>
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary d-flex flex-items-center Link--has-description" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;code_search&quot;,&quot;context&quot;:&quot;product&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;code_search_link_product_navbar&quot;}" href="https://github.com/features/code-search">
+      <svg aria-hidden="true" height="24" viewBox="0 0 24 24" version="1.1" width="24" data-view-component="true" class="octicon octicon-code-square color-fg-subtle mr-3">
+    <path d="M10.3 8.24a.75.75 0 0 1-.04 1.06L7.352 12l2.908 2.7a.75.75 0 1 1-1.02 1.1l-3.5-3.25a.75.75 0 0 1 0-1.1l3.5-3.25a.75.75 0 0 1 1.06.04Zm3.44 1.06a.75.75 0 1 1 1.02-1.1l3.5 3.25a.75.75 0 0 1 0 1.1l-3.5 3.25a.75.75 0 1 1-1.02-1.1l2.908-2.7-2.908-2.7Z"></path><path d="M2 3.75C2 2.784 2.784 2 3.75 2h16.5c.966 0 1.75.784 1.75 1.75v16.5A1.75 1.75 0 0 1 20.25 22H3.75A1.75 1.75 0 0 1 2 20.25Zm1.75-.25a.25.25 0 0 0-.25.25v16.5c0 .138.112.25.25.25h16.5a.25.25 0 0 0 .25-.25V3.75a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <div>
+          <div class="color-fg-default h4">
+            Code Search
+          </div>
+        Find more, search less
+      </div>
+
+    
+</a></li>
+
+                </ul>
+              </div>
+          </div>
+          <div class="HeaderMenu-column pl-lg-4 border-lg-left pr-lg-7">
+              <div class="border-bottom border-lg-bottom-0 border-bottom-0">
+                    <span class="d-block h4 color-fg-default my-1" id="product-explore-heading">Explore</span>
+
+                <ul class="list-style-none f5" aria-labelledby="product-explore-heading">
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;why_github&quot;,&quot;context&quot;:&quot;product&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;why_github_link_product_navbar&quot;}" href="https://github.com/why-github">
+      Why GitHub
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;all_features&quot;,&quot;context&quot;:&quot;product&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;all_features_link_product_navbar&quot;}" href="https://github.com/features">
+      All features
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary Link--external" target="_blank" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;documentation&quot;,&quot;context&quot;:&quot;product&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;documentation_link_product_navbar&quot;}" href="https://docs.github.com">
+      Documentation
+
+    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-link-external HeaderMenu-external-icon color-fg-subtle">
+    <path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"></path>
+</svg>
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary Link--external" target="_blank" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;github_skills&quot;,&quot;context&quot;:&quot;product&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;github_skills_link_product_navbar&quot;}" href="https://skills.github.com">
+      GitHub Skills
+
+    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-link-external HeaderMenu-external-icon color-fg-subtle">
+    <path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"></path>
+</svg>
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary Link--external" target="_blank" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;blog&quot;,&quot;context&quot;:&quot;product&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;blog_link_product_navbar&quot;}" href="https://github.blog">
+      Blog
+
+    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-link-external HeaderMenu-external-icon color-fg-subtle">
+    <path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"></path>
+</svg>
+</a></li>
+
+                </ul>
+              </div>
+          </div>
+
+      </div>
+</li>
+
+
+                <li class="HeaderMenu-item position-relative flex-wrap flex-justify-between flex-items-center d-block d-lg-flex flex-lg-nowrap flex-lg-items-center js-details-container js-header-menu-item">
+      <button type="button" class="HeaderMenu-link border-0 width-full width-lg-auto px-0 px-lg-2 py-lg-2 no-wrap d-flex flex-items-center flex-justify-between js-details-target" aria-expanded="false">
+        Solutions
+        <svg opacity="0.5" aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-chevron-down HeaderMenu-icon ml-1">
+    <path d="M12.78 5.22a.749.749 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.06 0L3.22 6.28a.749.749 0 1 1 1.06-1.06L8 8.939l3.72-3.719a.749.749 0 0 1 1.06 0Z"></path>
+</svg>
+      </button>
+
+      <div class="HeaderMenu-dropdown dropdown-menu rounded m-0 p-0 pt-2 pt-lg-4 position-relative position-lg-absolute left-0 left-lg-n3 d-lg-flex flex-wrap dropdown-menu-wide">
+          <div class="HeaderMenu-column pl-lg-4 px-lg-4 pb-3 pb-lg-0">
+              <div class="border-bottom border-lg-bottom-0 mb-3 pb-3">
+                    <span class="d-block h4 color-fg-default my-1" id="solutions-by-company-size-heading">By company size</span>
+
+                <ul class="list-style-none f5" aria-labelledby="solutions-by-company-size-heading">
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;enterprises&quot;,&quot;context&quot;:&quot;solutions&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;enterprises_link_solutions_navbar&quot;}" href="https://github.com/enterprise">
+      Enterprises
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;small_and_medium_teams&quot;,&quot;context&quot;:&quot;solutions&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;small_and_medium_teams_link_solutions_navbar&quot;}" href="https://github.com/team">
+      Small and medium teams
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;startups&quot;,&quot;context&quot;:&quot;solutions&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;startups_link_solutions_navbar&quot;}" href="https://github.com/enterprise/startups">
+      Startups
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;nonprofits&quot;,&quot;context&quot;:&quot;solutions&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;nonprofits_link_solutions_navbar&quot;}" href="/solutions/industry/nonprofits">
+      Nonprofits
+
+    
+</a></li>
+
+                </ul>
+              </div>
+              <div class="border-bottom border-lg-bottom-0 pb-3">
+                    <span class="d-block h4 color-fg-default my-1" id="solutions-by-use-case-heading">By use case</span>
+
+                <ul class="list-style-none f5" aria-labelledby="solutions-by-use-case-heading">
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;devsecops&quot;,&quot;context&quot;:&quot;solutions&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;devsecops_link_solutions_navbar&quot;}" href="/solutions/use-case/devsecops">
+      DevSecOps
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;devops&quot;,&quot;context&quot;:&quot;solutions&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;devops_link_solutions_navbar&quot;}" href="/solutions/use-case/devops">
+      DevOps
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;ci_cd&quot;,&quot;context&quot;:&quot;solutions&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;ci_cd_link_solutions_navbar&quot;}" href="/solutions/use-case/ci-cd">
+      CI/CD
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;view_all_use_cases&quot;,&quot;context&quot;:&quot;solutions&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;view_all_use_cases_link_solutions_navbar&quot;}" href="/solutions/use-case">
+      View all use cases
+
+    
+</a></li>
+
+                </ul>
+              </div>
+          </div>
+          <div class="HeaderMenu-column pl-lg-4 border-lg-left pr-lg-7">
+              <div class="border-bottom border-lg-bottom-0 pb-3 pb-lg-0">
+                    <span class="d-block h4 color-fg-default my-1" id="solutions-by-industry-heading">By industry</span>
+
+                <ul class="list-style-none f5" aria-labelledby="solutions-by-industry-heading">
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;healthcare&quot;,&quot;context&quot;:&quot;solutions&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;healthcare_link_solutions_navbar&quot;}" href="/solutions/industry/healthcare">
+      Healthcare
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;financial_services&quot;,&quot;context&quot;:&quot;solutions&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;financial_services_link_solutions_navbar&quot;}" href="/solutions/industry/financial-services">
+      Financial services
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;manufacturing&quot;,&quot;context&quot;:&quot;solutions&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;manufacturing_link_solutions_navbar&quot;}" href="/solutions/industry/manufacturing">
+      Manufacturing
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;government&quot;,&quot;context&quot;:&quot;solutions&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;government_link_solutions_navbar&quot;}" href="/solutions/industry/government">
+      Government
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;view_all_industries&quot;,&quot;context&quot;:&quot;solutions&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;view_all_industries_link_solutions_navbar&quot;}" href="/solutions/industry">
+      View all industries
+
+    
+</a></li>
+
+                </ul>
+              </div>
+          </div>
+
+         <div class="HeaderMenu-trailing-link rounded-bottom-2 flex-shrink-0 mt-lg-4 px-lg-4 py-4 py-lg-3 f5 text-semibold">
+            <a href="/solutions">
+              View all solutions
+              <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-chevron-right HeaderMenu-trailing-link-icon">
+    <path d="M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z"></path>
+</svg>
+</a>         </div>
+      </div>
+</li>
+
+
+                <li class="HeaderMenu-item position-relative flex-wrap flex-justify-between flex-items-center d-block d-lg-flex flex-lg-nowrap flex-lg-items-center js-details-container js-header-menu-item">
+      <button type="button" class="HeaderMenu-link border-0 width-full width-lg-auto px-0 px-lg-2 py-lg-2 no-wrap d-flex flex-items-center flex-justify-between js-details-target" aria-expanded="false">
+        Resources
+        <svg opacity="0.5" aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-chevron-down HeaderMenu-icon ml-1">
+    <path d="M12.78 5.22a.749.749 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.06 0L3.22 6.28a.749.749 0 1 1 1.06-1.06L8 8.939l3.72-3.719a.749.749 0 0 1 1.06 0Z"></path>
+</svg>
+      </button>
+
+      <div class="HeaderMenu-dropdown dropdown-menu rounded m-0 p-0 pt-2 pt-lg-4 position-relative position-lg-absolute left-0 left-lg-n3 pb-2 pb-lg-4 d-lg-flex flex-wrap dropdown-menu-wide">
+          <div class="HeaderMenu-column pl-lg-4 px-lg-4 pb-3 pb-lg-0">
+              <div class="border-bottom border-lg-bottom-0 pb-3">
+                    <span class="d-block h4 color-fg-default my-1" id="resources-topics-heading">Topics</span>
+
+                <ul class="list-style-none f5" aria-labelledby="resources-topics-heading">
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;ai&quot;,&quot;context&quot;:&quot;resources&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;ai_link_resources_navbar&quot;}" href="/resources/articles/ai">
+      AI
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;devops&quot;,&quot;context&quot;:&quot;resources&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;devops_link_resources_navbar&quot;}" href="/resources/articles/devops">
+      DevOps
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;security&quot;,&quot;context&quot;:&quot;resources&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;security_link_resources_navbar&quot;}" href="/resources/articles/security">
+      Security
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;software_development&quot;,&quot;context&quot;:&quot;resources&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;software_development_link_resources_navbar&quot;}" href="/resources/articles/software-development">
+      Software Development
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;view_all&quot;,&quot;context&quot;:&quot;resources&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;view_all_link_resources_navbar&quot;}" href="/resources/articles">
+      View all
+
+    
+</a></li>
+
+                </ul>
+              </div>
+          </div>
+          <div class="HeaderMenu-column pl-lg-4 border-lg-left pr-lg-7">
+              <div class="border-bottom border-lg-bottom-0 border-bottom-0">
+                    <span class="d-block h4 color-fg-default my-1" id="resources-explore-heading">Explore</span>
+
+                <ul class="list-style-none f5" aria-labelledby="resources-explore-heading">
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary Link--external" target="_blank" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;learning_pathways&quot;,&quot;context&quot;:&quot;resources&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;learning_pathways_link_resources_navbar&quot;}" href="https://resources.github.com/learn/pathways">
+      Learning Pathways
+
+    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-link-external HeaderMenu-external-icon color-fg-subtle">
+    <path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"></path>
+</svg>
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary Link--external" target="_blank" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;events_amp_webinars&quot;,&quot;context&quot;:&quot;resources&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;events_amp_webinars_link_resources_navbar&quot;}" href="https://resources.github.com">
+      Events &amp; Webinars
+
+    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-link-external HeaderMenu-external-icon color-fg-subtle">
+    <path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"></path>
+</svg>
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;ebooks_amp_whitepapers&quot;,&quot;context&quot;:&quot;resources&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;ebooks_amp_whitepapers_link_resources_navbar&quot;}" href="https://github.com/resources/whitepapers">
+      Ebooks &amp; Whitepapers
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;customer_stories&quot;,&quot;context&quot;:&quot;resources&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;customer_stories_link_resources_navbar&quot;}" href="https://github.com/customer-stories">
+      Customer Stories
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary Link--external" target="_blank" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;partners&quot;,&quot;context&quot;:&quot;resources&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;partners_link_resources_navbar&quot;}" href="https://partner.github.com">
+      Partners
+
+    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-link-external HeaderMenu-external-icon color-fg-subtle">
+    <path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"></path>
+</svg>
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;executive_insights&quot;,&quot;context&quot;:&quot;resources&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;executive_insights_link_resources_navbar&quot;}" href="https://github.com/solutions/executive-insights">
+      Executive Insights
+
+    
+</a></li>
+
+                </ul>
+              </div>
+          </div>
+
+      </div>
+</li>
+
+
+                <li class="HeaderMenu-item position-relative flex-wrap flex-justify-between flex-items-center d-block d-lg-flex flex-lg-nowrap flex-lg-items-center js-details-container js-header-menu-item">
+      <button type="button" class="HeaderMenu-link border-0 width-full width-lg-auto px-0 px-lg-2 py-lg-2 no-wrap d-flex flex-items-center flex-justify-between js-details-target" aria-expanded="false">
+        Open Source
+        <svg opacity="0.5" aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-chevron-down HeaderMenu-icon ml-1">
+    <path d="M12.78 5.22a.749.749 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.06 0L3.22 6.28a.749.749 0 1 1 1.06-1.06L8 8.939l3.72-3.719a.749.749 0 0 1 1.06 0Z"></path>
+</svg>
+      </button>
+
+      <div class="HeaderMenu-dropdown dropdown-menu rounded m-0 p-0 pt-2 pt-lg-4 position-relative position-lg-absolute left-0 left-lg-n3 pb-2 pb-lg-4">
+          <div class="HeaderMenu-column px-lg-4">
+              <div class="border-bottom mb-3 mb-lg-3 pb-3">
+
+                <ul class="list-style-none f5" >
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary d-flex flex-items-center Link--has-description" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;github_sponsors&quot;,&quot;context&quot;:&quot;open_source&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;github_sponsors_link_open_source_navbar&quot;}" href="/sponsors">
+      
+      <div>
+          <div class="color-fg-default h4">
+            GitHub Sponsors
+          </div>
+        Fund open source developers
+      </div>
+
+    
+</a></li>
+
+                </ul>
+              </div>
+              <div class="border-bottom mb-3 mb-lg-3 pb-3">
+
+                <ul class="list-style-none f5" >
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary d-flex flex-items-center Link--has-description" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;the_readme_project&quot;,&quot;context&quot;:&quot;open_source&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;the_readme_project_link_open_source_navbar&quot;}" href="https://github.com/readme">
+      
+      <div>
+          <div class="color-fg-default h4">
+            The ReadME Project
+          </div>
+        GitHub community articles
+      </div>
+
+    
+</a></li>
+
+                </ul>
+              </div>
+              <div class="border-bottom border-bottom-0">
+                    <span class="d-block h4 color-fg-default my-1" id="open-source-repositories-heading">Repositories</span>
+
+                <ul class="list-style-none f5" aria-labelledby="open-source-repositories-heading">
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;topics&quot;,&quot;context&quot;:&quot;open_source&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;topics_link_open_source_navbar&quot;}" href="https://github.com/topics">
+      Topics
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;trending&quot;,&quot;context&quot;:&quot;open_source&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;trending_link_open_source_navbar&quot;}" href="https://github.com/trending">
+      Trending
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;collections&quot;,&quot;context&quot;:&quot;open_source&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;collections_link_open_source_navbar&quot;}" href="https://github.com/collections">
+      Collections
+
+    
+</a></li>
+
+                </ul>
+              </div>
+          </div>
+
+      </div>
+</li>
+
+
+                <li class="HeaderMenu-item position-relative flex-wrap flex-justify-between flex-items-center d-block d-lg-flex flex-lg-nowrap flex-lg-items-center js-details-container js-header-menu-item">
+      <button type="button" class="HeaderMenu-link border-0 width-full width-lg-auto px-0 px-lg-2 py-lg-2 no-wrap d-flex flex-items-center flex-justify-between js-details-target" aria-expanded="false">
+        Enterprise
+        <svg opacity="0.5" aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-chevron-down HeaderMenu-icon ml-1">
+    <path d="M12.78 5.22a.749.749 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.06 0L3.22 6.28a.749.749 0 1 1 1.06-1.06L8 8.939l3.72-3.719a.749.749 0 0 1 1.06 0Z"></path>
+</svg>
+      </button>
+
+      <div class="HeaderMenu-dropdown dropdown-menu rounded m-0 p-0 pt-2 pt-lg-4 position-relative position-lg-absolute left-0 left-lg-n3 pb-2 pb-lg-4">
+          <div class="HeaderMenu-column px-lg-4">
+              <div class="border-bottom mb-3 mb-lg-3 pb-3">
+
+                <ul class="list-style-none f5" >
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary d-flex flex-items-center Link--has-description" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;enterprise_platform&quot;,&quot;context&quot;:&quot;enterprise&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;enterprise_platform_link_enterprise_navbar&quot;}" href="/enterprise">
+      <svg aria-hidden="true" height="24" viewBox="0 0 24 24" version="1.1" width="24" data-view-component="true" class="octicon octicon-stack color-fg-subtle mr-3">
+    <path d="M11.063 1.456a1.749 1.749 0 0 1 1.874 0l8.383 5.316a1.751 1.751 0 0 1 0 2.956l-8.383 5.316a1.749 1.749 0 0 1-1.874 0L2.68 9.728a1.751 1.751 0 0 1 0-2.956Zm1.071 1.267a.25.25 0 0 0-.268 0L3.483 8.039a.25.25 0 0 0 0 .422l8.383 5.316a.25.25 0 0 0 .268 0l8.383-5.316a.25.25 0 0 0 0-.422Z"></path><path d="M1.867 12.324a.75.75 0 0 1 1.035-.232l8.964 5.685a.25.25 0 0 0 .268 0l8.964-5.685a.75.75 0 0 1 .804 1.267l-8.965 5.685a1.749 1.749 0 0 1-1.874 0l-8.965-5.685a.75.75 0 0 1-.231-1.035Z"></path><path d="M1.867 16.324a.75.75 0 0 1 1.035-.232l8.964 5.685a.25.25 0 0 0 .268 0l8.964-5.685a.75.75 0 0 1 .804 1.267l-8.965 5.685a1.749 1.749 0 0 1-1.874 0l-8.965-5.685a.75.75 0 0 1-.231-1.035Z"></path>
+</svg>
+      <div>
+          <div class="color-fg-default h4">
+            Enterprise platform
+          </div>
+        AI-powered developer platform
+      </div>
+
+    
+</a></li>
+
+                </ul>
+              </div>
+              <div class="border-bottom border-bottom-0">
+                    <span class="d-block h4 color-fg-default my-1" id="enterprise-available-add-ons-heading">Available add-ons</span>
+
+                <ul class="list-style-none f5" aria-labelledby="enterprise-available-add-ons-heading">
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary d-flex flex-items-center Link--has-description pb-lg-3" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;github_advanced_security&quot;,&quot;context&quot;:&quot;enterprise&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;github_advanced_security_link_enterprise_navbar&quot;}" href="https://github.com/security/advanced-security">
+      <svg aria-hidden="true" height="24" viewBox="0 0 24 24" version="1.1" width="24" data-view-component="true" class="octicon octicon-shield-check color-fg-subtle mr-3">
+    <path d="M16.53 9.78a.75.75 0 0 0-1.06-1.06L11 13.19l-1.97-1.97a.75.75 0 0 0-1.06 1.06l2.5 2.5a.75.75 0 0 0 1.06 0l5-5Z"></path><path d="m12.54.637 8.25 2.675A1.75 1.75 0 0 1 22 4.976V10c0 6.19-3.771 10.704-9.401 12.83a1.704 1.704 0 0 1-1.198 0C5.77 20.705 2 16.19 2 10V4.976c0-.758.489-1.43 1.21-1.664L11.46.637a1.748 1.748 0 0 1 1.08 0Zm-.617 1.426-8.25 2.676a.249.249 0 0 0-.173.237V10c0 5.46 3.28 9.483 8.43 11.426a.199.199 0 0 0 .14 0C17.22 19.483 20.5 15.461 20.5 10V4.976a.25.25 0 0 0-.173-.237l-8.25-2.676a.253.253 0 0 0-.154 0Z"></path>
+</svg>
+      <div>
+          <div class="color-fg-default h4">
+            GitHub Advanced Security
+          </div>
+        Enterprise-grade security features
+      </div>
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary d-flex flex-items-center Link--has-description pb-lg-3" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;copilot_for_business&quot;,&quot;context&quot;:&quot;enterprise&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;copilot_for_business_link_enterprise_navbar&quot;}" href="/features/copilot/copilot-business">
+      <svg aria-hidden="true" height="24" viewBox="0 0 24 24" version="1.1" width="24" data-view-component="true" class="octicon octicon-copilot color-fg-subtle mr-3">
+    <path d="M23.922 16.992c-.861 1.495-5.859 5.023-11.922 5.023-6.063 0-11.061-3.528-11.922-5.023A.641.641 0 0 1 0 16.736v-2.869a.841.841 0 0 1 .053-.22c.372-.935 1.347-2.292 2.605-2.656.167-.429.414-1.055.644-1.517a10.195 10.195 0 0 1-.052-1.086c0-1.331.282-2.499 1.132-3.368.397-.406.89-.717 1.474-.952 1.399-1.136 3.392-2.093 6.122-2.093 2.731 0 4.767.957 6.166 2.093.584.235 1.077.546 1.474.952.85.869 1.132 2.037 1.132 3.368 0 .368-.014.733-.052 1.086.23.462.477 1.088.644 1.517 1.258.364 2.233 1.721 2.605 2.656a.832.832 0 0 1 .053.22v2.869a.641.641 0 0 1-.078.256ZM12.172 11h-.344a4.323 4.323 0 0 1-.355.508C10.703 12.455 9.555 13 7.965 13c-1.725 0-2.989-.359-3.782-1.259a2.005 2.005 0 0 1-.085-.104L4 11.741v6.585c1.435.779 4.514 2.179 8 2.179 3.486 0 6.565-1.4 8-2.179v-6.585l-.098-.104s-.033.045-.085.104c-.793.9-2.057 1.259-3.782 1.259-1.59 0-2.738-.545-3.508-1.492a4.323 4.323 0 0 1-.355-.508h-.016.016Zm.641-2.935c.136 1.057.403 1.913.878 2.497.442.544 1.134.938 2.344.938 1.573 0 2.292-.337 2.657-.751.384-.435.558-1.15.558-2.361 0-1.14-.243-1.847-.705-2.319-.477-.488-1.319-.862-2.824-1.025-1.487-.161-2.192.138-2.533.529-.269.307-.437.808-.438 1.578v.021c0 .265.021.562.063.893Zm-1.626 0c.042-.331.063-.628.063-.894v-.02c-.001-.77-.169-1.271-.438-1.578-.341-.391-1.046-.69-2.533-.529-1.505.163-2.347.537-2.824 1.025-.462.472-.705 1.179-.705 2.319 0 1.211.175 1.926.558 2.361.365.414 1.084.751 2.657.751 1.21 0 1.902-.394 2.344-.938.475-.584.742-1.44.878-2.497Z"></path><path d="M14.5 14.25a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0v-2a1 1 0 0 1 1-1Zm-5 0a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0v-2a1 1 0 0 1 1-1Z"></path>
+</svg>
+      <div>
+          <div class="color-fg-default h4">
+            Copilot for business
+          </div>
+        Enterprise-grade AI features
+      </div>
+
+    
+</a></li>
+
+                    <li>
+  <a class="HeaderMenu-dropdown-link d-block no-underline position-relative py-2 Link--secondary d-flex flex-items-center Link--has-description" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;premium_support&quot;,&quot;context&quot;:&quot;enterprise&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;premium_support_link_enterprise_navbar&quot;}" href="/premium-support">
+      <svg aria-hidden="true" height="24" viewBox="0 0 24 24" version="1.1" width="24" data-view-component="true" class="octicon octicon-comment-discussion color-fg-subtle mr-3">
+    <path d="M1.75 1h12.5c.966 0 1.75.784 1.75 1.75v9.5A1.75 1.75 0 0 1 14.25 14H8.061l-2.574 2.573A1.458 1.458 0 0 1 3 15.543V14H1.75A1.75 1.75 0 0 1 0 12.25v-9.5C0 1.784.784 1 1.75 1ZM1.5 2.75v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25Z"></path><path d="M22.5 8.75a.25.25 0 0 0-.25-.25h-3.5a.75.75 0 0 1 0-1.5h3.5c.966 0 1.75.784 1.75 1.75v9.5A1.75 1.75 0 0 1 22.25 20H21v1.543a1.457 1.457 0 0 1-2.487 1.03L15.939 20H10.75A1.75 1.75 0 0 1 9 18.25v-1.465a.75.75 0 0 1 1.5 0v1.465c0 .138.112.25.25.25h5.5a.75.75 0 0 1 .53.22l2.72 2.72v-2.19a.75.75 0 0 1 .75-.75h2a.25.25 0 0 0 .25-.25v-9.5Z"></path>
+</svg>
+      <div>
+          <div class="color-fg-default h4">
+            Premium Support
+          </div>
+        Enterprise-grade 24/7 support
+      </div>
+
+    
+</a></li>
+
+                </ul>
+              </div>
+          </div>
+
+      </div>
+</li>
+
+
+                <li class="HeaderMenu-item position-relative flex-wrap flex-justify-between flex-items-center d-block d-lg-flex flex-lg-nowrap flex-lg-items-center js-details-container js-header-menu-item">
+    <a class="HeaderMenu-link no-underline px-0 px-lg-2 py-3 py-lg-2 d-block d-lg-inline-block" data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;pricing&quot;,&quot;context&quot;:&quot;global&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;pricing_link_global_navbar&quot;}" href="https://github.com/pricing">Pricing</a>
+</li>
+
+            </ul>
+          </nav>
+
+        <div class="d-flex flex-column flex-lg-row width-full flex-justify-end flex-lg-items-center text-center mt-3 mt-lg-0 text-lg-left ml-lg-3">
+                
+
+
+<qbsearch-input class="search-input" data-scope="repo:vectorgraphics/asymptote" data-custom-scopes-path="/search/custom_scopes" data-delete-custom-scopes-csrf="Oh_qb63VVGx73brrwj26GcgSPmbMgbF1UAmXWwX17EczwEusUrpidkvWRdMV9g4CIMbE64v6-6BezqivIadARA" data-max-custom-scopes="10" data-header-redesign-enabled="false" data-initial-value="" data-blackbird-suggestions-path="/search/suggestions" data-jump-to-suggestions-path="/_graphql/GetSuggestedNavigationDestinations" data-current-repository="vectorgraphics/asymptote" data-current-org="vectorgraphics" data-current-owner="" data-logged-in="false" data-copilot-chat-enabled="false" data-nl-search-enabled="false" data-retain-scroll-position="true">
+  <div
+    class="search-input-container search-with-dialog position-relative d-flex flex-row flex-items-center mr-4 rounded"
+    data-action="click:qbsearch-input#searchInputContainerClicked"
+  >
+      <button
+        type="button"
+        class="header-search-button placeholder  input-button form-control d-flex flex-1 flex-self-stretch flex-items-center no-wrap width-full py-0 pl-2 pr-0 text-left border-0 box-shadow-none"
+        data-target="qbsearch-input.inputButton"
+        aria-label="Search or jump to…"
+        aria-haspopup="dialog"
+        placeholder="Search or jump to..."
+        data-hotkey=s,/
+        autocapitalize="off"
+        data-analytics-event="{&quot;location&quot;:&quot;navbar&quot;,&quot;action&quot;:&quot;searchbar&quot;,&quot;context&quot;:&quot;global&quot;,&quot;tag&quot;:&quot;input&quot;,&quot;label&quot;:&quot;searchbar_input_global_navbar&quot;}"
+        data-action="click:qbsearch-input#handleExpand"
+      >
+        <div class="mr-2 color-fg-muted">
+          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-search">
+    <path d="M10.68 11.74a6 6 0 0 1-7.922-8.982 6 6 0 0 1 8.982 7.922l3.04 3.04a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215ZM11.5 7a4.499 4.499 0 1 0-8.997 0A4.499 4.499 0 0 0 11.5 7Z"></path>
+</svg>
+        </div>
+        <span class="flex-1" data-target="qbsearch-input.inputButtonText">Search or jump to...</span>
+          <div class="d-flex" data-target="qbsearch-input.hotkeyIndicator">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="20" aria-hidden="true" class="mr-1"><path fill="none" stroke="#979A9C" opacity=".4" d="M3.5.5h12c1.7 0 3 1.3 3 3v13c0 1.7-1.3 3-3 3h-12c-1.7 0-3-1.3-3-3v-13c0-1.7 1.3-3 3-3z"></path><path fill="#979A9C" d="M11.8 6L8 15.1h-.9L10.8 6h1z"></path></svg>
+          </div>
+      </button>
+
+    <input type="hidden" name="type" class="js-site-search-type-field">
+
+    
+<div class="Overlay--hidden " data-modal-dialog-overlay>
+  <modal-dialog data-action="close:qbsearch-input#handleClose cancel:qbsearch-input#handleClose" data-target="qbsearch-input.searchSuggestionsDialog" role="dialog" id="search-suggestions-dialog" aria-modal="true" aria-labelledby="search-suggestions-dialog-header" data-view-component="true" class="Overlay Overlay--width-large Overlay--height-auto">
+      <h1 id="search-suggestions-dialog-header" class="sr-only">Search code, repositories, users, issues, pull requests...</h1>
+    <div class="Overlay-body Overlay-body--paddingNone">
+      
+          <div data-view-component="true">        <div class="search-suggestions position-fixed width-full color-shadow-large border color-fg-default color-bg-default overflow-hidden d-flex flex-column query-builder-container"
+          style="border-radius: 12px;"
+          data-target="qbsearch-input.queryBuilderContainer"
+          hidden
+        >
+          <!-- '"` --><!-- </textarea></xmp> --></option></form><form id="query-builder-test-form" action="" accept-charset="UTF-8" method="get">
+  <query-builder data-target="qbsearch-input.queryBuilder" id="query-builder-query-builder-test" data-filter-key=":" data-view-component="true" class="QueryBuilder search-query-builder">
+    <div class="FormControl FormControl--fullWidth">
+      <label id="query-builder-test-label" for="query-builder-test" class="FormControl-label sr-only">
+        Search
+      </label>
+      <div
+        class="QueryBuilder-StyledInput width-fit "
+        data-target="query-builder.styledInput"
+      >
+          <span id="query-builder-test-leadingvisual-wrap" class="FormControl-input-leadingVisualWrap QueryBuilder-leadingVisualWrap">
+            <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-search FormControl-input-leadingVisual">
+    <path d="M10.68 11.74a6 6 0 0 1-7.922-8.982 6 6 0 0 1 8.982 7.922l3.04 3.04a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215ZM11.5 7a4.499 4.499 0 1 0-8.997 0A4.499 4.499 0 0 0 11.5 7Z"></path>
+</svg>
+          </span>
+        <div data-target="query-builder.styledInputContainer" class="QueryBuilder-StyledInputContainer">
+          <div
+            aria-hidden="true"
+            class="QueryBuilder-StyledInputContent"
+            data-target="query-builder.styledInputContent"
+          ></div>
+          <div class="QueryBuilder-InputWrapper">
+            <div aria-hidden="true" class="QueryBuilder-Sizer" data-target="query-builder.sizer"></div>
+            <input id="query-builder-test" name="query-builder-test" value="" autocomplete="off" type="text" role="combobox" spellcheck="false" aria-expanded="false" aria-describedby="validation-89a43e40-8627-457d-8f9f-e863d188deec" data-target="query-builder.input" data-action="
+          input:query-builder#inputChange
+          blur:query-builder#inputBlur
+          keydown:query-builder#inputKeydown
+          focus:query-builder#inputFocus
+        " data-view-component="true" class="FormControl-input QueryBuilder-Input FormControl-medium" />
+          </div>
+        </div>
+          <span class="sr-only" id="query-builder-test-clear">Clear</span>
+          <button role="button" id="query-builder-test-clear-button" aria-labelledby="query-builder-test-clear query-builder-test-label" data-target="query-builder.clearButton" data-action="
+                click:query-builder#clear
+                focus:query-builder#clearButtonFocus
+                blur:query-builder#clearButtonBlur
+              " variant="small" hidden="hidden" type="button" data-view-component="true" class="Button Button--iconOnly Button--invisible Button--medium mr-1 px-2 py-0 d-flex flex-items-center rounded-1 color-fg-muted">  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-x-circle-fill Button-visual">
+    <path d="M2.343 13.657A8 8 0 1 1 13.658 2.343 8 8 0 0 1 2.343 13.657ZM6.03 4.97a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042L6.94 8 4.97 9.97a.749.749 0 0 0 .326 1.275.749.749 0 0 0 .734-.215L8 9.06l1.97 1.97a.749.749 0 0 0 1.275-.326.749.749 0 0 0-.215-.734L9.06 8l1.97-1.97a.749.749 0 0 0-.326-1.275.749.749 0 0 0-.734.215L8 6.94Z"></path>
+</svg>
+</button>
+
+      </div>
+      <template id="search-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-search">
+    <path d="M10.68 11.74a6 6 0 0 1-7.922-8.982 6 6 0 0 1 8.982 7.922l3.04 3.04a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215ZM11.5 7a4.499 4.499 0 1 0-8.997 0A4.499 4.499 0 0 0 11.5 7Z"></path>
+</svg>
+</template>
+
+<template id="code-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-code">
+    <path d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z"></path>
+</svg>
+</template>
+
+<template id="file-code-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-file-code">
+    <path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0 1 14.25 15h-9a.75.75 0 0 1 0-1.5h9a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 10 4.25V1.5H5.75a.25.25 0 0 0-.25.25v2.5a.75.75 0 0 1-1.5 0Zm1.72 4.97a.75.75 0 0 1 1.06 0l2 2a.75.75 0 0 1 0 1.06l-2 2a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734l1.47-1.47-1.47-1.47a.75.75 0 0 1 0-1.06ZM3.28 7.78 1.81 9.25l1.47 1.47a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018l-2-2a.75.75 0 0 1 0-1.06l2-2a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Zm8.22-6.218V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"></path>
+</svg>
+</template>
+
+<template id="history-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-history">
+    <path d="m.427 1.927 1.215 1.215a8.002 8.002 0 1 1-1.6 5.685.75.75 0 1 1 1.493-.154 6.5 6.5 0 1 0 1.18-4.458l1.358 1.358A.25.25 0 0 1 3.896 6H.25A.25.25 0 0 1 0 5.75V2.104a.25.25 0 0 1 .427-.177ZM7.75 4a.75.75 0 0 1 .75.75v2.992l2.028.812a.75.75 0 0 1-.557 1.392l-2.5-1A.751.751 0 0 1 7 8.25v-3.5A.75.75 0 0 1 7.75 4Z"></path>
+</svg>
+</template>
+
+<template id="repo-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-repo">
+    <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z"></path>
+</svg>
+</template>
+
+<template id="bookmark-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-bookmark">
+    <path d="M3 2.75C3 1.784 3.784 1 4.75 1h6.5c.966 0 1.75.784 1.75 1.75v11.5a.75.75 0 0 1-1.227.579L8 11.722l-3.773 3.107A.751.751 0 0 1 3 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.91l3.023-2.489a.75.75 0 0 1 .954 0l3.023 2.49V2.75a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+</template>
+
+<template id="plus-circle-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-plus-circle">
+    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm7.25-3.25v2.5h2.5a.75.75 0 0 1 0 1.5h-2.5v2.5a.75.75 0 0 1-1.5 0v-2.5h-2.5a.75.75 0 0 1 0-1.5h2.5v-2.5a.75.75 0 0 1 1.5 0Z"></path>
+</svg>
+</template>
+
+<template id="circle-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-dot-fill">
+    <path d="M8 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z"></path>
+</svg>
+</template>
+
+<template id="trash-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-trash">
+    <path d="M11 1.75V3h2.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H5V1.75C5 .784 5.784 0 6.75 0h2.5C10.216 0 11 .784 11 1.75ZM4.496 6.675l.66 6.6a.25.25 0 0 0 .249.225h5.19a.25.25 0 0 0 .249-.225l.66-6.6a.75.75 0 0 1 1.492.149l-.66 6.6A1.748 1.748 0 0 1 10.595 15h-5.19a1.75 1.75 0 0 1-1.741-1.575l-.66-6.6a.75.75 0 1 1 1.492-.15ZM6.5 1.75V3h3V1.75a.25.25 0 0 0-.25-.25h-2.5a.25.25 0 0 0-.25.25Z"></path>
+</svg>
+</template>
+
+<template id="team-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-people">
+    <path d="M2 5.5a3.5 3.5 0 1 1 5.898 2.549 5.508 5.508 0 0 1 3.034 4.084.75.75 0 1 1-1.482.235 4 4 0 0 0-7.9 0 .75.75 0 0 1-1.482-.236A5.507 5.507 0 0 1 3.102 8.05 3.493 3.493 0 0 1 2 5.5ZM11 4a3.001 3.001 0 0 1 2.22 5.018 5.01 5.01 0 0 1 2.56 3.012.749.749 0 0 1-.885.954.752.752 0 0 1-.549-.514 3.507 3.507 0 0 0-2.522-2.372.75.75 0 0 1-.574-.73v-.352a.75.75 0 0 1 .416-.672A1.5 1.5 0 0 0 11 5.5.75.75 0 0 1 11 4Zm-5.5-.5a2 2 0 1 0-.001 3.999A2 2 0 0 0 5.5 3.5Z"></path>
+</svg>
+</template>
+
+<template id="project-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-project">
+    <path d="M1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0 1 14.25 16H1.75A1.75 1.75 0 0 1 0 14.25V1.75C0 .784.784 0 1.75 0ZM1.5 1.75v12.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25ZM11.75 3a.75.75 0 0 1 .75.75v7.5a.75.75 0 0 1-1.5 0v-7.5a.75.75 0 0 1 .75-.75Zm-8.25.75a.75.75 0 0 1 1.5 0v5.5a.75.75 0 0 1-1.5 0ZM8 3a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 3Z"></path>
+</svg>
+</template>
+
+<template id="pencil-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-pencil">
+    <path d="M11.013 1.427a1.75 1.75 0 0 1 2.474 0l1.086 1.086a1.75 1.75 0 0 1 0 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 0 1-.927-.928l.929-3.25c.081-.286.235-.547.445-.758l8.61-8.61Zm.176 4.823L9.75 4.81l-6.286 6.287a.253.253 0 0 0-.064.108l-.558 1.953 1.953-.558a.253.253 0 0 0 .108-.064Zm1.238-3.763a.25.25 0 0 0-.354 0L10.811 3.75l1.439 1.44 1.263-1.263a.25.25 0 0 0 0-.354Z"></path>
+</svg>
+</template>
+
+<template id="copilot-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copilot">
+    <path d="M7.998 15.035c-4.562 0-7.873-2.914-7.998-3.749V9.338c.085-.628.677-1.686 1.588-2.065.013-.07.024-.143.036-.218.029-.183.06-.384.126-.612-.201-.508-.254-1.084-.254-1.656 0-.87.128-1.769.693-2.484.579-.733 1.494-1.124 2.724-1.261 1.206-.134 2.262.034 2.944.765.05.053.096.108.139.165.044-.057.094-.112.143-.165.682-.731 1.738-.899 2.944-.765 1.23.137 2.145.528 2.724 1.261.566.715.693 1.614.693 2.484 0 .572-.053 1.148-.254 1.656.066.228.098.429.126.612.012.076.024.148.037.218.924.385 1.522 1.471 1.591 2.095v1.872c0 .766-3.351 3.795-8.002 3.795Zm0-1.485c2.28 0 4.584-1.11 5.002-1.433V7.862l-.023-.116c-.49.21-1.075.291-1.727.291-1.146 0-2.059-.327-2.71-.991A3.222 3.222 0 0 1 8 6.303a3.24 3.24 0 0 1-.544.743c-.65.664-1.563.991-2.71.991-.652 0-1.236-.081-1.727-.291l-.023.116v4.255c.419.323 2.722 1.433 5.002 1.433ZM6.762 2.83c-.193-.206-.637-.413-1.682-.297-1.019.113-1.479.404-1.713.7-.247.312-.369.789-.369 1.554 0 .793.129 1.171.308 1.371.162.181.519.379 1.442.379.853 0 1.339-.235 1.638-.54.315-.322.527-.827.617-1.553.117-.935-.037-1.395-.241-1.614Zm4.155-.297c-1.044-.116-1.488.091-1.681.297-.204.219-.359.679-.242 1.614.091.726.303 1.231.618 1.553.299.305.784.54 1.638.54.922 0 1.28-.198 1.442-.379.179-.2.308-.578.308-1.371 0-.765-.123-1.242-.37-1.554-.233-.296-.693-.587-1.713-.7Z"></path><path d="M6.25 9.037a.75.75 0 0 1 .75.75v1.501a.75.75 0 0 1-1.5 0V9.787a.75.75 0 0 1 .75-.75Zm4.25.75v1.501a.75.75 0 0 1-1.5 0V9.787a.75.75 0 0 1 1.5 0Z"></path>
+</svg>
+</template>
+
+<template id="copilot-error-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copilot-error">
+    <path d="M16 11.24c0 .112-.072.274-.21.467L13 9.688V7.862l-.023-.116c-.49.21-1.075.291-1.727.291-.198 0-.388-.009-.571-.029L6.833 5.226a4.01 4.01 0 0 0 .17-.782c.117-.935-.037-1.395-.241-1.614-.193-.206-.637-.413-1.682-.297-.683.076-1.115.231-1.395.415l-1.257-.91c.579-.564 1.413-.877 2.485-.996 1.206-.134 2.262.034 2.944.765.05.053.096.108.139.165.044-.057.094-.112.143-.165.682-.731 1.738-.899 2.944-.765 1.23.137 2.145.528 2.724 1.261.566.715.693 1.614.693 2.484 0 .572-.053 1.148-.254 1.656.066.228.098.429.126.612.012.076.024.148.037.218.924.385 1.522 1.471 1.591 2.095Zm-5.083-8.707c-1.044-.116-1.488.091-1.681.297-.204.219-.359.679-.242 1.614.091.726.303 1.231.618 1.553.299.305.784.54 1.638.54.922 0 1.28-.198 1.442-.379.179-.2.308-.578.308-1.371 0-.765-.123-1.242-.37-1.554-.233-.296-.693-.587-1.713-.7Zm2.511 11.074c-1.393.776-3.272 1.428-5.43 1.428-4.562 0-7.873-2.914-7.998-3.749V9.338c.085-.628.677-1.686 1.588-2.065.013-.07.024-.143.036-.218.029-.183.06-.384.126-.612-.18-.455-.241-.963-.252-1.475L.31 4.107A.747.747 0 0 1 0 3.509V3.49a.748.748 0 0 1 .625-.73c.156-.026.306.047.435.139l14.667 10.578a.592.592 0 0 1 .227.264.752.752 0 0 1 .046.249v.022a.75.75 0 0 1-1.19.596Zm-1.367-.991L5.635 7.964a5.128 5.128 0 0 1-.889.073c-.652 0-1.236-.081-1.727-.291l-.023.116v4.255c.419.323 2.722 1.433 5.002 1.433 1.539 0 3.089-.505 4.063-.934Z"></path>
+</svg>
+</template>
+
+<template id="workflow-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-workflow">
+    <path d="M0 1.75C0 .784.784 0 1.75 0h3.5C6.216 0 7 .784 7 1.75v3.5A1.75 1.75 0 0 1 5.25 7H4v4a1 1 0 0 0 1 1h4v-1.25C9 9.784 9.784 9 10.75 9h3.5c.966 0 1.75.784 1.75 1.75v3.5A1.75 1.75 0 0 1 14.25 16h-3.5A1.75 1.75 0 0 1 9 14.25v-.75H5A2.5 2.5 0 0 1 2.5 11V7h-.75A1.75 1.75 0 0 1 0 5.25Zm1.75-.25a.25.25 0 0 0-.25.25v3.5c0 .138.112.25.25.25h3.5a.25.25 0 0 0 .25-.25v-3.5a.25.25 0 0 0-.25-.25Zm9 9a.25.25 0 0 0-.25.25v3.5c0 .138.112.25.25.25h3.5a.25.25 0 0 0 .25-.25v-3.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+</template>
+
+<template id="book-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-book">
+    <path d="M0 1.75A.75.75 0 0 1 .75 1h4.253c1.227 0 2.317.59 3 1.501A3.743 3.743 0 0 1 11.006 1h4.245a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75h-4.507a2.25 2.25 0 0 0-1.591.659l-.622.621a.75.75 0 0 1-1.06 0l-.622-.621A2.25 2.25 0 0 0 5.258 13H.75a.75.75 0 0 1-.75-.75Zm7.251 10.324.004-5.073-.002-2.253A2.25 2.25 0 0 0 5.003 2.5H1.5v9h3.757a3.75 3.75 0 0 1 1.994.574ZM8.755 4.75l-.004 7.322a3.752 3.752 0 0 1 1.992-.572H14.5v-9h-3.495a2.25 2.25 0 0 0-2.25 2.25Z"></path>
+</svg>
+</template>
+
+<template id="code-review-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-code-review">
+    <path d="M1.75 1h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 13H8.061l-2.574 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25v-8.5C0 1.784.784 1 1.75 1ZM1.5 2.75v8.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-8.5a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25Zm5.28 1.72a.75.75 0 0 1 0 1.06L5.31 7l1.47 1.47a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018l-2-2a.75.75 0 0 1 0-1.06l2-2a.75.75 0 0 1 1.06 0Zm2.44 0a.75.75 0 0 1 1.06 0l2 2a.75.75 0 0 1 0 1.06l-2 2a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L10.69 7 9.22 5.53a.75.75 0 0 1 0-1.06Z"></path>
+</svg>
+</template>
+
+<template id="codespaces-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-codespaces">
+    <path d="M0 11.25c0-.966.784-1.75 1.75-1.75h12.5c.966 0 1.75.784 1.75 1.75v3A1.75 1.75 0 0 1 14.25 16H1.75A1.75 1.75 0 0 1 0 14.25Zm2-9.5C2 .784 2.784 0 3.75 0h8.5C13.216 0 14 .784 14 1.75v5a1.75 1.75 0 0 1-1.75 1.75h-8.5A1.75 1.75 0 0 1 2 6.75Zm1.75-.25a.25.25 0 0 0-.25.25v5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-5a.25.25 0 0 0-.25-.25Zm-2 9.5a.25.25 0 0 0-.25.25v3c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25v-3a.25.25 0 0 0-.25-.25Z"></path><path d="M7 12.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Zm-4 0a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1-.75-.75Z"></path>
+</svg>
+</template>
+
+<template id="comment-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-comment">
+    <path d="M1 2.75C1 1.784 1.784 1 2.75 1h10.5c.966 0 1.75.784 1.75 1.75v7.5A1.75 1.75 0 0 1 13.25 12H9.06l-2.573 2.573A1.458 1.458 0 0 1 4 13.543V12H2.75A1.75 1.75 0 0 1 1 10.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h4.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+</template>
+
+<template id="comment-discussion-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-comment-discussion">
+    <path d="M1.75 1h8.5c.966 0 1.75.784 1.75 1.75v5.5A1.75 1.75 0 0 1 10.25 10H7.061l-2.574 2.573A1.458 1.458 0 0 1 2 11.543V10h-.25A1.75 1.75 0 0 1 0 8.25v-5.5C0 1.784.784 1 1.75 1ZM1.5 2.75v5.5c0 .138.112.25.25.25h1a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h3.5a.25.25 0 0 0 .25-.25v-5.5a.25.25 0 0 0-.25-.25h-8.5a.25.25 0 0 0-.25.25Zm13 2a.25.25 0 0 0-.25-.25h-.5a.75.75 0 0 1 0-1.5h.5c.966 0 1.75.784 1.75 1.75v5.5A1.75 1.75 0 0 1 14.25 12H14v1.543a1.458 1.458 0 0 1-2.487 1.03L9.22 12.28a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215l2.22 2.22v-2.19a.75.75 0 0 1 .75-.75h1a.25.25 0 0 0 .25-.25Z"></path>
+</svg>
+</template>
+
+<template id="organization-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-organization">
+    <path d="M1.75 16A1.75 1.75 0 0 1 0 14.25V1.75C0 .784.784 0 1.75 0h8.5C11.216 0 12 .784 12 1.75v12.5c0 .085-.006.168-.018.25h2.268a.25.25 0 0 0 .25-.25V8.285a.25.25 0 0 0-.111-.208l-1.055-.703a.749.749 0 1 1 .832-1.248l1.055.703c.487.325.779.871.779 1.456v5.965A1.75 1.75 0 0 1 14.25 16h-3.5a.766.766 0 0 1-.197-.026c-.099.017-.2.026-.303.026h-3a.75.75 0 0 1-.75-.75V14h-1v1.25a.75.75 0 0 1-.75.75Zm-.25-1.75c0 .138.112.25.25.25H4v-1.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 .75.75v1.25h2.25a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25h-8.5a.25.25 0 0 0-.25.25ZM3.75 6h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1 0-1.5ZM3 3.75A.75.75 0 0 1 3.75 3h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 3 3.75Zm4 3A.75.75 0 0 1 7.75 6h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 7 6.75ZM7.75 3h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1 0-1.5ZM3 9.75A.75.75 0 0 1 3.75 9h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 3 9.75ZM7.75 9h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1 0-1.5Z"></path>
+</svg>
+</template>
+
+<template id="rocket-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-rocket">
+    <path d="M14.064 0h.186C15.216 0 16 .784 16 1.75v.186a8.752 8.752 0 0 1-2.564 6.186l-.458.459c-.314.314-.641.616-.979.904v3.207c0 .608-.315 1.172-.833 1.49l-2.774 1.707a.749.749 0 0 1-1.11-.418l-.954-3.102a1.214 1.214 0 0 1-.145-.125L3.754 9.816a1.218 1.218 0 0 1-.124-.145L.528 8.717a.749.749 0 0 1-.418-1.11l1.71-2.774A1.748 1.748 0 0 1 3.31 4h3.204c.288-.338.59-.665.904-.979l.459-.458A8.749 8.749 0 0 1 14.064 0ZM8.938 3.623h-.002l-.458.458c-.76.76-1.437 1.598-2.02 2.5l-1.5 2.317 2.143 2.143 2.317-1.5c.902-.583 1.74-1.26 2.499-2.02l.459-.458a7.25 7.25 0 0 0 2.123-5.127V1.75a.25.25 0 0 0-.25-.25h-.186a7.249 7.249 0 0 0-5.125 2.123ZM3.56 14.56c-.732.732-2.334 1.045-3.005 1.148a.234.234 0 0 1-.201-.064.234.234 0 0 1-.064-.201c.103-.671.416-2.273 1.15-3.003a1.502 1.502 0 1 1 2.12 2.12Zm6.94-3.935c-.088.06-.177.118-.266.175l-2.35 1.521.548 1.783 1.949-1.2a.25.25 0 0 0 .119-.213ZM3.678 8.116 5.2 5.766c.058-.09.117-.178.176-.266H3.309a.25.25 0 0 0-.213.119l-1.2 1.95ZM12 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path>
+</svg>
+</template>
+
+<template id="shield-check-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-shield-check">
+    <path d="m8.533.133 5.25 1.68A1.75 1.75 0 0 1 15 3.48V7c0 1.566-.32 3.182-1.303 4.682-.983 1.498-2.585 2.813-5.032 3.855a1.697 1.697 0 0 1-1.33 0c-2.447-1.042-4.049-2.357-5.032-3.855C1.32 10.182 1 8.566 1 7V3.48a1.75 1.75 0 0 1 1.217-1.667l5.25-1.68a1.748 1.748 0 0 1 1.066 0Zm-.61 1.429.001.001-5.25 1.68a.251.251 0 0 0-.174.237V7c0 1.36.275 2.666 1.057 3.859.784 1.194 2.121 2.342 4.366 3.298a.196.196 0 0 0 .154 0c2.245-.957 3.582-2.103 4.366-3.297C13.225 9.666 13.5 8.358 13.5 7V3.48a.25.25 0 0 0-.174-.238l-5.25-1.68a.25.25 0 0 0-.153 0ZM11.28 6.28l-3.5 3.5a.75.75 0 0 1-1.06 0l-1.5-1.5a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215l.97.97 2.97-2.97a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z"></path>
+</svg>
+</template>
+
+<template id="heart-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-heart">
+    <path d="m8 14.25.345.666a.75.75 0 0 1-.69 0l-.008-.004-.018-.01a7.152 7.152 0 0 1-.31-.17 22.055 22.055 0 0 1-3.434-2.414C2.045 10.731 0 8.35 0 5.5 0 2.836 2.086 1 4.25 1 5.797 1 7.153 1.802 8 3.02 8.847 1.802 10.203 1 11.75 1 13.914 1 16 2.836 16 5.5c0 2.85-2.045 5.231-3.885 6.818a22.066 22.066 0 0 1-3.744 2.584l-.018.01-.006.003h-.002ZM4.25 2.5c-1.336 0-2.75 1.164-2.75 3 0 2.15 1.58 4.144 3.365 5.682A20.58 20.58 0 0 0 8 13.393a20.58 20.58 0 0 0 3.135-2.211C12.92 9.644 14.5 7.65 14.5 5.5c0-1.836-1.414-3-2.75-3-1.373 0-2.609.986-3.029 2.456a.749.749 0 0 1-1.442 0C6.859 3.486 5.623 2.5 4.25 2.5Z"></path>
+</svg>
+</template>
+
+<template id="server-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-server">
+    <path d="M1.75 1h12.5c.966 0 1.75.784 1.75 1.75v4c0 .372-.116.717-.314 1 .198.283.314.628.314 1v4a1.75 1.75 0 0 1-1.75 1.75H1.75A1.75 1.75 0 0 1 0 12.75v-4c0-.358.109-.707.314-1a1.739 1.739 0 0 1-.314-1v-4C0 1.784.784 1 1.75 1ZM1.5 2.75v4c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25v-4a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25Zm.25 5.75a.25.25 0 0 0-.25.25v4c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25v-4a.25.25 0 0 0-.25-.25ZM7 4.75A.75.75 0 0 1 7.75 4h4.5a.75.75 0 0 1 0 1.5h-4.5A.75.75 0 0 1 7 4.75ZM7.75 10h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM3 4.75A.75.75 0 0 1 3.75 4h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 3 4.75ZM3.75 10h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1 0-1.5Z"></path>
+</svg>
+</template>
+
+<template id="globe-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-globe">
+    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM5.78 8.75a9.64 9.64 0 0 0 1.363 4.177c.255.426.542.832.857 1.215.245-.296.551-.705.857-1.215A9.64 9.64 0 0 0 10.22 8.75Zm4.44-1.5a9.64 9.64 0 0 0-1.363-4.177c-.307-.51-.612-.919-.857-1.215a9.927 9.927 0 0 0-.857 1.215A9.64 9.64 0 0 0 5.78 7.25Zm-5.944 1.5H1.543a6.507 6.507 0 0 0 4.666 5.5c-.123-.181-.24-.365-.352-.552-.715-1.192-1.437-2.874-1.581-4.948Zm-2.733-1.5h2.733c.144-2.074.866-3.756 1.58-4.948.12-.197.237-.381.353-.552a6.507 6.507 0 0 0-4.666 5.5Zm10.181 1.5c-.144 2.074-.866 3.756-1.58 4.948-.12.197-.237.381-.353.552a6.507 6.507 0 0 0 4.666-5.5Zm2.733-1.5a6.507 6.507 0 0 0-4.666-5.5c.123.181.24.365.353.552.714 1.192 1.436 2.874 1.58 4.948Z"></path>
+</svg>
+</template>
+
+<template id="issue-opened-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-issue-opened">
+    <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"></path><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Z"></path>
+</svg>
+</template>
+
+<template id="device-mobile-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-device-mobile">
+    <path d="M3.75 0h8.5C13.216 0 14 .784 14 1.75v12.5A1.75 1.75 0 0 1 12.25 16h-8.5A1.75 1.75 0 0 1 2 14.25V1.75C2 .784 2.784 0 3.75 0ZM3.5 1.75v12.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25h-8.5a.25.25 0 0 0-.25.25ZM8 13a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path>
+</svg>
+</template>
+
+<template id="package-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-package">
+    <path d="m8.878.392 5.25 3.045c.54.314.872.89.872 1.514v6.098a1.75 1.75 0 0 1-.872 1.514l-5.25 3.045a1.75 1.75 0 0 1-1.756 0l-5.25-3.045A1.75 1.75 0 0 1 1 11.049V4.951c0-.624.332-1.201.872-1.514L7.122.392a1.75 1.75 0 0 1 1.756 0ZM7.875 1.69l-4.63 2.685L8 7.133l4.755-2.758-4.63-2.685a.248.248 0 0 0-.25 0ZM2.5 5.677v5.372c0 .09.047.171.125.216l4.625 2.683V8.432Zm6.25 8.271 4.625-2.683a.25.25 0 0 0 .125-.216V5.677L8.75 8.432Z"></path>
+</svg>
+</template>
+
+<template id="credit-card-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-credit-card">
+    <path d="M10.75 9a.75.75 0 0 0 0 1.5h1.5a.75.75 0 0 0 0-1.5h-1.5Z"></path><path d="M0 3.75C0 2.784.784 2 1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 14H1.75A1.75 1.75 0 0 1 0 12.25ZM14.5 6.5h-13v5.75c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25Zm0-2.75a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25V5h13Z"></path>
+</svg>
+</template>
+
+<template id="play-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-play">
+    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm4.879-2.773 4.264 2.559a.25.25 0 0 1 0 .428l-4.264 2.559A.25.25 0 0 1 6 10.559V5.442a.25.25 0 0 1 .379-.215Z"></path>
+</svg>
+</template>
+
+<template id="gift-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-gift">
+    <path d="M2 2.75A2.75 2.75 0 0 1 4.75 0c.983 0 1.873.42 2.57 1.232.268.318.497.668.68 1.042.183-.375.411-.725.68-1.044C9.376.42 10.266 0 11.25 0a2.75 2.75 0 0 1 2.45 4h.55c.966 0 1.75.784 1.75 1.75v2c0 .698-.409 1.301-1 1.582v4.918A1.75 1.75 0 0 1 13.25 16H2.75A1.75 1.75 0 0 1 1 14.25V9.332C.409 9.05 0 8.448 0 7.75v-2C0 4.784.784 4 1.75 4h.55c-.192-.375-.3-.8-.3-1.25ZM7.25 9.5H2.5v4.75c0 .138.112.25.25.25h4.5Zm1.5 0v5h4.5a.25.25 0 0 0 .25-.25V9.5Zm0-4V8h5.5a.25.25 0 0 0 .25-.25v-2a.25.25 0 0 0-.25-.25Zm-7 0a.25.25 0 0 0-.25.25v2c0 .138.112.25.25.25h5.5V5.5h-5.5Zm3-4a1.25 1.25 0 0 0 0 2.5h2.309c-.233-.818-.542-1.401-.878-1.793-.43-.502-.915-.707-1.431-.707ZM8.941 4h2.309a1.25 1.25 0 0 0 0-2.5c-.516 0-1 .205-1.43.707-.337.392-.646.975-.879 1.793Z"></path>
+</svg>
+</template>
+
+<template id="code-square-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-code-square">
+    <path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0 1 14.25 16H1.75A1.75 1.75 0 0 1 0 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25Zm7.47 3.97a.75.75 0 0 1 1.06 0l2 2a.75.75 0 0 1 0 1.06l-2 2a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L10.69 8 9.22 6.53a.75.75 0 0 1 0-1.06ZM6.78 6.53 5.31 8l1.47 1.47a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215l-2-2a.75.75 0 0 1 0-1.06l2-2a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z"></path>
+</svg>
+</template>
+
+<template id="device-desktop-icon">
+  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-device-desktop">
+    <path d="M14.25 1c.966 0 1.75.784 1.75 1.75v7.5A1.75 1.75 0 0 1 14.25 12h-3.727c.099 1.041.52 1.872 1.292 2.757A.752.752 0 0 1 11.25 16h-6.5a.75.75 0 0 1-.565-1.243c.772-.885 1.192-1.716 1.292-2.757H1.75A1.75 1.75 0 0 1 0 10.25v-7.5C0 1.784.784 1 1.75 1ZM1.75 2.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25ZM9.018 12H6.982a5.72 5.72 0 0 1-.765 2.5h3.566a5.72 5.72 0 0 1-.765-2.5Z"></path>
+</svg>
+</template>
+
+        <div class="position-relative">
+                <ul
+                  role="listbox"
+                  class="ActionListWrap QueryBuilder-ListWrap"
+                  aria-label="Suggestions"
+                  data-action="
+                    combobox-commit:query-builder#comboboxCommit
+                    mousedown:query-builder#resultsMousedown
+                  "
+                  data-target="query-builder.resultsList"
+                  data-persist-list=false
+                  id="query-builder-test-results"
+                  tabindex="-1"
+                ></ul>
+        </div>
+      <div class="FormControl-inlineValidation" id="validation-89a43e40-8627-457d-8f9f-e863d188deec" hidden="hidden">
+        <span class="FormControl-inlineValidation--visual">
+          <svg aria-hidden="true" height="12" viewBox="0 0 12 12" version="1.1" width="12" data-view-component="true" class="octicon octicon-alert-fill">
+    <path d="M4.855.708c.5-.896 1.79-.896 2.29 0l4.675 8.351a1.312 1.312 0 0 1-1.146 1.954H1.33A1.313 1.313 0 0 1 .183 9.058ZM7 7V3H5v4Zm-1 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"></path>
+</svg>
+        </span>
+        <span></span>
+</div>    </div>
+    <div data-target="query-builder.screenReaderFeedback" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+</query-builder></form>
+          <div class="d-flex flex-row color-fg-muted px-3 text-small color-bg-default search-feedback-prompt">
+            <a target="_blank" href="https://docs.github.com/search-github/github-code-search/understanding-github-code-search-syntax" data-view-component="true" class="Link color-fg-accent text-normal ml-2">Search syntax tips</a>            <div class="d-flex flex-1"></div>
+          </div>
+        </div>
+</div>
+
+    </div>
+</modal-dialog></div>
+  </div>
+  <div data-action="click:qbsearch-input#retract" class="dark-backdrop position-fixed" hidden data-target="qbsearch-input.darkBackdrop"></div>
+  <div class="color-fg-default">
+    
+<dialog-helper>
+  <dialog data-target="qbsearch-input.feedbackDialog" data-action="close:qbsearch-input#handleDialogClose cancel:qbsearch-input#handleDialogClose" id="feedback-dialog" aria-modal="true" aria-labelledby="feedback-dialog-title" aria-describedby="feedback-dialog-description" data-view-component="true" class="Overlay Overlay-whenNarrow Overlay--size-medium Overlay--motion-scaleFade Overlay--disableScroll">
+    <div data-view-component="true" class="Overlay-header">
+  <div class="Overlay-headerContentWrap">
+    <div class="Overlay-titleWrap">
+      <h1 class="Overlay-title " id="feedback-dialog-title">
+        Provide feedback
+      </h1>
+        
+    </div>
+    <div class="Overlay-actionWrap">
+      <button data-close-dialog-id="feedback-dialog" aria-label="Close" aria-label="Close" type="button" data-view-component="true" class="close-button Overlay-closeButton"><svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-x">
+    <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
+</svg></button>
+    </div>
+  </div>
+  
+</div>
+      <scrollable-region data-labelled-by="feedback-dialog-title">
+        <div data-view-component="true" class="Overlay-body">        <!-- '"` --><!-- </textarea></xmp> --></option></form><form id="code-search-feedback-form" data-turbo="false" action="/search/feedback" accept-charset="UTF-8" method="post"><input type="hidden" data-csrf="true" name="authenticity_token" value="Lc3fhBInQUFqcF011V+vyIK87VIVdRRTLLpxWZuRlu6Yx/wMYXwKzjBH9UU7E2sbiWt7h+4achX80L4myoVOHg==" />
+          <p>We read every piece of feedback, and take your input very seriously.</p>
+          <textarea name="feedback" class="form-control width-full mb-2" style="height: 120px" id="feedback"></textarea>
+          <input name="include_email" id="include_email" aria-label="Include my email address so I can be contacted" class="form-control mr-2" type="checkbox">
+          <label for="include_email" style="font-weight: normal">Include my email address so I can be contacted</label>
+</form></div>
+      </scrollable-region>
+      <div data-view-component="true" class="Overlay-footer Overlay-footer--alignEnd">          <button data-close-dialog-id="feedback-dialog" type="button" data-view-component="true" class="btn">    Cancel
+</button>
+          <button form="code-search-feedback-form" data-action="click:qbsearch-input#submitFeedback" type="submit" data-view-component="true" class="btn-primary btn">    Submit feedback
+</button>
+</div>
+</dialog></dialog-helper>
+
+    <custom-scopes data-target="qbsearch-input.customScopesManager">
+    
+<dialog-helper>
+  <dialog data-target="custom-scopes.customScopesModalDialog" data-action="close:qbsearch-input#handleDialogClose cancel:qbsearch-input#handleDialogClose" id="custom-scopes-dialog" aria-modal="true" aria-labelledby="custom-scopes-dialog-title" aria-describedby="custom-scopes-dialog-description" data-view-component="true" class="Overlay Overlay-whenNarrow Overlay--size-medium Overlay--motion-scaleFade Overlay--disableScroll">
+    <div data-view-component="true" class="Overlay-header Overlay-header--divided">
+  <div class="Overlay-headerContentWrap">
+    <div class="Overlay-titleWrap">
+      <h1 class="Overlay-title " id="custom-scopes-dialog-title">
+        Saved searches
+      </h1>
+        <h2 id="custom-scopes-dialog-description" class="Overlay-description">Use saved searches to filter your results more quickly</h2>
+    </div>
+    <div class="Overlay-actionWrap">
+      <button data-close-dialog-id="custom-scopes-dialog" aria-label="Close" aria-label="Close" type="button" data-view-component="true" class="close-button Overlay-closeButton"><svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-x">
+    <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
+</svg></button>
+    </div>
+  </div>
+  
+</div>
+      <scrollable-region data-labelled-by="custom-scopes-dialog-title">
+        <div data-view-component="true" class="Overlay-body">        <div data-target="custom-scopes.customScopesModalDialogFlash"></div>
+
+        <div hidden class="create-custom-scope-form" data-target="custom-scopes.createCustomScopeForm">
+        <!-- '"` --><!-- </textarea></xmp> --></option></form><form id="custom-scopes-dialog-form" data-turbo="false" action="/search/custom_scopes" accept-charset="UTF-8" method="post"><input type="hidden" data-csrf="true" name="authenticity_token" value="PUlDJnSHGdyUErW1uA8V/cvUfdmyIXwYoKD6FyblB778hKHQvnQJ/PNwB103ImRTizKXhMbWpMXCJARdNuiQ9g==" />
+          <div data-target="custom-scopes.customScopesModalDialogFlash"></div>
+
+          <input type="hidden" id="custom_scope_id" name="custom_scope_id" data-target="custom-scopes.customScopesIdField">
+
+          <div class="form-group">
+            <label for="custom_scope_name">Name</label>
+            <auto-check src="/search/custom_scopes/check_name" required>
+              <input
+                type="text"
+                name="custom_scope_name"
+                id="custom_scope_name"
+                data-target="custom-scopes.customScopesNameField"
+                class="form-control"
+                autocomplete="off"
+                placeholder="github-ruby"
+                required
+                maxlength="50">
+              <input type="hidden" data-csrf="true" value="30+8jUy+cEBpxhUvjQbCzM6JkVu3wTd4kFpg1Qgd5YUXynLLfYIdWtSfJedltx6OY0wzgRYL/7u08ICcPx2i2w==" />
+            </auto-check>
+          </div>
+
+          <div class="form-group">
+            <label for="custom_scope_query">Query</label>
+            <input
+              type="text"
+              name="custom_scope_query"
+              id="custom_scope_query"
+              data-target="custom-scopes.customScopesQueryField"
+              class="form-control"
+              autocomplete="off"
+              placeholder="(repo:mona/a OR repo:mona/b) AND lang:python"
+              required
+              maxlength="500">
+          </div>
+
+          <p class="text-small color-fg-muted">
+            To see all available qualifiers, see our <a class="Link--inTextBlock" href="https://docs.github.com/search-github/github-code-search/understanding-github-code-search-syntax">documentation</a>.
+          </p>
+</form>        </div>
+
+        <div data-target="custom-scopes.manageCustomScopesForm">
+          <div data-target="custom-scopes.list"></div>
+        </div>
+
+</div>
+      </scrollable-region>
+      <div data-view-component="true" class="Overlay-footer Overlay-footer--alignEnd Overlay-footer--divided">          <button data-action="click:custom-scopes#customScopesCancel" type="button" data-view-component="true" class="btn">    Cancel
+</button>
+          <button form="custom-scopes-dialog-form" data-action="click:custom-scopes#customScopesSubmit" data-target="custom-scopes.customScopesSubmitButton" type="submit" data-view-component="true" class="btn-primary btn">    Create saved search
+</button>
+</div>
+</dialog></dialog-helper>
+    </custom-scopes>
+  </div>
+</qbsearch-input>
+
+
+            <div class="position-relative HeaderMenu-link-wrap d-lg-inline-block">
+              <a
+                href="/login?return_to=https%3A%2F%2Fgithub.com%2Fvectorgraphics%2Fasymptote%2Fblob%2Fmaster%2Fbase%2Fgeometry.asy"
+                class="HeaderMenu-link HeaderMenu-link--sign-in HeaderMenu-button flex-shrink-0 no-underline d-none d-lg-inline-flex border border-lg-0 rounded px-2 py-1"
+                style="margin-left: 12px;"
+                data-hydro-click="{&quot;event_type&quot;:&quot;authentication.click&quot;,&quot;payload&quot;:{&quot;location_in_page&quot;:&quot;site header menu&quot;,&quot;repository_id&quot;:null,&quot;auth_type&quot;:&quot;SIGN_UP&quot;,&quot;originating_url&quot;:&quot;https://github.com/vectorgraphics/asymptote/blob/master/base/geometry.asy&quot;,&quot;user_id&quot;:null}}" data-hydro-click-hmac="86721a14483fbde45a6cefe2619f24bda33d70defa38b9a321ce48c0397660a7"
+                data-analytics-event="{&quot;category&quot;:&quot;Marketing nav&quot;,&quot;action&quot;:&quot;click to go to homepage&quot;,&quot;label&quot;:&quot;ref_page:Marketing;ref_cta:Sign in;ref_loc:Header&quot;}"
+              >
+                Sign in
+              </a>
+            </div>
+
+              <a href="/signup?ref_cta=Sign+up&amp;ref_loc=header+logged+out&amp;ref_page=%2F%3Cuser-name%3E%2F%3Crepo-name%3E%2Fblob%2Fshow&amp;source=header-repo&amp;source_repo=vectorgraphics%2Fasymptote"
+                class="HeaderMenu-link HeaderMenu-link--sign-up HeaderMenu-button flex-shrink-0 d-flex d-lg-inline-flex no-underline border color-border-default rounded px-2 py-1"
+                data-hydro-click="{&quot;event_type&quot;:&quot;authentication.click&quot;,&quot;payload&quot;:{&quot;location_in_page&quot;:&quot;site header menu&quot;,&quot;repository_id&quot;:null,&quot;auth_type&quot;:&quot;SIGN_UP&quot;,&quot;originating_url&quot;:&quot;https://github.com/vectorgraphics/asymptote/blob/master/base/geometry.asy&quot;,&quot;user_id&quot;:null}}" data-hydro-click-hmac="86721a14483fbde45a6cefe2619f24bda33d70defa38b9a321ce48c0397660a7"
+                data-analytics-event="{&quot;category&quot;:&quot;Sign up&quot;,&quot;action&quot;:&quot;click to sign up for account&quot;,&quot;label&quot;:&quot;ref_page:/&lt;user-name&gt;/&lt;repo-name&gt;/blob/show;ref_cta:Sign up;ref_loc:header logged out&quot;}"
+              >
+                Sign up
+              </a>
+
+                <div class="AppHeader-appearanceSettings">
+    <react-partial-anchor>
+      <button data-target="react-partial-anchor.anchor" id="icon-button-200c8f1e-31ce-4521-ae41-9d6bb8bcfcd6" aria-labelledby="tooltip-208a3f86-5cf9-460c-9d67-5f823b3162b7" type="button" disabled="disabled" data-view-component="true" class="Button Button--iconOnly Button--invisible Button--medium AppHeader-button HeaderMenu-link border cursor-wait">  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-sliders Button-visual">
+    <path d="M15 2.75a.75.75 0 0 1-.75.75h-4a.75.75 0 0 1 0-1.5h4a.75.75 0 0 1 .75.75Zm-8.5.75v1.25a.75.75 0 0 0 1.5 0v-4a.75.75 0 0 0-1.5 0V2H1.75a.75.75 0 0 0 0 1.5H6.5Zm1.25 5.25a.75.75 0 0 0 0-1.5h-6a.75.75 0 0 0 0 1.5h6ZM15 8a.75.75 0 0 1-.75.75H11.5V10a.75.75 0 1 1-1.5 0V6a.75.75 0 0 1 1.5 0v1.25h2.75A.75.75 0 0 1 15 8Zm-9 5.25v-2a.75.75 0 0 0-1.5 0v1.25H1.75a.75.75 0 0 0 0 1.5H4.5v1.25a.75.75 0 0 0 1.5 0v-2Zm9 0a.75.75 0 0 1-.75.75h-6a.75.75 0 0 1 0-1.5h6a.75.75 0 0 1 .75.75Z"></path>
+</svg>
+</button><tool-tip id="tooltip-208a3f86-5cf9-460c-9d67-5f823b3162b7" for="icon-button-200c8f1e-31ce-4521-ae41-9d6bb8bcfcd6" popover="manual" data-direction="s" data-type="label" data-view-component="true" class="sr-only position-absolute">Appearance settings</tool-tip>
+
+      <template data-target="react-partial-anchor.template">
+        <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/primer-react.b2a80302b2912cf742ec.module.css" />
+<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/appearance-settings.76259b61ecc822265749.module.css" />
+
+<react-partial
+  partial-name="appearance-settings"
+  data-ssr="false"
+  data-attempted-ssr="false"
+  data-react-profiling="false"
+>
+  
+  <script type="application/json" data-target="react-partial.embeddedData">{"props":{}}</script>
+  <div data-target="react-partial.reactRoot"></div>
+</react-partial>
+
+
+      </template>
+    </react-partial-anchor>
+  </div>
+
+          <button type="button" class="sr-only js-header-menu-focus-trap d-block d-lg-none">Resetting focus</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div hidden="hidden" data-view-component="true" class="js-stale-session-flash stale-session-flash flash flash-warn flash-full">
+  
+        <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-alert">
+    <path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path>
+</svg>
+        <span class="js-stale-session-flash-signed-in" hidden>You signed in with another tab or window. <a class="Link--inTextBlock" href="">Reload</a> to refresh your session.</span>
+        <span class="js-stale-session-flash-signed-out" hidden>You signed out in another tab or window. <a class="Link--inTextBlock" href="">Reload</a> to refresh your session.</span>
+        <span class="js-stale-session-flash-switched" hidden>You switched accounts on another tab or window. <a class="Link--inTextBlock" href="">Reload</a> to refresh your session.</span>
+
+    <button id="icon-button-78e57abc-b0b3-4973-8894-bf64292f3c76" aria-labelledby="tooltip-824f2fe1-811d-4ea7-bb87-d2b5a99b3c71" type="button" data-view-component="true" class="Button Button--iconOnly Button--invisible Button--medium flash-close js-flash-close">  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-x Button-visual">
+    <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
+</svg>
+</button><tool-tip id="tooltip-824f2fe1-811d-4ea7-bb87-d2b5a99b3c71" for="icon-button-78e57abc-b0b3-4973-8894-bf64292f3c76" popover="manual" data-direction="s" data-type="label" data-view-component="true" class="sr-only position-absolute">Dismiss alert</tool-tip>
+
+
+  
+</div>
+    </div>
+
+  <div id="start-of-content" class="show-on-focus"></div>
+
+
+
+
+
+
+
+
+    <div id="js-flash-container" class="flash-container" data-turbo-replace>
+
+
+
+
+  <template class="js-flash-template">
+    
+<div class="flash flash-full   {{ className }}">
+  <div >
+    <button autofocus class="flash-close js-flash-close" type="button" aria-label="Dismiss this message">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-x">
+    <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
+</svg>
+    </button>
+    <div aria-atomic="true" role="alert" class="js-flash-alert">
+      
+      <div>{{ message }}</div>
+
+    </div>
+  </div>
+</div>
+  </template>
+</div>
+
+
+    
+
+
+
+
+
+
+  <div
+    class="application-main "
+    data-commit-hovercards-enabled
+    data-discussion-hovercards-enabled
+    data-issue-and-pr-hovercards-enabled
+    data-project-hovercards-enabled
+  >
+        <div itemscope itemtype="http://schema.org/SoftwareSourceCode" class="">
+    <main id="js-repo-pjax-container" >
+      
+      
+    
+
+    
+
+
+
+
+
+
+  
+  <div id="repository-container-header"  class="pt-3 hide-full-screen" style="background-color: var(--page-header-bgColor, var(--color-page-header-bg));" data-turbo-replace>
+
+      <div class="d-flex flex-nowrap flex-justify-end mb-3  px-3 px-lg-5" style="gap: 1rem;">
+
+        <div class="flex-auto min-width-0 width-fit">
+            
+  <div class=" d-flex flex-wrap flex-items-center wb-break-word f3 text-normal">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-repo color-fg-muted mr-2">
+    <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z"></path>
+</svg>
+    
+    <span class="author flex-self-stretch" itemprop="author">
+      <a class="url fn" rel="author" data-hovercard-type="organization" data-hovercard-url="/orgs/vectorgraphics/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="/vectorgraphics">
+        vectorgraphics
+</a>    </span>
+    <span class="mx-1 flex-self-stretch color-fg-muted">/</span>
+    <strong itemprop="name" class="mr-2 flex-self-stretch">
+      <a data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" href="/vectorgraphics/asymptote">asymptote</a>
+    </strong>
+
+    <span></span><span class="Label Label--secondary v-align-middle mr-1">Public</span>
+  </div>
+
+
+        </div>
+
+        <div id="repository-details-container" class="flex-shrink-0" data-turbo-replace style="max-width: 70%;">
+            <ul class="pagehead-actions flex-shrink-0 d-none d-md-inline" style="padding: 2px 0;">
+    
+      
+
+  <li>
+            <a href="/login?return_to=%2Fvectorgraphics%2Fasymptote" rel="nofollow" id="repository-details-watch-button" data-hydro-click="{&quot;event_type&quot;:&quot;authentication.click&quot;,&quot;payload&quot;:{&quot;location_in_page&quot;:&quot;notification subscription menu watch&quot;,&quot;repository_id&quot;:null,&quot;auth_type&quot;:&quot;LOG_IN&quot;,&quot;originating_url&quot;:&quot;https://github.com/vectorgraphics/asymptote/blob/master/base/geometry.asy&quot;,&quot;user_id&quot;:null}}" data-hydro-click-hmac="09a72dfbde5935c7e45d906de31d5d1fe51dfc5eb0a59f73e9267692674596ea" aria-label="You must be signed in to change notification settings" data-view-component="true" class="btn-sm btn">    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-bell mr-2">
+    <path d="M8 16a2 2 0 0 0 1.985-1.75c.017-.137-.097-.25-.235-.25h-3.5c-.138 0-.252.113-.235.25A2 2 0 0 0 8 16ZM3 5a5 5 0 0 1 10 0v2.947c0 .05.015.098.042.139l1.703 2.555A1.519 1.519 0 0 1 13.482 13H2.518a1.516 1.516 0 0 1-1.263-2.36l1.703-2.554A.255.255 0 0 0 3 7.947Zm5-3.5A3.5 3.5 0 0 0 4.5 5v2.947c0 .346-.102.683-.294.97l-1.703 2.556a.017.017 0 0 0-.003.01l.001.006c0 .002.002.004.004.006l.006.004.007.001h10.964l.007-.001.006-.004.004-.006.001-.007a.017.017 0 0 0-.003-.01l-1.703-2.554a1.745 1.745 0 0 1-.294-.97V5A3.5 3.5 0 0 0 8 1.5Z"></path>
+</svg>Notifications
+</a>    <tool-tip id="tooltip-1aa57598-564b-44ad-85f4-924ef1275a1e" for="repository-details-watch-button" popover="manual" data-direction="s" data-type="description" data-view-component="true" class="sr-only position-absolute">You must be signed in to change notification settings</tool-tip>
+
+  </li>
+
+  <li>
+          <a icon="repo-forked" id="fork-button" href="/login?return_to=%2Fvectorgraphics%2Fasymptote" rel="nofollow" data-hydro-click="{&quot;event_type&quot;:&quot;authentication.click&quot;,&quot;payload&quot;:{&quot;location_in_page&quot;:&quot;repo details fork button&quot;,&quot;repository_id&quot;:40128816,&quot;auth_type&quot;:&quot;LOG_IN&quot;,&quot;originating_url&quot;:&quot;https://github.com/vectorgraphics/asymptote/blob/master/base/geometry.asy&quot;,&quot;user_id&quot;:null}}" data-hydro-click-hmac="037162e86c89e313afb838c5d59f4dae0b6c88b740f558447202b3d451bb0194" data-view-component="true" class="btn-sm btn">    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-repo-forked mr-2">
+    <path d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3 8.75a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z"></path>
+</svg>Fork
+    <span id="repo-network-counter" data-pjax-replace="true" data-turbo-replace="true" title="96" data-view-component="true" class="Counter">96</span>
+</a>
+  </li>
+
+  <li>
+        <div data-view-component="true" class="BtnGroup d-flex">
+        <a href="/login?return_to=%2Fvectorgraphics%2Fasymptote" rel="nofollow" data-hydro-click="{&quot;event_type&quot;:&quot;authentication.click&quot;,&quot;payload&quot;:{&quot;location_in_page&quot;:&quot;star button&quot;,&quot;repository_id&quot;:40128816,&quot;auth_type&quot;:&quot;LOG_IN&quot;,&quot;originating_url&quot;:&quot;https://github.com/vectorgraphics/asymptote/blob/master/base/geometry.asy&quot;,&quot;user_id&quot;:null}}" data-hydro-click-hmac="5932b8fcbc1e26f383aabc338d393a923a4ef7a5903084b9c813dfa082eb198e" aria-label="You must be signed in to star a repository" data-view-component="true" class="tooltipped tooltipped-sw btn-sm btn">    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-star v-align-text-bottom d-inline-block mr-2">
+    <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Zm0 2.445L6.615 5.5a.75.75 0 0 1-.564.41l-3.097.45 2.24 2.184a.75.75 0 0 1 .216.664l-.528 3.084 2.769-1.456a.75.75 0 0 1 .698 0l2.77 1.456-.53-3.084a.75.75 0 0 1 .216-.664l2.24-2.183-3.096-.45a.75.75 0 0 1-.564-.41L8 2.694Z"></path>
+</svg><span data-view-component="true" class="d-inline">
+          Star
+</span>          <span id="repo-stars-counter-star" aria-label="614 users starred this repository" data-singular-suffix="user starred this repository" data-plural-suffix="users starred this repository" data-turbo-replace="true" title="614" data-view-component="true" class="Counter js-social-count">614</span>
+</a></div>
+  </li>
+
+</ul>
+
+        </div>
+      </div>
+
+        <div id="responsive-meta-container" data-turbo-replace>
+</div>
+
+
+          <nav data-pjax="#js-repo-pjax-container" aria-label="Repository" data-view-component="true" class="js-repo-nav js-sidenav-container-pjax js-responsive-underlinenav overflow-hidden UnderlineNav px-3 px-md-4 px-lg-5">
+
+  <ul data-view-component="true" class="UnderlineNav-body list-style-none">
+      <li data-view-component="true" class="d-inline-flex">
+  <a id="code-tab" href="/vectorgraphics/asymptote" data-tab-item="i0code-tab" data-selected-links="repo_source repo_downloads repo_commits repo_releases repo_tags repo_branches repo_packages repo_deployments repo_attestations /vectorgraphics/asymptote" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-hotkey="g c" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Code&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" aria-current="page" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item selected">
+    
+              <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-code UnderlineNav-octicon d-none d-sm-inline">
+    <path d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z"></path>
+</svg>
+        <span data-content="Code">Code</span>
+          <span id="code-repo-tab-count" data-pjax-replace="" data-turbo-replace="" title="Not available" data-view-component="true" class="Counter"></span>
+
+
+    
+</a></li>
+      <li data-view-component="true" class="d-inline-flex">
+  <a id="issues-tab" href="/vectorgraphics/asymptote/issues" data-tab-item="i1issues-tab" data-selected-links="repo_issues repo_labels repo_milestones /vectorgraphics/asymptote/issues" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-hotkey="g i" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Issues&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item">
+    
+              <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-issue-opened UnderlineNav-octicon d-none d-sm-inline">
+    <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"></path><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Z"></path>
+</svg>
+        <span data-content="Issues">Issues</span>
+          <span id="issues-repo-tab-count" data-pjax-replace="" data-turbo-replace="" title="45" data-view-component="true" class="Counter">45</span>
+
+
+    
+</a></li>
+      <li data-view-component="true" class="d-inline-flex">
+  <a id="pull-requests-tab" href="/vectorgraphics/asymptote/pulls" data-tab-item="i2pull-requests-tab" data-selected-links="repo_pulls checks /vectorgraphics/asymptote/pulls" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-hotkey="g p" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Pull requests&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item">
+    
+              <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-git-pull-request UnderlineNav-octicon d-none d-sm-inline">
+    <path d="M1.5 3.25a2.25 2.25 0 1 1 3 2.122v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.25 2.25 0 0 1 1.5 3.25Zm5.677-.177L9.573.677A.25.25 0 0 1 10 .854V2.5h1A2.5 2.5 0 0 1 13.5 5v5.628a2.251 2.251 0 1 1-1.5 0V5a1 1 0 0 0-1-1h-1v1.646a.25.25 0 0 1-.427.177L7.177 3.427a.25.25 0 0 1 0-.354ZM3.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm0 9.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm8.25.75a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Z"></path>
+</svg>
+        <span data-content="Pull requests">Pull requests</span>
+          <span id="pull-requests-repo-tab-count" data-pjax-replace="" data-turbo-replace="" title="6" data-view-component="true" class="Counter">6</span>
+
+
+    
+</a></li>
+      <li data-view-component="true" class="d-inline-flex">
+  <a id="actions-tab" href="/vectorgraphics/asymptote/actions" data-tab-item="i3actions-tab" data-selected-links="repo_actions /vectorgraphics/asymptote/actions" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-hotkey="g a" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Actions&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item">
+    
+              <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-play UnderlineNav-octicon d-none d-sm-inline">
+    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm4.879-2.773 4.264 2.559a.25.25 0 0 1 0 .428l-4.264 2.559A.25.25 0 0 1 6 10.559V5.442a.25.25 0 0 1 .379-.215Z"></path>
+</svg>
+        <span data-content="Actions">Actions</span>
+          <span id="actions-repo-tab-count" data-pjax-replace="" data-turbo-replace="" title="Not available" data-view-component="true" class="Counter"></span>
+
+
+    
+</a></li>
+      <li data-view-component="true" class="d-inline-flex">
+  <a id="projects-tab" href="/vectorgraphics/asymptote/projects" data-tab-item="i4projects-tab" data-selected-links="repo_projects new_repo_project repo_project /vectorgraphics/asymptote/projects" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-hotkey="g b" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Projects&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item">
+    
+              <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-table UnderlineNav-octicon d-none d-sm-inline">
+    <path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0 1 14.25 16H1.75A1.75 1.75 0 0 1 0 14.25ZM6.5 6.5v8h7.75a.25.25 0 0 0 .25-.25V6.5Zm8-1.5V1.75a.25.25 0 0 0-.25-.25H6.5V5Zm-13 1.5v7.75c0 .138.112.25.25.25H5v-8ZM5 5V1.5H1.75a.25.25 0 0 0-.25.25V5Z"></path>
+</svg>
+        <span data-content="Projects">Projects</span>
+          <span id="projects-repo-tab-count" data-pjax-replace="" data-turbo-replace="" title="0" hidden="hidden" data-view-component="true" class="Counter">0</span>
+
+
+    
+</a></li>
+      <li data-view-component="true" class="d-inline-flex">
+  <a id="wiki-tab" href="/vectorgraphics/asymptote/wiki" data-tab-item="i5wiki-tab" data-selected-links="repo_wiki /vectorgraphics/asymptote/wiki" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-hotkey="g w" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Wiki&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item">
+    
+              <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-book UnderlineNav-octicon d-none d-sm-inline">
+    <path d="M0 1.75A.75.75 0 0 1 .75 1h4.253c1.227 0 2.317.59 3 1.501A3.743 3.743 0 0 1 11.006 1h4.245a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75h-4.507a2.25 2.25 0 0 0-1.591.659l-.622.621a.75.75 0 0 1-1.06 0l-.622-.621A2.25 2.25 0 0 0 5.258 13H.75a.75.75 0 0 1-.75-.75Zm7.251 10.324.004-5.073-.002-2.253A2.25 2.25 0 0 0 5.003 2.5H1.5v9h3.757a3.75 3.75 0 0 1 1.994.574ZM8.755 4.75l-.004 7.322a3.752 3.752 0 0 1 1.992-.572H14.5v-9h-3.495a2.25 2.25 0 0 0-2.25 2.25Z"></path>
+</svg>
+        <span data-content="Wiki">Wiki</span>
+          <span id="wiki-repo-tab-count" data-pjax-replace="" data-turbo-replace="" title="Not available" data-view-component="true" class="Counter"></span>
+
+
+    
+</a></li>
+      <li data-view-component="true" class="d-inline-flex">
+  <a id="security-tab" href="/vectorgraphics/asymptote/security" data-tab-item="i6security-tab" data-selected-links="security overview alerts policy token_scanning code_scanning /vectorgraphics/asymptote/security" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-hotkey="g s" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Security&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item">
+    
+              <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-shield UnderlineNav-octicon d-none d-sm-inline">
+    <path d="M7.467.133a1.748 1.748 0 0 1 1.066 0l5.25 1.68A1.75 1.75 0 0 1 15 3.48V7c0 1.566-.32 3.182-1.303 4.682-.983 1.498-2.585 2.813-5.032 3.855a1.697 1.697 0 0 1-1.33 0c-2.447-1.042-4.049-2.357-5.032-3.855C1.32 10.182 1 8.566 1 7V3.48a1.75 1.75 0 0 1 1.217-1.667Zm.61 1.429a.25.25 0 0 0-.153 0l-5.25 1.68a.25.25 0 0 0-.174.238V7c0 1.358.275 2.666 1.057 3.86.784 1.194 2.121 2.34 4.366 3.297a.196.196 0 0 0 .154 0c2.245-.956 3.582-2.104 4.366-3.298C13.225 9.666 13.5 8.36 13.5 7V3.48a.251.251 0 0 0-.174-.237l-5.25-1.68ZM8.75 4.75v3a.75.75 0 0 1-1.5 0v-3a.75.75 0 0 1 1.5 0ZM9 10.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path>
+</svg>
+        <span data-content="Security">Security</span>
+          <include-fragment src="/vectorgraphics/asymptote/security/overall-count" accept="text/fragment+html" data-nonce="v2:0bbfd4a3-ba26-6421-8782-a199c1d5743b" data-view-component="true">
+  
+  <div data-show-on-forbidden-error hidden>
+    <div class="Box">
+  <div class="blankslate-container">
+    <div data-view-component="true" class="blankslate blankslate-spacious color-bg-default rounded-2">
+      
+
+      <h3 data-view-component="true" class="blankslate-heading">        Uh oh!
+</h3>
+      <p data-view-component="true">        <p class="color-fg-muted my-2 mb-2 ws-normal">There was an error while loading. <a class="Link--inTextBlock" data-turbo="false" href="" aria-label="Please reload this page">Please reload this page</a>.</p>
+</p>
+
+</div>  </div>
+</div>  </div>
+</include-fragment>
+
+    
+</a></li>
+      <li data-view-component="true" class="d-inline-flex">
+  <a id="insights-tab" href="/vectorgraphics/asymptote/pulse" data-tab-item="i7insights-tab" data-selected-links="repo_graphs repo_contributors dependency_graph dependabot_updates pulse people community /vectorgraphics/asymptote/pulse" data-pjax="#repo-content-pjax-container" data-turbo-frame="repo-content-turbo-frame" data-analytics-event="{&quot;category&quot;:&quot;Underline navbar&quot;,&quot;action&quot;:&quot;Click tab&quot;,&quot;label&quot;:&quot;Insights&quot;,&quot;target&quot;:&quot;UNDERLINE_NAV.TAB&quot;}" data-view-component="true" class="UnderlineNav-item no-wrap js-responsive-underlinenav-item js-selected-navigation-item">
+    
+              <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-graph UnderlineNav-octicon d-none d-sm-inline">
+    <path d="M1.5 1.75V13.5h13.75a.75.75 0 0 1 0 1.5H.75a.75.75 0 0 1-.75-.75V1.75a.75.75 0 0 1 1.5 0Zm14.28 2.53-5.25 5.25a.75.75 0 0 1-1.06 0L7 7.06 4.28 9.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.25-3.25a.75.75 0 0 1 1.06 0L10 7.94l4.72-4.72a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z"></path>
+</svg>
+        <span data-content="Insights">Insights</span>
+          <span id="insights-repo-tab-count" data-pjax-replace="" data-turbo-replace="" title="Not available" data-view-component="true" class="Counter"></span>
+
+
+    
+</a></li>
+</ul>
+    <div style="visibility:hidden;" data-view-component="true" class="UnderlineNav-actions js-responsive-underlinenav-overflow position-absolute pr-3 pr-md-4 pr-lg-5 right-0">      <action-menu data-select-variant="none" data-view-component="true">
+  <focus-group direction="vertical" mnemonics retain>
+    <button id="action-menu-dbba0e80-f494-463a-9533-66cc5080f705-button" popovertarget="action-menu-dbba0e80-f494-463a-9533-66cc5080f705-overlay" aria-controls="action-menu-dbba0e80-f494-463a-9533-66cc5080f705-list" aria-haspopup="true" aria-labelledby="tooltip-30069d1a-45f4-4e3a-a232-d85119b02564" type="button" data-view-component="true" class="Button Button--iconOnly Button--secondary Button--medium UnderlineNav-item">  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-kebab-horizontal Button-visual">
+    <path d="M8 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM1.5 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Zm13 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"></path>
+</svg>
+</button><tool-tip id="tooltip-30069d1a-45f4-4e3a-a232-d85119b02564" for="action-menu-dbba0e80-f494-463a-9533-66cc5080f705-button" popover="manual" data-direction="s" data-type="label" data-view-component="true" class="sr-only position-absolute">Additional navigation options</tool-tip>
+
+
+<anchored-position data-target="action-menu.overlay" id="action-menu-dbba0e80-f494-463a-9533-66cc5080f705-overlay" anchor="action-menu-dbba0e80-f494-463a-9533-66cc5080f705-button" align="start" side="outside-bottom" anchor-offset="normal" popover="auto" data-view-component="true">
+  <div data-view-component="true" class="Overlay Overlay--size-auto">
+    
+      <div data-view-component="true" class="Overlay-body Overlay-body--paddingNone">          <action-list>
+  <div data-view-component="true">
+    <ul aria-labelledby="action-menu-dbba0e80-f494-463a-9533-66cc5080f705-button" id="action-menu-dbba0e80-f494-463a-9533-66cc5080f705-list" role="menu" data-view-component="true" class="ActionListWrap--inset ActionListWrap">
+        <li hidden="hidden" data-menu-item="i0code-tab" data-targets="action-list.items" role="none" data-view-component="true" class="ActionListItem">
+    
+    
+    <a tabindex="-1" id="item-e8521f99-d237-4128-802b-ba40d5998f8b" href="/vectorgraphics/asymptote" role="menuitem" data-view-component="true" class="ActionListContent ActionListContent--visual16">
+        <span class="ActionListItem-visual ActionListItem-visual--leading">
+          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-code">
+    <path d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z"></path>
+</svg>
+        </span>
+      
+        <span data-view-component="true" class="ActionListItem-label">
+          Code
+</span>      
+</a>
+  
+</li>
+        <li hidden="hidden" data-menu-item="i1issues-tab" data-targets="action-list.items" role="none" data-view-component="true" class="ActionListItem">
+    
+    
+    <a tabindex="-1" id="item-a0c57c2c-b85e-43af-afc5-6d1e451ef848" href="/vectorgraphics/asymptote/issues" role="menuitem" data-view-component="true" class="ActionListContent ActionListContent--visual16">
+        <span class="ActionListItem-visual ActionListItem-visual--leading">
+          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-issue-opened">
+    <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"></path><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Z"></path>
+</svg>
+        </span>
+      
+        <span data-view-component="true" class="ActionListItem-label">
+          Issues
+</span>      
+</a>
+  
+</li>
+        <li hidden="hidden" data-menu-item="i2pull-requests-tab" data-targets="action-list.items" role="none" data-view-component="true" class="ActionListItem">
+    
+    
+    <a tabindex="-1" id="item-8697b99b-9e5a-418c-b5a1-618defca4de8" href="/vectorgraphics/asymptote/pulls" role="menuitem" data-view-component="true" class="ActionListContent ActionListContent--visual16">
+        <span class="ActionListItem-visual ActionListItem-visual--leading">
+          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-git-pull-request">
+    <path d="M1.5 3.25a2.25 2.25 0 1 1 3 2.122v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.25 2.25 0 0 1 1.5 3.25Zm5.677-.177L9.573.677A.25.25 0 0 1 10 .854V2.5h1A2.5 2.5 0 0 1 13.5 5v5.628a2.251 2.251 0 1 1-1.5 0V5a1 1 0 0 0-1-1h-1v1.646a.25.25 0 0 1-.427.177L7.177 3.427a.25.25 0 0 1 0-.354ZM3.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm0 9.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm8.25.75a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Z"></path>
+</svg>
+        </span>
+      
+        <span data-view-component="true" class="ActionListItem-label">
+          Pull requests
+</span>      
+</a>
+  
+</li>
+        <li hidden="hidden" data-menu-item="i3actions-tab" data-targets="action-list.items" role="none" data-view-component="true" class="ActionListItem">
+    
+    
+    <a tabindex="-1" id="item-3b9fe869-f02a-4083-aa18-40f80e93a967" href="/vectorgraphics/asymptote/actions" role="menuitem" data-view-component="true" class="ActionListContent ActionListContent--visual16">
+        <span class="ActionListItem-visual ActionListItem-visual--leading">
+          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-play">
+    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm4.879-2.773 4.264 2.559a.25.25 0 0 1 0 .428l-4.264 2.559A.25.25 0 0 1 6 10.559V5.442a.25.25 0 0 1 .379-.215Z"></path>
+</svg>
+        </span>
+      
+        <span data-view-component="true" class="ActionListItem-label">
+          Actions
+</span>      
+</a>
+  
+</li>
+        <li hidden="hidden" data-menu-item="i4projects-tab" data-targets="action-list.items" role="none" data-view-component="true" class="ActionListItem">
+    
+    
+    <a tabindex="-1" id="item-b65267e4-2a7f-4aa1-9728-a076c31f3937" href="/vectorgraphics/asymptote/projects" role="menuitem" data-view-component="true" class="ActionListContent ActionListContent--visual16">
+        <span class="ActionListItem-visual ActionListItem-visual--leading">
+          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-table">
+    <path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0 1 14.25 16H1.75A1.75 1.75 0 0 1 0 14.25ZM6.5 6.5v8h7.75a.25.25 0 0 0 .25-.25V6.5Zm8-1.5V1.75a.25.25 0 0 0-.25-.25H6.5V5Zm-13 1.5v7.75c0 .138.112.25.25.25H5v-8ZM5 5V1.5H1.75a.25.25 0 0 0-.25.25V5Z"></path>
+</svg>
+        </span>
+      
+        <span data-view-component="true" class="ActionListItem-label">
+          Projects
+</span>      
+</a>
+  
+</li>
+        <li hidden="hidden" data-menu-item="i5wiki-tab" data-targets="action-list.items" role="none" data-view-component="true" class="ActionListItem">
+    
+    
+    <a tabindex="-1" id="item-f3bb15bc-8222-43b3-bde8-8ec95c442241" href="/vectorgraphics/asymptote/wiki" role="menuitem" data-view-component="true" class="ActionListContent ActionListContent--visual16">
+        <span class="ActionListItem-visual ActionListItem-visual--leading">
+          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-book">
+    <path d="M0 1.75A.75.75 0 0 1 .75 1h4.253c1.227 0 2.317.59 3 1.501A3.743 3.743 0 0 1 11.006 1h4.245a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75h-4.507a2.25 2.25 0 0 0-1.591.659l-.622.621a.75.75 0 0 1-1.06 0l-.622-.621A2.25 2.25 0 0 0 5.258 13H.75a.75.75 0 0 1-.75-.75Zm7.251 10.324.004-5.073-.002-2.253A2.25 2.25 0 0 0 5.003 2.5H1.5v9h3.757a3.75 3.75 0 0 1 1.994.574ZM8.755 4.75l-.004 7.322a3.752 3.752 0 0 1 1.992-.572H14.5v-9h-3.495a2.25 2.25 0 0 0-2.25 2.25Z"></path>
+</svg>
+        </span>
+      
+        <span data-view-component="true" class="ActionListItem-label">
+          Wiki
+</span>      
+</a>
+  
+</li>
+        <li hidden="hidden" data-menu-item="i6security-tab" data-targets="action-list.items" role="none" data-view-component="true" class="ActionListItem">
+    
+    
+    <a tabindex="-1" id="item-234f0252-d8c6-47c7-8171-4983d3ef681b" href="/vectorgraphics/asymptote/security" role="menuitem" data-view-component="true" class="ActionListContent ActionListContent--visual16">
+        <span class="ActionListItem-visual ActionListItem-visual--leading">
+          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-shield">
+    <path d="M7.467.133a1.748 1.748 0 0 1 1.066 0l5.25 1.68A1.75 1.75 0 0 1 15 3.48V7c0 1.566-.32 3.182-1.303 4.682-.983 1.498-2.585 2.813-5.032 3.855a1.697 1.697 0 0 1-1.33 0c-2.447-1.042-4.049-2.357-5.032-3.855C1.32 10.182 1 8.566 1 7V3.48a1.75 1.75 0 0 1 1.217-1.667Zm.61 1.429a.25.25 0 0 0-.153 0l-5.25 1.68a.25.25 0 0 0-.174.238V7c0 1.358.275 2.666 1.057 3.86.784 1.194 2.121 2.34 4.366 3.297a.196.196 0 0 0 .154 0c2.245-.956 3.582-2.104 4.366-3.298C13.225 9.666 13.5 8.36 13.5 7V3.48a.251.251 0 0 0-.174-.237l-5.25-1.68ZM8.75 4.75v3a.75.75 0 0 1-1.5 0v-3a.75.75 0 0 1 1.5 0ZM9 10.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path>
+</svg>
+        </span>
+      
+        <span data-view-component="true" class="ActionListItem-label">
+          Security
+</span>      
+</a>
+  
+</li>
+        <li hidden="hidden" data-menu-item="i7insights-tab" data-targets="action-list.items" role="none" data-view-component="true" class="ActionListItem">
+    
+    
+    <a tabindex="-1" id="item-6ced0370-efa7-4c62-8189-3415ef9494fe" href="/vectorgraphics/asymptote/pulse" role="menuitem" data-view-component="true" class="ActionListContent ActionListContent--visual16">
+        <span class="ActionListItem-visual ActionListItem-visual--leading">
+          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-graph">
+    <path d="M1.5 1.75V13.5h13.75a.75.75 0 0 1 0 1.5H.75a.75.75 0 0 1-.75-.75V1.75a.75.75 0 0 1 1.5 0Zm14.28 2.53-5.25 5.25a.75.75 0 0 1-1.06 0L7 7.06 4.28 9.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.25-3.25a.75.75 0 0 1 1.06 0L10 7.94l4.72-4.72a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z"></path>
+</svg>
+        </span>
+      
+        <span data-view-component="true" class="ActionListItem-label">
+          Insights
+</span>      
+</a>
+  
+</li>
+</ul>    
+</div></action-list>
+
+
+</div>
+      
+</div></anchored-position>  </focus-group>
+</action-menu></div>
+</nav>
+
+  </div>
+
+  
+
+
+
+<turbo-frame id="repo-content-turbo-frame" target="_top" data-turbo-action="advance" class="">
+    <div id="repo-content-pjax-container" class="repository-content " >
+    
+
+
+
+    
+      
+    
+
+
+
+
+
+
+
+
+<react-app
+  app-name="react-code-view"
+  initial-path="/vectorgraphics/asymptote/blob/master/base/geometry.asy"
+    style="display: block; min-height: calc(100vh - 64px);"
+  data-attempted-ssr="false"
+  data-ssr="false"
+  data-lazy="false"
+  data-alternate="false"
+  data-data-router-enabled="false"
+  data-react-profiling="false"
+>
+  
+  <script type="application/json" data-target="react-app.embeddedData">{"payload":{"allShortcutsEnabled":false,"fileTree":{"base":{"items":[{"name":"res","path":"base/res","contentType":"directory"},{"name":"shaders","path":"base/shaders","contentType":"directory"},{"name":"webgl","path":"base/webgl","contentType":"directory"},{"name":"CAD.asy","path":"base/CAD.asy","contentType":"file"},{"name":"animate.asy","path":"base/animate.asy","contentType":"file"},{"name":"animation.asy","path":"base/animation.asy","contentType":"file"},{"name":"annotate.asy","path":"base/annotate.asy","contentType":"file"},{"name":"asy-init.el","path":"base/asy-init.el","contentType":"file"},{"name":"asy-kate.sh","path":"base/asy-kate.sh","contentType":"file"},{"name":"asy-mode.el","path":"base/asy-mode.el","contentType":"file"},{"name":"asy.vim","path":"base/asy.vim","contentType":"file"},{"name":"asy_filetype.vim","path":"base/asy_filetype.vim","contentType":"file"},{"name":"asymptote.py","path":"base/asymptote.py","contentType":"file"},{"name":"babel.asy","path":"base/babel.asy","contentType":"file"},{"name":"bezulate.asy","path":"base/bezulate.asy","contentType":"file"},{"name":"binarytree.asy","path":"base/binarytree.asy","contentType":"file"},{"name":"bsp.asy","path":"base/bsp.asy","contentType":"file"},{"name":"checkversion.asy","path":"base/checkversion.asy","contentType":"file"},{"name":"colormap.asy","path":"base/colormap.asy","contentType":"file"},{"name":"contour.asy","path":"base/contour.asy","contentType":"file"},{"name":"contour3.asy","path":"base/contour3.asy","contentType":"file"},{"name":"drawtree.asy","path":"base/drawtree.asy","contentType":"file"},{"name":"embed.asy","path":"base/embed.asy","contentType":"file"},{"name":"external.asy","path":"base/external.asy","contentType":"file"},{"name":"feynman.asy","path":"base/feynman.asy","contentType":"file"},{"name":"flowchart.asy","path":"base/flowchart.asy","contentType":"file"},{"name":"fontsize.asy","path":"base/fontsize.asy","contentType":"file"},{"name":"geometry.asy","path":"base/geometry.asy","contentType":"file"},{"name":"graph.asy","path":"base/graph.asy","contentType":"file"},{"name":"graph3.asy","path":"base/graph3.asy","contentType":"file"},{"name":"graph_settings.asy","path":"base/graph_settings.asy","contentType":"file"},{"name":"graph_splinetype.asy","path":"base/graph_splinetype.asy","contentType":"file"},{"name":"grid3.asy","path":"base/grid3.asy","contentType":"file"},{"name":"interpolate.asy","path":"base/interpolate.asy","contentType":"file"},{"name":"labelpath.asy","path":"base/labelpath.asy","contentType":"file"},{"name":"labelpath3.asy","path":"base/labelpath3.asy","contentType":"file"},{"name":"lmfit.asy","path":"base/lmfit.asy","contentType":"file"},{"name":"map.asy","path":"base/map.asy","contentType":"file"},{"name":"mapArray.asy","path":"base/mapArray.asy","contentType":"file"},{"name":"markers.asy","path":"base/markers.asy","contentType":"file"},{"name":"math.asy","path":"base/math.asy","contentType":"file"},{"name":"metapost.asy","path":"base/metapost.asy","contentType":"file"},{"name":"nopapersize.ps","path":"base/nopapersize.ps","contentType":"file"},{"name":"obj.asy","path":"base/obj.asy","contentType":"file"},{"name":"ode.asy","path":"base/ode.asy","contentType":"file"},{"name":"palette.asy","path":"base/palette.asy","contentType":"file"},{"name":"patterns.asy","path":"base/patterns.asy","contentType":"file"},{"name":"plain.asy","path":"base/plain.asy","contentType":"file"},{"name":"plain_Label.asy","path":"base/plain_Label.asy","contentType":"file"},{"name":"plain_arcs.asy","path":"base/plain_arcs.asy","contentType":"file"},{"name":"plain_arrows.asy","path":"base/plain_arrows.asy","contentType":"file"},{"name":"plain_bounds.asy","path":"base/plain_bounds.asy","contentType":"file"},{"name":"plain_boxes.asy","path":"base/plain_boxes.asy","contentType":"file"},{"name":"plain_constants.asy","path":"base/plain_constants.asy","contentType":"file"},{"name":"plain_debugger.asy","path":"base/plain_debugger.asy","contentType":"file"},{"name":"plain_filldraw.asy","path":"base/plain_filldraw.asy","contentType":"file"},{"name":"plain_margins.asy","path":"base/plain_margins.asy","contentType":"file"},{"name":"plain_markers.asy","path":"base/plain_markers.asy","contentType":"file"},{"name":"plain_paths.asy","path":"base/plain_paths.asy","contentType":"file"},{"name":"plain_pens.asy","path":"base/plain_pens.asy","contentType":"file"},{"name":"plain_picture.asy","path":"base/plain_picture.asy","contentType":"file"},{"name":"plain_prethree.asy","path":"base/plain_prethree.asy","contentType":"file"},{"name":"plain_scaling.asy","path":"base/plain_scaling.asy","contentType":"file"},{"name":"plain_shipout.asy","path":"base/plain_shipout.asy","contentType":"file"},{"name":"plain_strings.asy","path":"base/plain_strings.asy","contentType":"file"},{"name":"pstoedit.asy","path":"base/pstoedit.asy","contentType":"file"},{"name":"rational.asy","path":"base/rational.asy","contentType":"file"},{"name":"rationalSimplex.asy","path":"base/rationalSimplex.asy","contentType":"file"},{"name":"reload.js","path":"base/reload.js","contentType":"file"},{"name":"roundedpath.asy","path":"base/roundedpath.asy","contentType":"file"},{"name":"simplex.asy","path":"base/simplex.asy","contentType":"file"},{"name":"simplex2.asy","path":"base/simplex2.asy","contentType":"file"},{"name":"size10.asy","path":"base/size10.asy","contentType":"file"},{"name":"size11.asy","path":"base/size11.asy","contentType":"file"},{"name":"slide.asy","path":"base/slide.asy","contentType":"file"},{"name":"slopefield.asy","path":"base/slopefield.asy","contentType":"file"},{"name":"smoothcontour3.asy","path":"base/smoothcontour3.asy","contentType":"file"},{"name":"solids.asy","path":"base/solids.asy","contentType":"file"},{"name":"stats.asy","path":"base/stats.asy","contentType":"file"},{"name":"syzygy.asy","path":"base/syzygy.asy","contentType":"file"},{"name":"texcolors.asy","path":"base/texcolors.asy","contentType":"file"},{"name":"three.asy","path":"base/three.asy","contentType":"file"},{"name":"three_arrows.asy","path":"base/three_arrows.asy","contentType":"file"},{"name":"three_light.asy","path":"base/three_light.asy","contentType":"file"},{"name":"three_margins.asy","path":"base/three_margins.asy","contentType":"file"},{"name":"three_surface.asy","path":"base/three_surface.asy","contentType":"file"},{"name":"three_tube.asy","path":"base/three_tube.asy","contentType":"file"},{"name":"tree.asy","path":"base/tree.asy","contentType":"file"},{"name":"trembling.asy","path":"base/trembling.asy","contentType":"file"},{"name":"tube.asy","path":"base/tube.asy","contentType":"file"},{"name":"v3d.asy","path":"base/v3d.asy","contentType":"file"},{"name":"x11colors.asy","path":"base/x11colors.asy","contentType":"file"}],"totalCount":92},"":{"items":[{"name":".github","path":".github","contentType":"directory"},{"name":"GUI","path":"GUI","contentType":"directory"},{"name":"LspCpp","path":"LspCpp","contentType":"directory"},{"name":"backports","path":"backports","contentType":"directory"},{"name":"base","path":"base","contentType":"directory"},{"name":"build-scripts","path":"build-scripts","contentType":"directory"},{"name":"cmake-preset-files","path":"cmake-preset-files","contentType":"directory"},{"name":"cmake-scripts","path":"cmake-scripts","contentType":"directory"},{"name":"cudareflect","path":"cudareflect","contentType":"directory"},{"name":"cxxtests","path":"cxxtests","contentType":"directory"},{"name":"doc","path":"doc","contentType":"directory"},{"name":"examples","path":"examples","contentType":"directory"},{"name":"gc","path":"gc","contentType":"directory"},{"name":"libatomic_ops","path":"libatomic_ops","contentType":"directory"},{"name":"misc","path":"misc","contentType":"directory"},{"name":"patches","path":"patches","contentType":"directory"},{"name":"prc","path":"prc","contentType":"directory"},{"name":"tests","path":"tests","contentType":"directory"},{"name":"testsExtra","path":"testsExtra","contentType":"directory"},{"name":"thirdparty_impl","path":"thirdparty_impl","contentType":"directory"},{"name":"tinyexr","path":"tinyexr","contentType":"directory"},{"name":"webgl","path":"webgl","contentType":"directory"},{"name":"windows","path":"windows","contentType":"directory"},{"name":".clang-format","path":".clang-format","contentType":"file"},{"name":".gdbinit","path":".gdbinit","contentType":"file"},{"name":".gitattributes","path":".gitattributes","contentType":"file"},{"name":".gitignore","path":".gitignore","contentType":"file"},{"name":".isort.cfg","path":".isort.cfg","contentType":"file"},{"name":".pylintrc","path":".pylintrc","contentType":"file"},{"name":"BUGS","path":"BUGS","contentType":"file"},{"name":"CMakeLists.txt","path":"CMakeLists.txt","contentType":"file"},{"name":"CMakePresets.json","path":"CMakePresets.json","contentType":"file"},{"name":"Delaunay.cc","path":"Delaunay.cc","contentType":"file"},{"name":"Delaunay.h","path":"Delaunay.h","contentType":"file"},{"name":"EXRFiles.cc","path":"EXRFiles.cc","contentType":"file"},{"name":"EXRFiles.h","path":"EXRFiles.h","contentType":"file"},{"name":"GLTextures.cc","path":"GLTextures.cc","contentType":"file"},{"name":"GLTextures.h","path":"GLTextures.h","contentType":"file"},{"name":"INSTALL","path":"INSTALL","contentType":"file"},{"name":"INSTALL-VCPKG.md","path":"INSTALL-VCPKG.md","contentType":"file"},{"name":"INSTALL-WIN.md","path":"INSTALL-WIN.md","contentType":"file"},{"name":"LICENSE","path":"LICENSE","contentType":"file"},{"name":"LICENSE.LESSER","path":"LICENSE.LESSER","contentType":"file"},{"name":"Makefile.in","path":"Makefile.in","contentType":"file"},{"name":"Pipfile","path":"Pipfile","contentType":"file"},{"name":"README","path":"README","contentType":"file"},{"name":"TODO","path":"TODO","contentType":"file"},{"name":"_config.yml","path":"_config.yml","contentType":"file"},{"name":"abs3doutfile.h","path":"abs3doutfile.h","contentType":"file"},{"name":"absyn.cc","path":"absyn.cc","contentType":"file"},{"name":"absyn.h","path":"absyn.h","contentType":"file"},{"name":"access.cc","path":"access.cc","contentType":"file"},{"name":"access.h","path":"access.h","contentType":"file"},{"name":"align.h","path":"align.h","contentType":"file"},{"name":"angle.h","path":"angle.h","contentType":"file"},{"name":"application.cc","path":"application.cc","contentType":"file"},{"name":"application.h","path":"application.h","contentType":"file"},{"name":"array.cc","path":"array.cc","contentType":"file"},{"name":"array.h","path":"array.h","contentType":"file"},{"name":"arrayop.h","path":"arrayop.h","contentType":"file"},{"name":"asy-list.py","path":"asy-list.py","contentType":"file"},{"name":"asymptote.spec","path":"asymptote.spec","contentType":"file"},{"name":"asyparser.cc","path":"asyparser.cc","contentType":"file"},{"name":"asyparser.h","path":"asyparser.h","contentType":"file"},{"name":"asyprocess.cc","path":"asyprocess.cc","contentType":"file"},{"name":"asyprocess.h","path":"asyprocess.h","contentType":"file"},{"name":"autogen.sh","path":"autogen.sh","contentType":"file"},{"name":"ax_pthread.m4","path":"ax_pthread.m4","contentType":"file"},{"name":"bbox.h","path":"bbox.h","contentType":"file"},{"name":"bbox3.h","path":"bbox3.h","contentType":"file"},{"name":"beziercurve.cc","path":"beziercurve.cc","contentType":"file"},{"name":"beziercurve.h","path":"beziercurve.h","contentType":"file"},{"name":"bezierpatch.cc","path":"bezierpatch.cc","contentType":"file"},{"name":"bezierpatch.h","path":"bezierpatch.h","contentType":"file"},{"name":"builtin.cc","path":"builtin.cc","contentType":"file"},{"name":"builtin.h","path":"builtin.h","contentType":"file"},{"name":"callable.cc","path":"callable.cc","contentType":"file"},{"name":"callable.h","path":"callable.h","contentType":"file"},{"name":"camp.l","path":"camp.l","contentType":"file"},{"name":"camp.y","path":"camp.y","contentType":"file"},{"name":"camperror.cc","path":"camperror.cc","contentType":"file"},{"name":"camperror.h","path":"camperror.h","contentType":"file"},{"name":"castop.h","path":"castop.h","contentType":"file"},{"name":"cc-mode2.el","path":"cc-mode2.el","contentType":"file"},{"name":"coder.cc","path":"coder.cc","contentType":"file"},{"name":"coder.h","path":"coder.h","contentType":"file"},{"name":"coenv.cc","path":"coenv.cc","contentType":"file"},{"name":"coenv.h","path":"coenv.h","contentType":"file"},{"name":"common.h","path":"common.h","contentType":"file"},{"name":"compile","path":"compile","contentType":"file"},{"name":"config.guess","path":"config.guess","contentType":"file"},{"name":"config.sub","path":"config.sub","contentType":"file"},{"name":"configure.ac","path":"configure.ac","contentType":"file"},{"name":"constructor.cc","path":"constructor.cc","contentType":"file"},{"name":"dec.cc","path":"dec.cc","contentType":"file"},{"name":"dec.h","path":"dec.h","contentType":"file"},{"name":"deconstruct","path":"deconstruct","contentType":"file"},{"name":"depcomp","path":"depcomp","contentType":"file"},{"name":"determine_pkg_info.py","path":"determine_pkg_info.py","contentType":"file"},{"name":"drawclipbegin.h","path":"drawclipbegin.h","contentType":"file"},{"name":"drawclipend.h","path":"drawclipend.h","contentType":"file"},{"name":"drawelement.h","path":"drawelement.h","contentType":"file"},{"name":"drawfill.cc","path":"drawfill.cc","contentType":"file"},{"name":"drawfill.h","path":"drawfill.h","contentType":"file"},{"name":"drawgrestore.h","path":"drawgrestore.h","contentType":"file"},{"name":"drawgroup.h","path":"drawgroup.h","contentType":"file"},{"name":"drawgsave.h","path":"drawgsave.h","contentType":"file"},{"name":"drawimage.h","path":"drawimage.h","contentType":"file"},{"name":"drawlabel.cc","path":"drawlabel.cc","contentType":"file"},{"name":"drawlabel.h","path":"drawlabel.h","contentType":"file"},{"name":"drawlayer.h","path":"drawlayer.h","contentType":"file"},{"name":"drawpath.cc","path":"drawpath.cc","contentType":"file"},{"name":"drawpath.h","path":"drawpath.h","contentType":"file"},{"name":"drawpath3.cc","path":"drawpath3.cc","contentType":"file"},{"name":"drawpath3.h","path":"drawpath3.h","contentType":"file"},{"name":"drawsurface.cc","path":"drawsurface.cc","contentType":"file"},{"name":"drawsurface.h","path":"drawsurface.h","contentType":"file"},{"name":"drawverbatim.h","path":"drawverbatim.h","contentType":"file"},{"name":"entry.cc","path":"entry.cc","contentType":"file"},{"name":"entry.h","path":"entry.h","contentType":"file"},{"name":"env.cc","path":"env.cc","contentType":"file"},{"name":"env.h","path":"env.h","contentType":"file"},{"name":"envcompleter.cc","path":"envcompleter.cc","contentType":"file"},{"name":"envcompleter.h","path":"envcompleter.h","contentType":"file"},{"name":"errormsg.cc","path":"errormsg.cc","contentType":"file"},{"name":"errormsg.h","path":"errormsg.h","contentType":"file"},{"name":"errors","path":"errors","contentType":"file"},{"name":"errortest.asy","path":"errortest.asy","contentType":"file"},{"name":"errortestBrokenTemplate.asy","path":"errortestBrokenTemplate.asy","contentType":"file"},{"name":"errortestNonTemplate.asy","path":"errortestNonTemplate.asy","contentType":"file"},{"name":"errortestTemplate.asy","path":"errortestTemplate.asy","contentType":"file"},{"name":"exithandlers.cc","path":"exithandlers.cc","contentType":"file"},{"name":"exithandlers.h","path":"exithandlers.h","contentType":"file"},{"name":"exp.cc","path":"exp.cc","contentType":"file"},{"name":"exp.h","path":"exp.h","contentType":"file"},{"name":"fftw++.cc","path":"fftw++.cc","contentType":"file"},{"name":"fftw++.h","path":"fftw++.h","contentType":"file"},{"name":"fftw++asy.cc","path":"fftw++asy.cc","contentType":"file"},{"name":"fileio.cc","path":"fileio.cc","contentType":"file"},{"name":"fileio.h","path":"fileio.h","contentType":"file"},{"name":"findsym.py","path":"findsym.py","contentType":"file"},{"name":"flatguide.cc","path":"flatguide.cc","contentType":"file"},{"name":"flatguide.h","path":"flatguide.h","contentType":"file"},{"name":"fpu.h","path":"fpu.h","contentType":"file"},{"name":"frame.h","path":"frame.h","contentType":"file"},{"name":"fundec.cc","path":"fundec.cc","contentType":"file"},{"name":"fundec.h","path":"fundec.h","contentType":"file"},{"name":"gen_preprocessed_depfile.py","path":"gen_preprocessed_depfile.py","contentType":"file"},{"name":"generate_asy_list_file.py","path":"generate_asy_list_file.py","contentType":"file"},{"name":"generate_asy_ver_info.py","path":"generate_asy_ver_info.py","contentType":"file"},{"name":"generate_enums.py","path":"generate_enums.py","contentType":"file"},{"name":"genv.cc","path":"genv.cc","contentType":"file"},{"name":"genv.h","path":"genv.h","contentType":"file"},{"name":"glew.c","path":"glew.c","contentType":"file"},{"name":"glrender.cc","path":"glrender.cc","contentType":"file"},{"name":"glrender.h","path":"glrender.h","contentType":"file"},{"name":"gsl.cc","path":"gsl.cc","contentType":"file"},{"name":"guide.cc","path":"guide.cc","contentType":"file"},{"name":"guide.h","path":"guide.h","contentType":"file"},{"name":"guideflags.h","path":"guideflags.h","contentType":"file"},{"name":"impdatum.cc","path":"impdatum.cc","contentType":"file"},{"name":"index.html","path":"index.html","contentType":"file"},{"name":"inst.h","path":"inst.h","contentType":"file"},{"name":"install-sh","path":"install-sh","contentType":"file"},{"name":"interact.cc","path":"interact.cc","contentType":"file"},{"name":"interact.h","path":"interact.h","contentType":"file"},{"name":"item.h","path":"item.h","contentType":"file"},{"name":"jsfile.cc","path":"jsfile.cc","contentType":"file"},{"name":"jsfile.h","path":"jsfile.h","contentType":"file"},{"name":"keywords.py","path":"keywords.py","contentType":"file"},{"name":"knot.cc","path":"knot.cc","contentType":"file"},{"name":"knot.h","path":"knot.h","contentType":"file"},{"name":"lexical.h","path":"lexical.h","contentType":"file"},{"name":"locate.cc","path":"locate.cc","contentType":"file"},{"name":"locate.h","path":"locate.h","contentType":"file"},{"name":"lspdec.cc","path":"lspdec.cc","contentType":"file"},{"name":"lspexp.cc","path":"lspexp.cc","contentType":"file"},{"name":"lspfundec.cc","path":"lspfundec.cc","contentType":"file"},{"name":"lspserv.cc","path":"lspserv.cc","contentType":"file"},{"name":"lspserv.h","path":"lspserv.h","contentType":"file"},{"name":"lspstm.cc","path":"lspstm.cc","contentType":"file"},{"name":"main.cc","path":"main.cc","contentType":"file"},{"name":"makeUnique.h","path":"makeUnique.h","contentType":"file"},{"name":"material.h","path":"material.h","contentType":"file"},{"name":"mathop.h","path":"mathop.h","contentType":"file"},{"name":"memory.cc","path":"memory.cc","contentType":"file"},{"name":"memory.h","path":"memory.h","contentType":"file"},{"name":"mod.h","path":"mod.h","contentType":"file"},{"name":"modifier.h","path":"modifier.h","contentType":"file"},{"name":"name.cc","path":"name.cc","contentType":"file"},{"name":"name.h","path":"name.h","contentType":"file"},{"name":"newexp.cc","path":"newexp.cc","contentType":"file"},{"name":"newexp.h","path":"newexp.h","contentType":"file"},{"name":"opcodes.h","path":"opcodes.h","contentType":"file"},{"name":"opsymbols.py","path":"opsymbols.py","contentType":"file"},{"name":"pair.h","path":"pair.h","contentType":"file"},{"name":"parallel.cc","path":"parallel.cc","contentType":"file"},{"name":"parallel.h","path":"parallel.h","contentType":"file"},{"name":"path.cc","path":"path.cc","contentType":"file"},{"name":"path.h","path":"path.h","contentType":"file"},{"name":"path3.cc","path":"path3.cc","contentType":"file"},{"name":"path3.h","path":"path3.h","contentType":"file"},{"name":"pen.cc","path":"pen.cc","contentType":"file"},{"name":"pen.h","path":"pen.h","contentType":"file"},{"name":"picture.cc","path":"picture.cc","contentType":"file"},{"name":"picture.h","path":"picture.h","contentType":"file"},{"name":"pipestream.cc","path":"pipestream.cc","contentType":"file"},{"name":"pipestream.h","path":"pipestream.h","contentType":"file"},{"name":"pkg-info.cmake","path":"pkg-info.cmake","contentType":"file"},{"name":"pkg.m4","path":"pkg.m4","contentType":"file"},{"name":"policy.h","path":"policy.h","contentType":"file"},{"name":"prcfile.h","path":"prcfile.h","contentType":"file"},{"name":"predicates.cc","path":"predicates.cc","contentType":"file"},{"name":"predicates.h","path":"predicates.h","contentType":"file"},{"name":"primitives.h","path":"primitives.h","contentType":"file"},{"name":"profiler.h","path":"profiler.h","contentType":"file"},{"name":"program.cc","path":"program.cc","contentType":"file"},{"name":"program.h","path":"program.h","contentType":"file"},{"name":"psfile.cc","path":"psfile.cc","contentType":"file"},{"name":"psfile.h","path":"psfile.h","contentType":"file"},{"name":"quick-start-win32.ps1","path":"quick-start-win32.ps1","contentType":"file"},{"name":"record.cc","path":"record.cc","contentType":"file"},{"name":"record.h","path":"record.h","contentType":"file"},{"name":"refaccess.cc","path":"refaccess.cc","contentType":"file"},{"name":"refaccess.h","path":"refaccess.h","contentType":"file"},{"name":"requirements.lint.txt","path":"requirements.lint.txt","contentType":"file"},{"name":"rounding.h","path":"rounding.h","contentType":"file"},{"name":"runarray.in","path":"runarray.in","contentType":"file"},{"name":"runbacktrace.in","path":"runbacktrace.in","contentType":"file"},{"name":"runfile.in","path":"runfile.in","contentType":"file"},{"name":"runhistory.in","path":"runhistory.in","contentType":"file"},{"name":"runlabel.in","path":"runlabel.in","contentType":"file"},{"name":"runmath.in","path":"runmath.in","contentType":"file"},{"name":"runpair.in","path":"runpair.in","contentType":"file"},{"name":"runpath.in","path":"runpath.in","contentType":"file"},{"name":"runpath3d.in","path":"runpath3d.in","contentType":"file"},{"name":"runpicture.in","path":"runpicture.in","contentType":"file"},{"name":"runstring.in","path":"runstring.in","contentType":"file"},{"name":"runsystem.in","path":"runsystem.in","contentType":"file"},{"name":"runtime.in","path":"runtime.in","contentType":"file"},{"name":"runtime.py","path":"runtime.py","contentType":"file"},{"name":"runtimebase.in","path":"runtimebase.in","contentType":"file"},{"name":"runtriple.in","path":"runtriple.in","contentType":"file"},{"name":"seconds.h","path":"seconds.h","contentType":"file"},{"name":"settings.cc","path":"settings.cc","contentType":"file"},{"name":"settings.h","path":"settings.h","contentType":"file"},{"name":"shaders.cc","path":"shaders.cc","contentType":"file"},{"name":"shaders.h","path":"shaders.h","contentType":"file"},{"name":"simpson.cc","path":"simpson.cc","contentType":"file"},{"name":"stack.cc","path":"stack.cc","contentType":"file"},{"name":"stack.h","path":"stack.h","contentType":"file"},{"name":"statistics.h","path":"statistics.h","contentType":"file"},{"name":"stm.cc","path":"stm.cc","contentType":"file"},{"name":"stm.h","path":"stm.h","contentType":"file"},{"name":"symbol.cc","path":"symbol.cc","contentType":"file"},{"name":"symbol.h","path":"symbol.h","contentType":"file"},{"name":"symbolmaps.cc","path":"symbolmaps.cc","contentType":"file"},{"name":"symbolmaps.h","path":"symbolmaps.h","contentType":"file"},{"name":"table.h","path":"table.h","contentType":"file"},{"name":"template_rev.cc.in","path":"template_rev.cc.in","contentType":"file"},{"name":"texfile.cc","path":"texfile.cc","contentType":"file"},{"name":"texfile.h","path":"texfile.h","contentType":"file"},{"name":"tr.cc","path":"tr.cc","contentType":"file"},{"name":"tr.h","path":"tr.h","contentType":"file"},{"name":"transform.h","path":"transform.h","contentType":"file"},{"name":"triple.h","path":"triple.h","contentType":"file"},{"name":"types.cc","path":"types.cc","contentType":"file"},{"name":"types.h","path":"types.h","contentType":"file"},{"name":"util.cc","path":"util.cc","contentType":"file"},{"name":"util.h","path":"util.h","contentType":"file"},{"name":"v3dfile.cc","path":"v3dfile.cc","contentType":"file"},{"name":"v3dfile.h","path":"v3dfile.h","contentType":"file"},{"name":"v3dheadertypes.csv","path":"v3dheadertypes.csv","contentType":"file"},{"name":"v3dtypes.csv","path":"v3dtypes.csv","contentType":"file"},{"name":"varinit.cc","path":"varinit.cc","contentType":"file"},{"name":"varinit.h","path":"varinit.h","contentType":"file"},{"name":"vcpkg.json","path":"vcpkg.json","contentType":"file"},{"name":"version.texi.in","path":"version.texi.in","contentType":"file"},{"name":"versionTemplate.asy.in","path":"versionTemplate.asy.in","contentType":"file"},{"name":"virtualfieldaccess.cc","path":"virtualfieldaccess.cc","contentType":"file"},{"name":"virtualfieldaccess.h","path":"virtualfieldaccess.h","contentType":"file"},{"name":"vm.h","path":"vm.h","contentType":"file"},{"name":"wce","path":"wce","contentType":"file"},{"name":"win32helpers.cc","path":"win32helpers.cc","contentType":"file"},{"name":"win32helpers.h","path":"win32helpers.h","contentType":"file"},{"name":"win32pipestream.cc","path":"win32pipestream.cc","contentType":"file"},{"name":"win32pipestream.h","path":"win32pipestream.h","contentType":"file"},{"name":"win32xdr.cc","path":"win32xdr.cc","contentType":"file"},{"name":"win32xdr.h","path":"win32xdr.h","contentType":"file"},{"name":"xstream.cc","path":"xstream.cc","contentType":"file"},{"name":"xstream.h","path":"xstream.h","contentType":"file"}],"totalCount":291}},"fileTreeProcessingTime":15.412166,"foldersToFetch":[],"incompleteFileTree":false,"repo":{"id":40128816,"defaultBranch":"master","name":"asymptote","ownerLogin":"vectorgraphics","currentUserCanPush":false,"isFork":false,"isEmpty":false,"createdAt":"2015-08-03T14:19:49.000Z","ownerAvatar":"https://avatars.githubusercontent.com/u/13317638?v=4","public":true,"private":false,"isOrgOwned":true},"codeLineWrapEnabled":false,"symbolsExpanded":false,"treeExpanded":true,"refInfo":{"name":"master","listCacheKey":"v0:1752880675.0","canEdit":false,"refType":"branch","currentOid":"3fcec975f109fe7958cf60e4572f717ae5bbb96d"},"path":"base/geometry.asy","currentUser":null,"blob":{"rawLines":["// geometry.asy","","// Copyright (C) 2007","// Author: Philippe IVALDI 2007/09/01","// http://www.piprime.fr/","","// This program is free software ; you can redistribute it and/or modify","// it under the terms of the GNU Lesser General Public License as published by","// the Free Software Foundation ; either version 3 of the License, or","// (at your option) any later version.","","// This program is distributed in the hope that it will be useful, but","// WITHOUT ANY WARRANTY ; without even the implied warranty of","// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU","// Lesser General Public License for more details.","","// You should have received a copy of the GNU Lesser General Public License","// along with this program ; if not, write to the Free Software","// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA","","// COMMENTARY:","// An Asymptote geometry module.","","// THANKS:","// Special thanks to Olivier Guibe for his help in mathematical issues.","","// BUGS:","","// CODE:","","import math;","import markers;","","real Infinity=1.0/(1000*realEpsilon);","","// A rotation in the direction dir limited to [-90,90]","// This is useful for rotating text along a line in the direction dir.","private transform rotate(explicit pair dir)","{","  real angle=degrees(dir);","  if(angle \u003e 90 \u0026\u0026 angle \u003c 270) angle -= 180;","  return rotate(angle);","}","","// *=======================================================*","// *........................HEADER.........................*","/*\u003casyxml\u003e\u003cvariable type=\"real\" signature=\"epsgeo\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real epsgeo = 10 * sqrt(realEpsilon);/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eVariable used in the approximate calculations.\u003c/documentation\u003e\u003c/variable\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"addMargins(picture,real,real,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void addMargins(picture pic = currentpicture,","                real lmargin = 0, real bmargin = 0,","                real rmargin = lmargin, real tmargin = bmargin,","                bool rigid = true, bool allObject = true)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eAdd margins to 'pic' with respect to","   the current bounding box of 'pic'.","   If 'rigid' is false, margins are added iff an infinite curve will","   be prolonged on the margin.","   If 'allObject' is false, fixed - size objects (such as labels and","   arrowheads) will be ignored.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  pair m = allObject ? truepoint(pic, SW) : point(pic, SW);","  pair M = allObject ? truepoint(pic, NE) : point(pic, NE);","  if(rigid) {","    draw(m - inverse(pic.calculateTransform()) * (lmargin, bmargin), invisible);","    draw(M + inverse(pic.calculateTransform()) * (rmargin, tmargin), invisible);","  } else pic.addBox(m, M, -(lmargin, bmargin), (rmargin, tmargin));","}","","real approximate(real t)","{","  real ot = t;","  if(abs(t - ceil(t)) \u003c epsgeo) ot = ceil(t);","  else if(abs(t - floor(t)) \u003c epsgeo) ot = floor(t);","  return ot;","}","","real[] approximate(real[] T)","{","  return map(approximate, T);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"binomial(real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real binomial(real n, real k)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn n!/((n - k)!*k!)\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return gamma(n + 1)/(gamma(n - k + 1) * gamma(k + 1));","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"rf(real,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real rf(real x, real y, real z)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eComputes Carlson's elliptic integral of the first kind.","   x, y, and z must be non negative, and at most one can be zero.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  real ERRTOL = 0.0025,","    TINY = 1.5e-38,","    BIG = 3e37,","    THIRD = 1/3,","    C1 = 1/24,","    C2 = 0.1,","    C3 = 3/44,","    C4 = 1/14;","  real alamb, ave, delx, dely, delz, e2, e3, sqrtx, sqrty, sqrtz, xt, yt, zt;","  if(min(x, y, z) \u003c 0 || min(x + y, x + z, y + z) \u003c TINY ||","     max(x, y, z) \u003e BIG) abort(\"rf: invalid arguments.\");","  xt = x;","  yt = y;","  zt = z;","  do {","    sqrtx = sqrt(xt);","    sqrty = sqrt(yt);","    sqrtz = sqrt(zt);","    alamb = sqrtx * (sqrty + sqrtz) + sqrty * sqrtz;","    xt = 0.25 * (xt + alamb);","    yt = 0.25 * (yt + alamb);","    zt = 0.25 * (zt + alamb);","    ave = THIRD * (xt + yt + zt);","    delx = (ave - xt)/ave;","    dely = (ave - yt)/ave;","    delz = (ave - zt)/ave;","  } while(max(fabs(delx), fabs(dely), fabs(delz)) \u003e ERRTOL);","  e2 = delx * dely - delz * delz;","  e3 = delx * dely * delz;","  return (1.0 + (C1 * e2 - C2 - C3 * e3) * e2 + C4 * e3)/sqrt(ave);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"rd(real,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real rd(real x, real y, real z)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eComputes Carlson's elliptic integral of the second kind.","   x and y must be positive, and at most one can be zero.","   z must be non negative.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  real ERRTOL = 0.0015,","    TINY = 1e-25,","    BIG = 4.5 * 10.0^21,","    C1 = (3/14),","    C2 = (1/6),","    C3 = (9/22),","    C4 = (3/26),","    C5 = (0.25 * C3),","    C6 = (1.5 * C4);","  real alamb, ave, delx, dely, delz, ea, eb, ec, ed, ee, fac, sqrtx, sqrty,","    sqrtz, sum, xt, yt, zt;","  if (min(x, y) \u003c 0 || min(x + y, z) \u003c TINY || max(x, y, z) \u003e BIG)","    abort(\"rd: invalid arguments\");","  xt = x;","  yt = y;","  zt = z;","  sum = 0;","  fac = 1;","  do {","    sqrtx = sqrt(xt);","    sqrty = sqrt(yt);","    sqrtz = sqrt(zt);","    alamb = sqrtx * (sqrty + sqrtz) + sqrty * sqrtz;","    sum += fac/(sqrtz * (zt + alamb));","    fac = 0.25 * fac;","    xt = 0.25 * (xt + alamb);","    yt = 0.25 * (yt + alamb);","    zt = 0.25 * (zt + alamb);","    ave = 0.2 * (xt + yt + 3.0 * zt);","    delx = (ave - xt)/ave;","    dely = (ave - yt)/ave;","    delz = (ave - zt)/ave;","  } while (max(fabs(delx), fabs(dely), fabs(delz)) \u003e ERRTOL);","  ea = delx * dely;","  eb = delz * delz;","  ec = ea - eb;","  ed = ea - 6 * eb;","  ee = ed + ec + ec;","  return 3 * sum + fac * (1.0 + ed * (-C1 + C5 * ed - C6 * delz * ee)","                          +delz * (C2 * ee + delz * (-C3 * ec + delz * C4 * ea)))/(ave * sqrt(ave));","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"elle(real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real elle(real phi, real k)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eLegendre elliptic integral of the 2nd kind,","   evaluated using Carlson's functions RD and RF.","   The argument ranges are -infinity \u003c phi \u003c +infinity, 0 \u003c= k * sin(phi) \u003c= 1.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  real result;","  if (phi \u003e= 0 \u0026\u0026 phi \u003c= pi/2) {","    real cc, q, s;","    s = sin(phi);","    cc = cos(phi)^2;","    q = (1 - s * k) * (1 + s * k);","    result = s * (rf(cc, q, 1) - (s * k)^2 * rd(cc, q, 1)/3);","  } else","    if (phi \u003c= pi \u0026\u0026 phi \u003e= 0) {","      result = 2 * elle(pi/2, k) - elle(pi - phi, k);","    } else","      if (phi \u003c= 3 * pi/2 \u0026\u0026 phi \u003e= 0) {","        result = 2 * elle(pi/2, k) + elle(phi - pi, k);","      } else","        if (phi \u003c= 2 * pi \u0026\u0026 phi \u003e= 0) {","          result = 4 * elle(pi/2, k) - elle(2 * pi - phi, k);","        } else","          if (phi \u003e= 0) {","            int nb = floor(0.5 * phi/pi);","            result = nb * elle(2 * pi, k) + elle(phi%(2 * pi), k);","          } else result = -elle(-phi, k);","  return result;","}","","/*\u003casyxml\u003e\u003cfunction type=\"pair[]\" signature=\"intersectionpoints(pair,pair,real,real,real,real,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","pair[] intersectionpoints(pair A, pair B,","                          real a, real b, real c, real d, real f, real g)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eIntersection points with the line (AB) and the quadric curve","   a * x^2 + b * x * y + c * y^2 + d * x + f * y + g = 0 given in the default coordinate system\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  pair[] op;","  real ap = B.y - A.y,","    bpp = A.x - B.x,","    cp = A.y * B.x - A.x * B.y;","  real sol[];","  if (abs(ap) \u003e epsgeo) {","    real aa = ap * c + a * bpp^2/ap - b * bpp,","      bb = ap * f - bpp * d + 2 * a * bpp * cp/ap - b * cp,","      cc = ap * g - cp * d + a * cp^2/ap;","    sol = quadraticroots(aa, bb, cc);","    for (int i = 0; i \u003c sol.length; ++i) {","      op.push((-bpp * sol[i]/ap - cp/ap, sol[i]));","    }","  } else {","    real aa = a * bpp,","      bb = d * bpp - b * cp,","      cc = g * bpp - cp * f + c * cp^2/bpp;","    sol = quadraticroots(aa, bb, cc);","    for (int i = 0; i \u003c sol.length; ++i) {","      op.push((sol[i], -cp/bpp));","    }","  }","  return op;","}","","/*\u003casyxml\u003e\u003cfunction type=\"pair[]\" signature=\"intersectionpoints(pair,pair,real[])\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","pair[] intersectionpoints(pair A, pair B, real[] equation)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the intersection points of the line AB with","   the conic whose an equation is","   equation[0] * x^2 + equation[1] * x * y + equation[2] * y^2 + equation[3] * x + equation[4] * y + equation[5] = 0\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(equation.length != 6) abort(\"intersectionpoints: bad length of array for a conic equation.\");","  return intersectionpoints(A, B, equation[0], equation[1], equation[2],","                            equation[3], equation[4], equation[5]);","}","// *........................HEADER.........................*","// *=======================================================*","","// *=======================================================*","// *......................COORDINATES......................*","","real EPS = sqrt(realEpsilon);","","/*\u003casyxml\u003e\u003ctypedef type = \"convert\" return = \"pair\" params = \"pair\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","typedef pair convert(pair);/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eFunction type to convert pair in an other coordinate system.\u003c/documentation\u003e\u003c/typedef\u003e\u003c/asyxml\u003e*/","/*\u003casyxml\u003e\u003ctypedef type = \"abs\" return = \"real\" params = \"pair\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","typedef real abs(pair);/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eFunction type to calculate modulus of pair.\u003c/documentation\u003e\u003c/typedef\u003e\u003c/asyxml\u003e*/","/*\u003casyxml\u003e\u003ctypedef type = \"dot\" return = \"real\" params = \"pair, pair\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","typedef real dot(pair, pair);/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eFunction type to calculate dot product.\u003c/documentation\u003e\u003c/typedef\u003e\u003c/asyxml\u003e*/","/*\u003casyxml\u003e\u003ctypedef type = \"polar\" return = \"pair\" params = \"real, real\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","typedef pair polar(real, real);/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eFunction type to calculate the coordinates from the polar coordinates.\u003c/documentation\u003e\u003c/typedef\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cstruct signature=\"coordsys\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","struct coordsys","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThis structure represents a coordinate system in the plane.\u003c/documentation\u003e\u003c/asyxml\u003e*/","  /*\u003casyxml\u003e\u003cmethod type = \"pair\" signature=\"relativetodefault(pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted convert relativetodefault = new pair(pair m){return m;};/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eConvert a pair given relatively to this coordinate system to","                                                                       the pair relatively to the default coordinate system.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","  /*\u003casyxml\u003e\u003cmethod type = \"pair\" signature=\"defaulttorelativet(pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted convert defaulttorelative = new pair(pair m){return m;};/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eConvert a pair given relatively to the default coordinate system to","                                                                       the pair relatively to this coordinate system.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","  /*\u003casyxml\u003e\u003cmethod type = \"real\" signature=\"dot(pair,pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted dot dot = new real(pair m, pair n){return dot(m, n);};/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the dot product of this coordinate system.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","  /*\u003casyxml\u003e\u003cmethod type = \"real\" signature=\"abs(pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted abs abs = new real(pair m){return abs(m);};/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the modulus of a pair in this coordinate system.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","  /*\u003casyxml\u003e\u003cmethod type = \"pair\" signature=\"polar(real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted polar polar = new pair(real r, real a){return (r * cos(a), r * sin(a));};/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003ePolar coordinates routine of this coordinate system.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","  /*\u003casyxml\u003e\u003cproperty type = \"pair\" signature=\"O,i,j\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted pair O = (0, 0), i = (1, 0), j = (0, 1);/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eOrigin and units vector.\u003c/documentation\u003e\u003c/property\u003e\u003c/asyxml\u003e*/","  /*\u003casyxml\u003e\u003cmethod type = \"void\" signature=\"init(convert,convert,polar,dot)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  void init(convert rtd, convert dtr,","            polar polar, dot dot)","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe default constructor of the coordinate system.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    this.relativetodefault = rtd;","    this.defaulttorelative = dtr;","    this.polar = polar;","    this.dot = dot;","    this.abs = new real(pair m){return sqrt(dot(m, m));};;","    this.O = rtd((0, 0));","    this.i = rtd((1, 0)) - O;","    this.j = rtd((0, 1)) - O;","  }","}/*\u003casyxml\u003e\u003c/struct\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003coperator type = \"bool\" signature=\"==(coordsys,coordsys)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool operator ==(coordsys c1, coordsys c2)","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn true iff the coordinate system have the same origin and units vector.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","   return c1.O == c2.O \u0026\u0026 c1.i == c2.i \u0026\u0026 c1.j == c2.j;","  }","","/*\u003casyxml\u003e\u003cfunction type=\"coordsys\" signature=\"cartesiansystem(pair,pair,pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","coordsys cartesiansystem(pair O = (0, 0), pair i, pair j)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the Cartesian coordinate system (O, i, j).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," coordsys R;"," real[][] P = {{0, 0}, {0, 0}};"," real[][] iP;"," P[0][0] = i.x;"," P[0][1] = j.x;"," P[1][0] = i.y;"," P[1][1] = j.y;"," iP = inverse(P);"," real ni = abs(i);"," real nj = abs(j);"," real ij = angle(j) - angle(i);",""," pair rtd(pair m)"," {","   return O + (P[0][0] * m.x + P[0][1] * m.y, P[1][0] * m.x + P[1][1] * m.y);"," }",""," pair dtr(pair m)"," {","   m-=O;","   return (iP[0][0] * m.x + iP[0][1] * m.y, iP[1][0] * m.x + iP[1][1] * m.y);"," }",""," pair polar(real r, real a)"," {","   real ca = sin(ij - a)/(ni * sin(ij));","   real sa = sin(a)/(nj * sin(ij));","   return r * (ca, sa);"," }",""," real tdot(pair m, pair n)"," {","   return m.x * n.x * ni^2 + m.y * n.y * nj^2 + (m.x * n.y + n.x * m.y) * dot(i, j);"," }",""," R.init(rtd, dtr, polar, tdot);"," return R;","}","","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"show(picture,Label,Label,Label,coordsys,pen,pen,pen,pen,pen)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void show(picture pic = currentpicture, Label lo = \"$O$\",","          Label li = \"$\\vec{\\imath}$\",","          Label lj = \"$\\vec{\\jmath}$\",","          coordsys R,","          pen dotpen = currentpen, pen xpen = currentpen, pen ypen = xpen,","          pen ipen = red,","          pen jpen = ipen,","          arrowbar arrow = Arrow)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw the components (O, i, j, x - axis, y - axis) of 'R'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," unravel R;"," drawline(pic, O, O + i, xpen);"," drawline(pic, O, O + j, ypen);"," draw(pic, li, O--(O + i), ipen, arrow);"," Label lj = lj.copy();"," lj.align(lj.align, unit(I * j));"," draw(pic, lj, O--(O + j), jpen, arrow);"," draw(pic, lj, O--(O + j), jpen, arrow);"," dot(pic, O, dotpen);"," Label lo = lo.copy();"," lo.align(lo.align, -2 * dir(O--O + i, O--O + j));"," lo.p(dotpen);"," label(pic, lo, O);","}","","/*\u003casyxml\u003e\u003coperator type = \"pair\" signature=\"/(pair,coordsys)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","pair operator /(pair p, coordsys R)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the xy - coordinates of 'p' relatively to","   the coordinate system 'R'.","   For example, if R = cartesiansystem((1, 2), (1, 0), (0, 1)), (0, 0)/R is (-1, -2).\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," return R.defaulttorelative(p);","}","","/*\u003casyxml\u003e\u003coperator type = \"pair\" signature=\"*(coordsys,pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","pair operator *(coordsys R, pair p)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the coordinates of 'p' given in the","   xy - coordinates 'R'.","   For example, if R = cartesiansystem((1, 2), (1, 0), (0, 1)), R * (0, 0) is (1, 2).\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," return R.relativetodefault(p);","}","","/*\u003casyxml\u003e\u003coperator type = \"path\" signature=\"*(coordsys,path)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","path operator *(coordsys R, path g)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the reconstructed path applying R * pair to each node, pre and post control point of 'g'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," guide og = R * point(g, 0);"," real l = length(g);"," for(int i = 1; i \u003c= l; ++i)","   {","     pair P = R * point(g, i);","     pair post = R * postcontrol(g, i - 1);","     pair pre = R * precontrol(g, i);","     if(i == l \u0026\u0026 (cyclic(g)))","       og = og..controls post and pre..cycle;","     else","       og = og..controls post and pre..P;","   }"," return og;","}","","/*\u003casyxml\u003e\u003coperator type = \"coordsys\" signature=\"*(transform,coordsys)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","coordsys operator *(transform t,coordsys R)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide transform * coordsys.","   Note that shiftless(t) is applied to R.i and R.j.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," coordsys oc;"," oc = cartesiansystem(t * R.O, shiftless(t) * R.i, shiftless(t) * R.j);"," return oc;","}","","/*\u003casyxml\u003e\u003cconstant type = \"coordsys\" signature=\"defaultcoordsys\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","restricted coordsys defaultcoordsys = cartesiansystem(0, (1, 0), (0, 1));/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eOne can always refer to the default coordinate system using this constant.\u003c/documentation\u003e\u003c/constant\u003e\u003c/asyxml\u003e*/","/*\u003casyxml\u003e\u003cvariable type=\"coordsys\" signature=\"currentcoordsys\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","coordsys currentcoordsys = defaultcoordsys;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe coordinate system used by default.\u003c/documentation\u003e\u003c/variable\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cstruct signature=\"point\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","struct point","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThis structure replaces the pair to embed its coordinate system.","   For example, if 'P = point(cartesiansystem((1, 2), i, j), (0, 0))',","   P is equal to the pair (1, 2).\u003c/documentation\u003e\u003c/asyxml\u003e*/","  /*\u003casyxml\u003e\u003cproperty type = \"coordsys\" signature=\"coordsys\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  coordsys coordsys;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe coordinate system of this point.\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"pair\" signature=\"coordinates\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted pair coordinates;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe coordinates of this point relatively to the coordinate system 'coordsys'.\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"real\" signature=\"x, y\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted real x, y;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe xpart and the ypart of 'coordinates'.\u003c/documentation\u003e\u003c/property\u003e\u003c/asyxml\u003e*/","  /*\u003casyxml\u003e\u003cmethod type = \"\" signature=\"init(coordsys,pair)\"\u003e\u003ccode\u003e\u003cproperty type = \"real\" signature=\"m\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  real m = 1;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eUsed to cast mass\u003c-\u003epoint.\u003c/documentation\u003e\u003c/property\u003e\u003c/asyxml\u003e*/","  void init(coordsys R, pair coordinates, real mass)","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe constructor.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    this.coordsys = R;","    this.coordinates = coordinates;","    this.x = coordinates.x;","    this.y = coordinates.y;","    this.m = mass;","  }","}/*\u003casyxml\u003e\u003c/struct\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"point(coordsys,pair,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(coordsys R, pair p, real m = 1)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point which has the coodinates 'p' in the","   coordinate system 'R' and the mass 'm'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point op;","  op.init(R, p, m);","  return op;","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"point(explicit pair,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(explicit pair p, real m)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point which has the coodinates 'p' in the current","   coordinate system and the mass 'm'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point op;","  op.init(currentcoordsys, p, m);","  return op;","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"point(coordsys,explicit point,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(coordsys R, explicit point M, real m = M.m)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point of 'R' which has the coordinates of 'M' and the mass 'm'.","   Do not confuse this routine with the further routine 'changecoordsys'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point op;","  op.init(R, M.coordinates, M.m);","  return op;","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"changecoordsys(coordsys,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point changecoordsys(coordsys R, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point 'M' in the coordinate system 'coordsys'.","   In other words, the returned point marks the same plot as 'M' does.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point op;","  coordsys mco = M.coordsys;","  op.init(R, R.defaulttorelative(mco.relativetodefault(M.coordinates)), M.m);","  return op;","}","","/*\u003casyxml\u003e\u003cfunction type=\"pair\" signature=\"pair coordinates(point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","pair coordinates(point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the coordinates of 'M' in its coordinate system.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return M.coordinates;","}","","/*\u003casyxml\u003e\u003cfunction type=\"bool\" signature=\"bool samecoordsys(bool...point[])\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool samecoordsys(bool warn = true ... point[] M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn true iff all the points have the same coordinate system.","   If 'warn' is true and the coordinate systems are different, a warning is sent.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  bool ret = true;","  coordsys t = M[0].coordsys;","  for (int i = 1; i \u003c M.length; ++i) {","    ret = (t == M[i].coordsys);","    if(!ret) break;","    t = M[i].coordsys;","  }","  if(warn \u0026\u0026 !ret)","    warning(\"coodinatesystem\",","            \"the coordinate system of two objects are not the same.","The operation will be done relative to the default coordinate system.\");","  return ret;","}","","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"standardizecoordsys(coordsys,bool...point[])\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] standardizecoordsys(coordsys R = currentcoordsys,","                            bool warn = true ... point[] M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the points with the same coordinate system 'R'.","   If 'warn' is true and the coordinate systems are different, a warning is sent.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point[] op = new point[];","  op = M;","  if(!samecoordsys(warn ... M))","    for (int i = 1; i \u003c M.length; ++i)","      op[i] = changecoordsys(R, M[i]);","  return op;","}","","/*\u003casyxml\u003e\u003coperator type = \"pair\" signature=\"cast(point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","pair operator cast(point P)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast point to pair.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return P.coordsys.relativetodefault(P.coordinates);","}","","/*\u003casyxml\u003e\u003coperator type = \"pair[]\" signature=\"cast(point[])\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","pair[] operator cast(point[] P)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast point[] to pair[].\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  pair[] op;","  for (int i = 0; i \u003c P.length; ++i) {","    op.push((pair)P[i]);","  }","  return op;","}","","/*\u003casyxml\u003e\u003coperator type = \"point\" signature=\"cast(pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator cast(pair p)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast pair to point relatively to the current coordinate","   system 'currentcoordsys'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return point(currentcoordsys, p);","}","","/*\u003casyxml\u003e\u003coperator type = \"point[]\" signature=\"cast(pair[])\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] operator cast(pair[] p)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast pair[] to point[] relatively to the current coordinate","   system 'currentcoordsys'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  pair[] op;","  for (int i = 0; i \u003c p.length; ++i) {","    op.push((point)p[i]);","  }","  return op;","}","","/*\u003casyxml\u003e\u003cfunction type=\"pair\" signature=\"locate(point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","pair locate(point P)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the coordinates of 'P' in the default coordinate system.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return P.coordsys * P.coordinates;","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"locate(pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point locate(pair p)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point in the current coordinate system 'currentcoordsys'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return p; //automatic casting 'pair to point'.","}","","/*\u003casyxml\u003e\u003coperator type = \"point\" signature=\"*(real,explicit point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator *(real x, explicit point P)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eMultiply the coordinates (not the mass) of 'P' by 'x'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return point(P.coordsys, x * P.coordinates, P.m);","}","","/*\u003casyxml\u003e\u003coperator type = \"point\" signature=\"/(explicit point,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator /(explicit point P, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDivide the coordinates (not the mass) of 'P' by 'x'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return point(P.coordsys, P.coordinates/x, P.m);","}","","/*\u003casyxml\u003e\u003coperator type = \"point\" signature=\"/(real,explicit point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator /(real x, explicit point P)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return point(P.coordsys, x/P.coordinates, P.m);","}","","/*\u003casyxml\u003e\u003coperator type = \"point\" signature=\"-(explicit point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator -(explicit point P)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e-P. The mass is inchanged.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return point(P.coordsys, -P.coordinates, P.m);","}","","/*\u003casyxml\u003e\u003coperator type = \"point\" signature=\"+(explicit point,explicit point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator +(explicit point P1, explicit point P2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide 'point + point'.","   If the two points haven't the same coordinate system, a warning is sent and the","   returned point has the default coordinate system 'defaultcoordsys'.","   The masses are added.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  point[] P = standardizecoordsys(P1, P2);","  coordsys R = P[0].coordsys;","  return point(R, P[0].coordinates + P[1].coordinates, P1.m + P2.m);","}","","/*\u003casyxml\u003e\u003coperator type = \"point\" signature=\"+(explicit point,explicit pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator +(explicit point P1, explicit pair p2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide 'point + pair'.","   The pair 'p2' is supposed to be coordinates relatively to the coordinates system of 'P1'.","   The mass is not changed.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  coordsys R = currentcoordsys;","  return point(R, P1.coordinates + point(R, p2).coordinates, P1.m);","}","point operator +(explicit pair p1, explicit point p2)","{","  return p2 + p1;","}","","/*\u003casyxml\u003e\u003coperator type = \"point\" signature=\"-(explicit point,explicit point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator -(explicit point P1, explicit point P2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide 'point - point'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return P1 + (-P2);","}","","/*\u003casyxml\u003e\u003coperator type = \"point\" signature=\"-(explicit point,explicit pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator -(explicit point P1, explicit pair p2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide 'point - pair'.","   The pair 'p2' is supposed to be coordinates relatively to the coordinates system of 'P1'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return P1 + (-p2);","}","point operator -(explicit pair p1, explicit point P2)","{","  return p1 + (-P2);","}","","/*\u003casyxml\u003e\u003coperator type = \"point\" signature=\"*(transform,explicit point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator *(transform t, explicit point P)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide 'transform * point'.","   Note that the transforms scale, xscale, yscale and rotate are carried out relatively","   the default coordinate system 'defaultcoordsys' which is not desired for point","   defined in an other coordinate system.","   On can use scale(real, point), xscale(real, point), yscale(real, point), rotate(real, point),","   scaleO(real), xscaleO(real), yscaleO(real) and rotateO(real) (described further)","   to change the coordinate system of reference.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  coordsys R = P.coordsys;","  return point(R, (t * locate(P))/R, P.m);","}","","/*\u003casyxml\u003e\u003coperator type = \"point\" signature=\"*(explicit point,explicit point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator *(explicit point P1, explicit point P2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide 'point * point'.","   The resulted mass is the mass of P2\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  point[] P = standardizecoordsys(P1, P2);","  coordsys R = P[0].coordsys;","  return point(R, P[0].coordinates * P[1].coordinates, P2.m);","}","","/*\u003casyxml\u003e\u003coperator type = \"point\" signature=\"*(explicit point,explicit pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator *(explicit point P1, explicit pair p2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide 'point * pair'.","   The pair 'p2' is supposed to be the coordinates of","   the point in the coordinates system of 'P1'.","   'pair * point' is also defined.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  point P = point(P1.coordsys, p2, P1.m);","  return P1 * P;","}","point operator *(explicit pair p1, explicit point p2)","{","  return p2 * p1;","}","","/*\u003casyxml\u003e\u003coperator type = \"bool\" signature=\"==(explicit point,explicit point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool operator ==(explicit point M, explicit point N)","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide the test 'M == N' wish returns true iff MN \u003c EPS\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","   return abs(locate(M) - locate(N)) \u003c EPS;","  }","","/*\u003casyxml\u003e\u003coperator type = \"bool\" signature=\"!=(explicit point,explicit point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool operator !=(explicit point M, explicit point N)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide the test 'M != N' wish return true iff MN \u003e= EPS\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," return !(M == N);","}","","/*\u003casyxml\u003e\u003coperator type = \"guide\" signature=\"cast(point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","guide operator cast(point p)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast point to guide.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," return locate(p);","}","","/*\u003casyxml\u003e\u003coperator type = \"path\" signature=\"cast(point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","path operator cast(point p)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast point to path.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," return locate(p);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"dot(picture,Label,explicit point,align,string,pen)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void dot(picture pic = currentpicture, Label L, explicit point Z,","         align align = NoAlign,","         string format = defaultformat, pen p = currentpen)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," Label L = L.copy();"," L.position(locate(Z));"," if(L.s == \"\") {","   if(format == \"\") format = defaultformat;","   L.s = \"(\"+format(format, Z.x)+\", \"+format(format, Z.y)+\")\";"," }"," L.align(align, E);"," L.p(p);"," dot(pic, locate(Z), p);"," add(pic, L);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"abs(coordsys,pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real abs(coordsys R, pair m)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the modulus |m| in the coordinate system 'R'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return R.abs(m);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"abs(explicit point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real abs(explicit point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the modulus |M| in its coordinate system.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return M.coordsys.abs(M.coordinates);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"length(explicit point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real length(explicit point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the modulus |M| in its coordinate system (same as 'abs').\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return M.coordsys.abs(M.coordinates);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"conj(explicit point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point conj(explicit point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eConjugate.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return point(M.coordsys, conj(M.coordinates), M.m);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"degrees(explicit point,coordsys,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real degrees(explicit point M, coordsys R = M.coordsys, bool warn = true)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the angle of M (in degrees) relatively to 'R'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return (degrees(locate(M) - R.O, warn) - degrees(R.i))%360;","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"angle(explicit point,coordsys,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real angle(explicit point M, coordsys R = M.coordsys, bool warn = true)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the angle of M (in radians) relatively to 'R'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return radians(degrees(M, R, warn));","}","","bool Finite(explicit point z)","{"," return abs(z.x) \u003c Infinity \u0026\u0026 abs(z.y) \u003c Infinity;","}","","/*\u003casyxml\u003e\u003cfunction type=\"bool\" signature=\"finite(explicit point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool finite(explicit point p)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eAvoid to compute 'finite((pair)(infinite_point))'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return finite(p.coordinates);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"dot(point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real dot(point A, point B)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the dot product in the coordinate system of 'A'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," point[] P = standardizecoordsys(A.coordsys, A, B);"," return P[0].coordsys.dot(P[0].coordinates, P[1].coordinates);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"dot(point,explicit pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real dot(point A, explicit pair B)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the dot product in the default coordinate system.","   dot(explicit pair, point) is also defined.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return dot(locate(A), B);","}","real dot(explicit pair A, point B)","{"," return dot(A, locate(B));","}","","/*\u003casyxml\u003e\u003cfunction type=\"transforms\" signature=\"rotateO(real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","transform rotateO(real a)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eRotation around the origin of the current coordinate system.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return rotate(a, currentcoordsys.O);","}","","/*\u003casyxml\u003e\u003cfunction type=\"transform\" signature=\"projection(point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","transform projection(point A, point B)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the orthogonal projection on the line (AB).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," pair dir = unit(locate(A) - locate(B));"," pair a = locate(A);"," real cof = dir.x * a.x + dir.y * a.y;"," real tx = a.x - dir.x * cof;"," real txx = dir.x^2;"," real txy = dir.x * dir.y;"," real ty = a.y - dir.y * cof;"," real tyx = txy;"," real tyy = dir.y^2;"," transform t = (tx, ty, txx, txy, tyx, tyy);"," return t;","}","","/*\u003casyxml\u003e\u003cfunction type=\"transform\" signature=\"projection(point,point,point,point,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","transform projection(point A, point B, point C, point D, bool safe = false)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the (CD) parallel projection on (AB).","   If 'safe = true' and (AB)//(CD) return the identity.","   If 'safe = false' and (AB)//(CD) return an infinity scaling.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," pair a = locate(A);"," pair u = unit(locate(B) - locate(A));"," pair v = unit(locate(D) - locate(C));"," real c = u.x * a.y - u.y * a.x;"," real d = (conj(u) * v).y;"," if (abs(d) \u003c epsgeo) {","   return safe ? identity() : scale(infinity);"," }"," real tx = c * v.x/d;"," real ty = c * v.y/d;"," real txx = u.x * v.y/d;"," real txy = -u.x * v.x/d;"," real tyx = u.y * v.y/d;"," real tyy = -u.y * v.x/d;"," transform t = (tx, ty, txx, txy, tyx, tyy);"," return t;","}","","/*\u003casyxml\u003e\u003cfunction type=\"transform\" signature=\"scale(real,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","transform scale(real k, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eHomothety.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," pair P = locate(M);"," return shift(P) * scale(k) * shift(-P);","}","","/*\u003casyxml\u003e\u003cfunction type=\"transform\" signature=\"xscale(real,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","transform xscale(real k, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003exscale from 'M' relatively to the x - axis of the coordinate system of 'M'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," pair P = locate(M);"," real a = degrees(M.coordsys.i);"," return (shift(P) * rotate(a)) * xscale(k) * (rotate(-a) * shift(-P));","}","","/*\u003casyxml\u003e\u003cfunction type=\"transform\" signature=\"yscale(real,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","transform yscale(real k, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eyscale from 'M' relatively to the y - axis of the coordinate system of 'M'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," pair P = locate(M);"," real a = degrees(M.coordsys.j) - 90;"," return (shift(P) * rotate(a)) * yscale(k) * (rotate(-a) * shift(-P));","}","","/*\u003casyxml\u003e\u003cfunction type=\"transform\" signature=\"scale(real,point,point,point,point,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","transform scale(real k, point A, point B, point C, point D, bool safe = false)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003curl href = \"http://fr.wikipedia.org/wiki/Affinit%C3%A9_%28math%C3%A9matiques%29\"/\u003e","   (help me for English translation...)","   If 'safe = true' and (AB)//(CD) return the identity.","   If 'safe = false' and (AB)//(CD) return a infinity scaling.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," pair a = locate(A);"," pair u = unit(locate(B) - locate(A));"," pair v = unit(locate(D) - locate(C));"," real c = u.x * a.y - u.y * a.x;"," real d = (conj(u) * v).y;"," real d = (conj(u) * v).y;"," if (abs(d) \u003c epsgeo) {","   return safe ? identity() : scale(infinity);"," }"," real tx = (1 - k) * c * v.x/d;"," real ty = (1 - k) * c * v.y/d;"," real txx = (1 - k) * u.x * v.y/d + k;"," real txy = (k - 1) * u.x * v.x/d;"," real tyx = (1 - k) * u.y * v.y/d;"," real tyy = (k - 1) * u.y * v.x/d + k;"," transform t = (tx, ty, txx, txy, tyx, tyy);"," return t;","}","","/*\u003casyxml\u003e\u003cfunction type=\"transform\" signature=\"scaleO(real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","transform scaleO(real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eHomothety from the origin of the current coordinate system.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return scale(x, (0, 0));","}","","/*\u003casyxml\u003e\u003cfunction type=\"transform\" signature=\"xscaleO(real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","transform xscaleO(real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003exscale from the origin and relatively to the current coordinate system.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return scale(x, (0, 0), (0, 1), (0, 0), (1, 0));","}","","/*\u003casyxml\u003e\u003cfunction type=\"transform\" signature=\"yscaleO(real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","transform yscaleO(real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eyscale from the origin and relatively to the current coordinate system.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return scale(x, (0, 0), (1, 0), (0, 0), (0, 1));","}","","/*\u003casyxml\u003e\u003cstruct signature=\"vector\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","struct vector","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eLike a point but casting to pair, adding etc does not take account","   of the origin of the coordinate system.\u003c/documentation\u003e\u003cproperty type = \"point\" signature=\"v\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  point v;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCoordinates as a point (embed coordinate system and pair).\u003c/documentation\u003e\u003c/property\u003e\u003c/asyxml\u003e*/","}/*\u003casyxml\u003e\u003c/struct\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003coperator type = \"point\" signature=\"cast(vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator cast(vector v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast vector 'v' to point 'M' so that OM = v.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," return v.v;","}","","/*\u003casyxml\u003e\u003coperator type = \"vector\" signature=\"cast(pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","vector operator cast(pair v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast pair to vector relatively to the current coordinate","   system 'currentcoordsys'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," vector ov;"," ov.v = point(currentcoordsys, v);"," return ov;","}","","/*\u003casyxml\u003e\u003coperator type = \"vector\" signature=\"cast(explicit point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","vector operator cast(explicit point v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eA point can be interpreted like a vector using the code","   '(vector)a_point'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," vector ov;"," ov.v = v;"," return ov;","}","","/*\u003casyxml\u003e\u003coperator type = \"pair\" signature=\"cast(explicit vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","pair operator cast(explicit vector v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast vector to pair (the coordinates of 'v' in the default coordinate system).\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," return locate(v.v) - v.v.coordsys.O;","}","","/*\u003casyxml\u003e\u003coperator type = \"align\" signature=\"cast(vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","align operator cast(vector v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast vector to align.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," return (pair)v;","}","","/*\u003casyxml\u003e\u003cfunction type=\"vector\" signature=\"vector(coordsys, pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","vector vector(coordsys R = currentcoordsys, pair v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the vector of 'R' which has the coordinates 'v'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," vector ov;"," ov.v = point(R, v);"," return ov;","}","","/*\u003casyxml\u003e\u003cfunction type=\"vector\" signature=\"vector(point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","vector vector(point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the vector OM, where O is the origin of the coordinate system of 'M'.","   Useful to write 'vector(P - M);' instead of '(vector)(P - M)'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return M;","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"point(explicit vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(explicit vector u)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point M so that OM = u, where O is the origin of the coordinate system of 'u'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return u.v;","}","","/*\u003casyxml\u003e\u003cfunction type=\"pair\" signature=\"locate(explicit vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","pair locate(explicit vector v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the coordinates of 'v' in the default coordinate system (like casting vector to pair).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return (pair)v;","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"show(Label,pen,arrowbar)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void show(Label L, vector v, pen p = currentpen, arrowbar arrow = Arrow)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw the vector v (from the origin of its coordinate system).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," coordsys R = v.v.coordsys;"," draw(L, R.O--v.v, p, arrow);","}","","/*\u003casyxml\u003e\u003cfunction type=\"vector\" signature=\"changecoordsys(coordsys,vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","vector changecoordsys(coordsys R, vector v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the vector 'v' relatively to coordinate system 'R'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," vector ov;"," ov.v = point(R, (locate(v) + R.O)/R);"," return ov;","}","","/*\u003casyxml\u003e\u003coperator type = \"vector\" signature=\"*(real,explicit vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","vector operator *(real x, explicit vector v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide real * vector.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," return x * v.v;","}","","/*\u003casyxml\u003e\u003coperator type = \"vector\" signature=\"/(explicit vector,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","vector operator /(explicit vector v, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide vector/real\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," return v.v/x;","}","","/*\u003casyxml\u003e\u003coperator type = \"vector\" signature=\"*(transform t,explicit vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","vector operator *(transform t, explicit vector v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide transform * vector.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," return t * v.v;","}","","/*\u003casyxml\u003e\u003coperator type = \"vector\" signature=\"*(explicit point,explicit vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","vector operator *(explicit point M, explicit vector v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide point * vector\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," return M * v.v;","}","","/*\u003casyxml\u003e\u003coperator type = \"point\" signature=\"+(explicit point,explicit vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator +(point M, explicit vector v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn 'M' shifted by 'v'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," return shift(locate(v)) * M;","}","","/*\u003casyxml\u003e\u003coperator type = \"point\" signature=\"-(explicit point,explicit vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator -(point M, explicit vector v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn 'M' shifted by '-v'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," return shift(-locate(v)) * M;","}","","/*\u003casyxml\u003e\u003coperator type = \"vector\" signature=\"-(explicit vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","vector operator -(explicit vector v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide -v.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," return -v.v;","}","","/*\u003casyxml\u003e\u003coperator type = \"point\" signature=\"+(explicit pair,explicit vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator +(explicit pair m, explicit vector v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe pair 'm' is supposed to be the coordinates of","   a point in the current coordinates system 'currentcoordsys'.","   Return this point shifted by the vector 'v'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," return locate(m) + v;","}","","/*\u003casyxml\u003e\u003coperator type = \"point\" signature=\"-(explicit pair,explicit vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator -(explicit pair m, explicit vector v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe pair 'm' is supposed to be the coordinates of","   a point in the current coordinates system 'currentcoordsys'.","   Return this point shifted by the vector '-v'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," return m + (-v);","}","","/*\u003casyxml\u003e\u003coperator type = \"vector\" signature=\"+(explicit vector,explicit vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","vector operator +(explicit vector v1, explicit vector v2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide vector + vector.","   If the two vector haven't the same coordinate system, the returned","   vector is relative to the default coordinate system (without warning).\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," coordsys R = v1.v.coordsys;"," if(samecoordsys(false, v1, v2)){R = defaultcoordsys;}"," return vector(R, (locate(v1) + locate(v2))/R);","}","","/*\u003casyxml\u003e\u003coperator type = \"vector\" signature=\"-(explicit vector, explicit vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","vector operator -(explicit vector v1, explicit vector v2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide vector - vector.","   If the two vector haven't the same coordinate system, the returned","   vector is relative to the default coordinate system (without warning).\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," return v1 + (-v2);","}","","/*\u003casyxml\u003e\u003coperator type = \"bool\" signature=\"==(explicit vector,explicit vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool operator ==(explicit vector u, explicit vector v)","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn true iff |u - v|\u003cEPS.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","   return abs(u - v) \u003c EPS;","  }","","/*\u003casyxml\u003e\u003cfunction type=\"bool\" signature=\"collinear(vector,vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool collinear(vector u, vector v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn 'true' iff the vectors 'u' and 'v' are collinear.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return abs(ypart((conj((pair)u) * (pair)v))) \u003c EPS;","}","","/*\u003casyxml\u003e\u003cfunction type=\"vector\" signature=\"unit(point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","vector unit(point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the unit vector according to the modulus of its coordinate system.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return M/abs(M);","}","","/*\u003casyxml\u003e\u003cfunction type=\"vector\" signature=\"unit(vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","vector unit(vector u)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the unit vector according to the modulus of its coordinate system.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return u.v/abs(u.v);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"degrees(vector,coordsys,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real degrees(vector v,","             coordsys R = v.v.coordsys,","             bool warn = true)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the angle of 'v' (in degrees) relatively to 'R'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return (degrees(locate(v), warn) - degrees(R.i))%360;","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"angle(vector,coordsys,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real angle(explicit vector v,","           coordsys R = v.v.coordsys,","           bool warn = true)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the angle of 'v' (in radians) relatively to 'R'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return radians(degrees(v, R, warn));","}","","/*\u003casyxml\u003e\u003cfunction type=\"vector\" signature=\"conj(explicit vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","vector conj(explicit vector u)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eConjugate.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return conj(u.v);","}","","/*\u003casyxml\u003e\u003cfunction type=\"transform\" signature=\"rotate(explicit vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","transform rotate(explicit vector dir)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eA rotation in the direction 'dir' limited to [-90, 90]","   This is useful for rotating text along a line in the direction dir.","   rotate(explicit point dir) is also defined.","   \u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return rotate(locate(dir));","}","transform rotate(explicit point dir){return rotate(locate(vector(dir)));}","// *......................COORDINATES......................*","// *=======================================================*","","// *=======================================================*","// *.........................BASES.........................*","/*\u003casyxml\u003e\u003cvariable type=\"point\" signature=\"origin\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point origin = point(defaultcoordsys, (0, 0));/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe origin of the current coordinate system.\u003c/documentation\u003e\u003c/variable\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"origin(coordsys)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point origin(coordsys R = currentcoordsys)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the origin of the coordinate system 'R'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(R, (0, 0)); //use automatic casting;","}","","/*\u003casyxml\u003e\u003cvariable type=\"real\" signature=\"linemargin\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real linemargin = 0;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eMargin used to draw lines.\u003c/documentation\u003e\u003c/variable\u003e\u003c/asyxml\u003e*/","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"linemargin()\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real linemargin()","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the margin used to draw lines.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return linemargin;","}","","/*\u003casyxml\u003e\u003cvariable type=\"pen\" signature=\"addpenline\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","pen addpenline = squarecap;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eAdd this property to the drawing pen of \"finish\" lines.\u003c/documentation\u003e\u003c/variable\u003e\u003c/asyxml\u003e*/","pen addpenline(pen p) {","  return addpenline + p;","}","","/*\u003casyxml\u003e\u003cvariable type=\"pen\" signature=\"addpenarc\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","pen addpenarc = squarecap;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eAdd this property to the drawing pen of arcs.\u003c/documentation\u003e\u003c/variable\u003e\u003c/asyxml\u003e*/","pen addpenarc(pen p) {return addpenarc + p;}","","/*\u003casyxml\u003e\u003cvariable type=\"string\" signature=\"defaultmassformat\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","string defaultmassformat = \"$\\left(%L;%.4g\\right)$\";/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eFormat used to construct the default label of masses.\u003c/documentation\u003e\u003c/variable\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cfunction type=\"int\" signature=\"sgnd(real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","int sgnd(real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the -1 if x \u003c 0, 1 if x \u003e= 0.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return (x == 0) ? 1 : sgn(x);","}","int sgnd(int x)","{","  return (x == 0) ? 1 : sgn(x);","}","","/*\u003casyxml\u003e\u003cfunction type=\"bool\" signature=\"defined(pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool defined(point P)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn true iff the coordinates of 'P' are finite.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return finite(P.coordinates);","}","","/*\u003casyxml\u003e\u003cfunction type=\"bool\" signature=\"onpath(picture,path,point,pen)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool onpath(picture pic = currentpicture, path g, point M, pen p = currentpen)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn true iff 'M' is on the path drawn with the pen 'p' in 'pic'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  transform t = inverse(pic.calculateTransform());","  return intersect(g, shift(locate(M)) * scale(linewidth(p)/2) * t * unitcircle).length \u003e 0;","}","","/*\u003casyxml\u003e\u003cfunction type=\"bool\" signature=\"sameside(point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool sameside(point M, point N, point O)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn 'true' iff 'M' and 'N' are same side of the point 'O'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  pair m = M, n = N, o = O;","  return dot(m - o, n - o) \u003e= -epsgeo;","}","","/*\u003casyxml\u003e\u003cfunction type=\"bool\" signature=\"between(point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool between(point M, point O, point N)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn 'true' iff 'O' is between 'M' and 'N'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return (!sameside(N, M, O) || M == O || N == O);","}","","","typedef path pathModifier(path);","pathModifier NoModifier = new path(path g){return g;};","","private void Drawline(picture pic = currentpicture, Label L = \"\", pair P, bool dirP = true, pair Q, bool dirQ = true,","                      align align = NoAlign, pen p = currentpen,","                      arrowbar arrow = None,","                      Label legend = \"\", marker marker = nomarker,","                      pathModifier pathModifier = NoModifier)","{/* Add the two parameters 'dirP' and 'dirQ' to the native routine","    'drawline' of the module 'math'.","    Segment [PQ] will be prolonged in direction of P if 'dirP = true', in","    direction of Q if 'dirQ = true'.","    If 'dirP = dirQ = true', the behavior is that of the native 'drawline'.","    Add all the other parameters of 'Draw'.*/","  pic.add(new void (frame f, transform t, transform T, pair m, pair M) {","      picture opic;","      // Reduce the bounds by the size of the pen.","      m -= min(p) - (linemargin(), linemargin()); M -= max(p) + (linemargin(), linemargin());","","      // Calculate the points and direction vector in the transformed space.","      t = t * T;","      pair z = t * P;","      pair q = t * Q;","      pair v = q - z;","      // path g;","      pair ptp, ptq;","      real cp = dirP ? 1:0;","      real cq = dirQ ? 1:0;","      // Handle horizontal and vertical lines.","      if(v.x == 0) {","        if(m.x \u003c= z.x \u0026\u0026 z.x \u003c= M.x)","          if (dot(v, m - z) \u003c 0) {","            ptp = (z.x, z.y + cp * (m.y - z.y));","            ptq = (z.x, q.y + cq * (M.y - q.y));","          } else {","            ptq = (z.x, q.y + cq * (m.y - q.y));","            ptp = (z.x, z.y + cp * (M.y - z.y));","          }","      } else if(v.y == 0) {","        if (dot(v, m - z) \u003c 0) {","          ptp = (z.x + cp * (m.x - z.x), z.y);","          ptq = (q.x + cq * (M.x - q.x), z.y);","        } else {","          ptq = (q.x + cq * (m.x - q.x), z.y);","          ptp = (z.x + cp * (M.x - z.x), z.y);","        }","      } else {","        // Calculate the maximum and minimum t values allowed for the","        // parametric equation z + t * v","        real mx = (m.x - z.x)/v.x, Mx = (M.x - z.x)/v.x;","        real my = (m.y - z.y)/v.y, My = (M.y - z.y)/v.y;","        real tmin = max(v.x \u003e 0 ? mx : Mx, v.y \u003e 0 ? my : My);","        real tmax = min(v.x \u003e 0 ? Mx : mx, v.y \u003e 0 ? My : my);","        pair pmin = z + tmin * v;","        pair pmax = z + tmax * v;","        if(tmin \u003c= tmax) {","          ptp = z + cp * tmin * v;","          ptq = z + (cq == 0 ? v:tmax * v);","        }","      }","      path g = ptp--ptq;","      if (length(g)\u003e0)","        {","          if(L.s != \"\") {","            Label lL = L.copy();","            if(L.defaultposition) lL.position(Relative(.9));","            lL.p(p);","            lL.out(opic, g);","          }","          g = pathModifier(g);","          if(linetype(p).length == 0){","            pair m = midpoint(g);","            pen tp;","            tp = dirP ? p : addpenline(p);","            draw(opic, pathModifier(m--ptp), tp);","            tp = dirQ ? p : addpenline(p);","            draw(opic, pathModifier(m--ptq), tp);","          } else {","            draw(opic, g, p);","          }","          marker.markroutine(opic, marker.f, g);","          arrow(opic, g, p, NoMargin);","          add(f, opic.fit());","        }","    });","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"clipdraw(picture,Label,path,align,pen,arrowbar,arrowbar,real,real,Label,marker)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void clipdraw(picture pic = currentpicture, Label L = \"\", path g,","              align align = NoAlign, pen p = currentpen,","              arrowbar arrow = None, arrowbar bar = None,","              real xmargin = 0, real ymargin = xmargin,","              Label legend = \"\", marker marker = nomarker)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw the path 'g' on 'pic' clipped to the bounding box of 'pic'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(L.s != \"\") {","    picture tmp;","    label(tmp, L, g, p);","    add(pic, tmp);","  }","  pic.add(new void (frame f, transform t, transform T, pair m, pair M) {","      // Reduce the bounds by the size of the pen and the margins.","      m += min(p) + (xmargin, ymargin); M -= max(p) + (xmargin, ymargin);","      path bound = box(m, M);","      picture tmp;","      draw(tmp, \"\", t * T * g, align, p, arrow, bar, NoMargin, legend, marker);","      clip(tmp, bound);","      add(f, tmp.fit());","    });","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"distance(picture pic,Label,point,point,bool,real,pen,pen,arrow)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void distance(picture pic = currentpicture, Label L = \"\", point A, point B,","              bool rotated = true, real offset = 3mm,","              pen p = currentpen, pen joinpen = invisible,","              arrowbar arrow = Arrows(NoFill))","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw arrow between A and B (from FAQ).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  pair A = A, B = B;","  path g = A--B;","  transform Tp = shift(-offset * unit(B - A) * I);","  pic.add(new void(frame f, transform t) {","      picture opic;","      path G = Tp * t * g;","      transform id = identity();","      transform T = rotated ? rotate(B - A) : id;","      Label L = L.copy();","      L.align(L.align, Center);","      if(abs(ypart((conj(A - B) * L.align.dir))) \u003c epsgeo \u0026\u0026 L.filltype == NoFill)","        L.filltype = UnFill(1);","      draw(opic, T * L, G, p, arrow, Bars, PenMargins);","      pair Ap = t * A, Bp = t * B;","      draw(opic, (Ap--Tp * Ap)^^(Bp--Tp * Bp), joinpen);","      add(f, opic.fit());","    }, true);","  pic.addBox(min(g), max(g), Tp * min(p), Tp * max(p));","}","","/*\u003casyxml\u003e\u003cvariable type=\"real\" signature=\"perpfactor\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real perpfactor = 1;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eFactor for drawing perpendicular symbol.\u003c/documentation\u003e\u003c/variable\u003e\u003c/asyxml\u003e*/","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"perpendicularmark(picture,point,explicit pair,explicit pair,real,pen,margin,filltype)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void perpendicularmark(picture pic = currentpicture, point z,","                       explicit pair align,","                       explicit pair dir = E, real size = 0,","                       pen p = currentpen,","                       margin margin = NoMargin,","                       filltype filltype = NoFill)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw a perpendicular symbol at z aligned in the direction align","   relative to the path z--z + dir.","   dir(45 + n * 90), where n in N*, are common values for 'align'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  p = squarecap + miterjoin + p;","  if(size == 0) size = perpfactor * 3mm + linewidth(p) / 2;","  frame apic;","  pair d1 = size * align * unit(dir) * dir(-45);","  pair d2 = I * d1;","  path g = d1--d1 + d2--d2;","  g = margin(g, p).g;","  draw(apic, g, p);","  if(filltype != NoFill) filltype.fill(apic, (relpoint(g, 0) - relpoint(g, 0.5)+","                                              relpoint(g, 1))--g--cycle, p + solid);","  add(pic, apic, locate(z));","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"perpendicularmark(picture,point,vector,vector,real,pen,margin,filltype)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void perpendicularmark(picture pic = currentpicture, point z,","                       vector align,","                       vector dir = E, real size = 0,","                       pen p = currentpen,","                       margin margin = NoMargin,","                       filltype filltype = NoFill)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw a perpendicular symbol at z aligned in the direction align","   relative to the path z--z + dir.","   dir(45 + n * 90), where n in N, are common values for 'align'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  perpendicularmark(pic, z, (pair)align, (pair)dir, size,","                    p, margin, filltype);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"perpendicularmark(picture,point,explicit pair,path,real,pen,margin,filltype)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void perpendicularmark(picture pic = currentpicture, point z, explicit pair align, path g,","                       real size = 0, pen p = currentpen,","                       margin margin = NoMargin,","                       filltype filltype = NoFill)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw a perpendicular symbol at z aligned in the direction align","   relative to the path z--z + dir(g, 0).","   dir(45 + n * 90), where n in N, are common values for 'align'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  perpendicularmark(pic, z, align, dir(g, 0), size, p, margin, filltype);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"perpendicularmark(picture,point,vector,path,real,pen,margin,filltype)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void perpendicularmark(picture pic = currentpicture, point z, vector align, path g,","                       real size = 0, pen p = currentpen,","                       margin margin = NoMargin,","                       filltype filltype = NoFill)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw a perpendicular symbol at z aligned in the direction align","   relative to the path z--z + dir(g, 0).","   dir(45 + n * 90), where n in N, are common values for 'align'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  perpendicularmark(pic, z, (pair)align, dir(g, 0), size, p, margin, filltype);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"markrightangle(picture,point,point,point,real,pen,margin,filltype)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void markrightangle(picture pic = currentpicture, point A, point O,","                    point B, real size = 0, pen p = currentpen,","                    margin margin = NoMargin,","                    filltype filltype = NoFill)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eMark the angle AOB with a perpendicular symbol.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  pair Ap = A, Bp = B, Op = O;","  pair dir = Ap - Op;","  real a1 = degrees(dir);","  pair align = rotate(-a1) * dir(Op--Ap, Op--Bp);","  perpendicularmark(pic = pic, z = O, align = align,","                    dir = dir, size = size, p = p,","                    margin = margin, filltype = filltype);","}","","/*\u003casyxml\u003e\u003cfunction type=\"bool\" signature=\"simeq(point,point,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool simeq(point A, point B, real fuzz = epsgeo)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn true iff abs(A - B) \u003c fuzz.","   This routine is used internally to know if two points are equal, in particular by the operator == in 'point == point'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return (abs(A - B) \u003c fuzz);","}","bool simeq(point a, real b, real fuzz = epsgeo)","{","  coordsys R = a.coordsys;","  return (abs(a - point(R, ((pair)b)/R)) \u003c fuzz);","}","","/*\u003casyxml\u003e\u003cfunction type=\"pair\" signature=\"attract(pair,path,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","pair attract(pair m, path g, real fuzz = 0)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the nearest point (A PAIR) of 'm' which is on the path g.","   'fuzz' is the argument 'fuzz' of 'intersect'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(intersect(m, g, fuzz).length \u003e 0) return m;","  pair p;","  real step = 1, r = 0;","  real[] t;","  static real eps = sqrt(realEpsilon);","  do {// Find a radius for intersection","    r += step;","    t = intersect(shift(m) * scale(r) * unitcircle, g);","  } while(t.length \u003c= 0);","  p = point(g, t[1]);","  real rm = 0, rM = r;","  while(rM - rm \u003e eps) {","    r = (rm + rM)/2;","    t = intersect(shift(m) * scale(r) * unitcircle, g, fuzz);","    if(t.length \u003c= 0) {","      rm = r;","    } else {","      rM = r;","      p = point(g, t[1]);","    }","  }","  return p;","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"attract(point,path,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point attract(point M, path g, real fuzz = 0)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the nearest point (A POINT) of 'M' which is on the path g.","   'fuzz' is the argument 'fuzz' of 'intersect'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(M.coordsys, attract(locate(M), g)/M.coordsys);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real[]\" signature=\"intersect(path,explicit pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real[] intersect(path g, explicit pair p, real fuzz = 0)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  fuzz = fuzz \u003c= 0 ? sqrt(realEpsilon) : fuzz;","  real[] or;","  real r = realEpsilon;","  do{","    or = intersect(g, shift(p) * scale(r) * unitcircle, fuzz);","    r *= 2;","  } while(or.length == 0);","  return or;","}","","/*\u003casyxml\u003e\u003cfunction type=\"real[]\" signature=\"intersect(path,explicit point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real[] intersect(path g, explicit point P, real fuzz = epsgeo)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return intersect(g, locate(P), fuzz);","}","// *.........................BASES.........................*","// *=======================================================*","","// *=======================================================*","// *.........................LINES.........................*","/*\u003casyxml\u003e\u003cstruct signature=\"line\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","struct line","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThis structure provides the objects line, semi - line and segment oriented from A to B.","   All the calculus with this structure will be as exact as Asymptote can do.","   For a full precision, you must not cast 'line' to 'path' excepted for drawing routines.\u003c/documentation\u003e\u003c/asyxml\u003e*/","  /*\u003casyxml\u003e\u003cproperty type = \"point\" signature=\"A,B\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted point A,B;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eTwo line's points with same coordinate system.\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"bool\" signature=\"extendA,extendB\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  bool extendA,extendB;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eIf true,extend 'l' in direction of A (resp. B).\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"vector\" signature=\"u,v\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted vector u,v;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eu = unit(AB) = direction vector,v = normal vector.\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"real\" signature=\"a,b,c\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted real a,b,c;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCoefficients of the equation ax + by + c = 0 in the coordinate system of 'A'.\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"real\" signature=\"slope,origin\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted real slope, origin;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eSlope and ordinate at the origin.\u003c/documentation\u003e\u003c/property\u003e\u003c/asyxml\u003e*/","  /*\u003casyxml\u003e\u003cmethod type = \"line\" signature=\"copy()\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  line copy()","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCopy a line in a new instance.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    line l = new line;","    l.A = A;","    l.B = B;","    l.a = a;","    l.b = b;","    l.c = c;","    l.slope = slope;","    l.origin = origin;","    l.u = u;","    l.v = v;","    l.extendA = extendA;","    l.extendB = extendB;","    return l;","  }","","  /*\u003casyxml\u003e\u003cmethod type = \"void\" signature=\"init(point,bool,point,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  void init(point A, bool extendA = true, point B, bool extendB = true)","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eInitialize line.","     If 'extendA' is true, the \"line\" is infinite in the direction of A.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    point[] P = standardizecoordsys(A, B);","    this.A = P[0];","    this.B = P[1];","    this.a = B.y - A.y;","    this.b = A.x - B.x;","    this.c = A.y * B.x - A.x * B.y;","    this.slope= (this.b == 0) ? infinity : -this.a/this.b;","    this.origin = (this.b == 0) ? (this.c == 0) ? 0:infinity : -this.c/this.b;","    this.u = unit(P[1]-P[0]);","    //     int tmp = sgnd(this.slope);","    //     this.u = (dot((pair)this.u, N) \u003e= 0) ? tmp * this.u : -tmp * this.u;","    this.v = rotate(90, point(P[0].coordsys, (0, 0))) * this.u;","    this.extendA = extendA;","    this.extendB = extendB;","  }","}/*\u003casyxml\u003e\u003c/struct\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"line(point,bool,point,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line line(point A, bool extendA = true, point B, bool extendB = true)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the line passing through 'A' and 'B'.","   If 'extendA' is true, the \"line\" is infinite in the direction of A.","   A \"line\" can be half-line or segment.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if (A == B) abort(\"line: the points must be distinct.\");","  line l;","  l.init(A, extendA, B, extendB);","  return l;","}","","/*\u003casyxml\u003e\u003cstruct signature=\"segment\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","struct segment","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003clook href = \"struct line\"/\u003e.\u003c/documentation\u003e\u003c/asyxml\u003e*/","  restricted point A, B;// Extremity.","  restricted vector u, v;// u = direction vector, v = normal vector.","  restricted real a, b, c;// Coefficients of the equation ax + by + c = 0","  restricted real slope, origin;","  segment copy()","  {","    segment s = new segment;","    s.A = A;","    s.B = B;","    s.a = a;","    s.b = b;","    s.c = c;","    s.slope = slope;","    s.origin = origin;","    s.u = u;","    s.v = v;","    return s;","  }","","  void init(point A, point B)","  {","    line l;","    l.init(A, B);","    this.A = l.A; this.B = l.B;","    this.a = l.a; this.b = l.b; this.c = l.c;","    this.slope = l.slope; this.origin = l.origin;","    this.u = l.u; this.v = l.v;","  }","}/*\u003casyxml\u003e\u003c/struct\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cfunction type=\"segment\" signature=\"segment(point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","segment segment(point A, point B)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the segment whose the extremities are A and B.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  segment s;","  s.init(A, B);","  return s;","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"length(segment)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real length(segment s)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the length of 's'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return abs(s.A - s.B);","}","","/*\u003casyxml\u003e\u003coperator type = \"line\" signature=\"cast(segment)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line operator cast(segment s)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eA segment is casted to a \"finite line\".\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return line(s.A, false, s.B, false);","}","","/*\u003casyxml\u003e\u003coperator type = \"segment\" signature=\"cast(line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","segment operator cast(line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast line 'l' to segment [l.A l.B].\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return segment(l.A, l.B);","}","","path operator ecast(segment s)","{","  return s.A -- s.B;","}","","/*\u003casyxml\u003e\u003coperator type = \"line\" signature=\"*(transform,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line operator *(transform t, line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide transform * line\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return line(t * l.A, l.extendA, t * l.B, l.extendB);","}","/*\u003casyxml\u003e\u003coperator type = \"line\" signature=\"/(line,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line operator /(line l, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide l/x.","   Return the line passing through l.A/x and l.B/x.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return line(l.A/x, l.extendA, l.B/x, l.extendB);","}","line operator /(line l, int x){return line(l.A/x, l.B/x);}","/*\u003casyxml\u003e\u003coperator type = \"line\" signature=\"*(real,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line operator *(real x, line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide x * l.","   Return the line passing through x * l.A and x * l.B.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return line(x * l.A, l.extendA, x * l.B, l.extendB);","}","line operator *(int x, line l){return line(x * l.A, l.extendA, x * l.B, l.extendB);}","","/*\u003casyxml\u003e\u003coperator type = \"line\" signature=\"*(point,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line operator *(point M, line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide point * line.","   Return the line passing through unit(M) * l.A and unit(M) * l.B.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return line(unit(M) * l.A, l.extendA, unit(M) * l.B, l.extendB);","}","/*\u003casyxml\u003e\u003coperator type = \"line\" signature=\"+(line,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line operator +(line l, vector u)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide line + vector (and so line + point).","   Return the line 'l' shifted by 'u'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return line(l.A + u, l.extendA, l.B + u, l.extendB);","}","/*\u003casyxml\u003e\u003coperator type = \"line\" signature=\"-(line,vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line operator -(line l, vector u)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide line - vector (and so line - point).","   Return the line 'l' shifted by '-u'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return line(l.A - u, l.extendA, l.B - u, l.extendB);","}","","/*\u003casyxml\u003e\u003coperator type = \"line[]\" signature=\"^^(line,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line[] operator ^^(line l1, line l2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide line^^line.","   Return the line array {l1, l2}.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  line[] ol;","  ol.push(l1); ol.push(l2);","  return ol;","}","","/*\u003casyxml\u003e\u003coperator type = \"line[]\" signature=\"^^(line,line[])\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line[] operator ^^(line l1, line[] l2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide line^^line[].","   Return the line array {l1, l2[0], l2[1]...}.","   line[]^^line is also defined.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  line[] ol;","  ol.push(l1);","  for (int i = 0; i \u003c l2.length; ++i) {","    ol.push(l2[i]);","  }","  return ol;","}","line[] operator ^^(line[] l2, line l1)","{","  line[] ol = l2;","  ol.push(l1);","  return ol;","}","","/*\u003casyxml\u003e\u003coperator type = \"line[]\" signature=\"^^(line,line[])\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line[] operator ^^(line l1[], line[] l2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide line[]^^line[].","   Return the line array {l1[0], l1[1], ..., l2[0], l2[1], ...}.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  line[] ol = l1;","  for (int i = 0; i \u003c l2.length; ++i) {","    ol.push(l2[i]);","  }","  return ol;","}","","/*\u003casyxml\u003e\u003cfunction type=\"bool\" signature=\"sameside(point,point,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool sameside(point M, point P, line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn 'true' iff 'M' and 'N' are same side of the line (or on the line) 'l'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  pair A = l.A, B = l.B, m = M, p = P;","  pair mil = (A + B)/2;","  pair mA = rotate(90, mil) * A;","  pair mB = rotate(-90, mil) * A;","  return (abs(m - mA) \u003c= abs(m - mB)) == (abs(p - mA) \u003c= abs(p - mB));","  // transform proj = projection(l.A, l.B);","  // point Mp = proj * M;","  // point Pp = proj * P;","  // dot(Mp);dot(Pp);","  // return dot(locate(Mp - M), locate(Pp - P)) \u003e= 0;","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"line(segment)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line line(segment s)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the line passing through 's.A'","   and 's.B'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return line(s.A, s.B);","}","/*\u003casyxml\u003e\u003cfunction type=\"segment\" signature=\"segment(line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","segment segment(line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the segment whose extremities","   are 'l.A' and 'l.B'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return segment(l.A, l.B);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"midpoint(segment)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point midpoint(segment s)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the midpoint of 's'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return 0.5 * (s.A + s.B);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"write(line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void write(explicit line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eWrite some informations about 'l'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  write(\"A = \"+(string)((pair)l.A));","  write(\"Extend A = \"+(l.extendA ? \"true\" : \"false\"));","  write(\"B = \"+(string)((pair)l.B));","  write(\"Extend B = \"+(l.extendB ? \"true\" : \"false\"));","  write(\"u = \"+(string)((pair)l.u));","  write(\"v = \"+(string)((pair)l.v));","  write(\"a = \"+(string) l.a);","  write(\"b = \"+(string) l.b);","  write(\"c = \"+(string) l.c);","  write(\"slope = \"+(string) l.slope);","  write(\"origin = \"+(string) l.origin);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"write(explicit segment)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void write(explicit segment s)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eWrite some informations about 's'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  write(\"A = \"+(string)((pair)s.A));","  write(\"B = \"+(string)((pair)s.B));","  write(\"u = \"+(string)((pair)s.u));","  write(\"v = \"+(string)((pair)s.v));","  write(\"a = \"+(string) s.a);","  write(\"b = \"+(string) s.b);","  write(\"c = \"+(string) s.c);","  write(\"slope = \"+(string) s.slope);","  write(\"origin = \"+(string) s.origin);","}","","/*\u003casyxml\u003e\u003coperator type = \"bool\" signature=\"==(line,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool operator ==(line l1, line l2)","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide the test 'line == line'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","   return (collinear(l1.u, l2.u) \u0026\u0026","           abs(ypart((locate(l1.A) - locate(l1.B))/(locate(l1.A) - locate(l2.B)))) \u003c epsgeo \u0026\u0026","           l1.extendA == l2.extendA \u0026\u0026 l1.extendB == l2.extendB);","  }","","/*\u003casyxml\u003e\u003coperator type = \"bool\" signature=\"!=(line,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool operator !=(line l1, line l2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide the test 'line != line'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," return !(l1 == l2);","}","","/*\u003casyxml\u003e\u003coperator type = \"bool\" signature=\"@(point,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool operator @(point m, line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide the test 'point @ line'.","   Return true iff 'm' is on the 'l'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/"," point M = changecoordsys(l.A.coordsys, m);"," if (abs(l.a * M.x + l.b * M.y + l.c) \u003e= epsgeo) return false;"," if (l.extendA \u0026\u0026 l.extendB) return true;"," if (!l.extendA \u0026\u0026 !l.extendB) return between(l.A, M, l.B);"," if (l.extendA) return sameside(M, l.A, l.B);"," return sameside(M, l.B, l.A);","}","","/*\u003casyxml\u003e\u003cfunction type=\"coordsys\" signature=\"coordsys(line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","coordsys coordsys(line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the coordinate system in which 'l' is defined.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return l.A.coordsys;","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"reverse(line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line reverse(line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003ePermute the points 'A' and 'B' of 'l' and so its orientation.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return line(l.B, l.extendB, l.A, l.extendA);","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"extend(line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line extend(line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the infinite line passing through 'l.A' and 'l.B'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," line ol = l.copy();"," ol.extendA = true;"," ol.extendB = true;"," return ol;","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"complementary(explicit line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line complementary(explicit line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the complementary of a half-line with respect of","   the full line 'l'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," if (l.extendA \u0026\u0026 l.extendB)","   abort(\"complementary: the parameter is not a half-line.\");"," point origin = l.extendA ? l.B : l.A;"," point ptdir = l.extendA ?"," rotate(180, l.B) * l.A : rotate(180, l.A) * l.B;"," return line(origin, false, ptdir);","}","","/*\u003casyxml\u003e\u003cfunction type=\"line[]\" signature=\"complementary(explicit segment)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line[] complementary(explicit segment s)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the two half-lines of origin 's.A' and 's.B' respectively.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," line[] ol = new line[2];"," ol[0] = complementary(line(s.A, false, s.B));"," ol[1] = complementary(line(s.A, s.B, false));"," return ol;","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"Ox(coordsys)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line Ox(coordsys R = currentcoordsys)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the x-axis of 'R'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/"," return line(point(R, (0, 0)), point(R, E));","}","/*\u003casyxml\u003e\u003cconstant type = \"line\" signature=\"Ox\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","restricted line Ox = Ox();/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003ethe x-axis of","                            the default coordinate system.\u003c/documentation\u003e\u003c/constant\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"Oy(coordsys)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line Oy(coordsys R = currentcoordsys)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the y-axis of 'R'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return line(point(R, (0, 0)), point(R, N));","}","/*\u003casyxml\u003e\u003cconstant type = \"line\" signature=\"Oy\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","restricted line Oy = Oy();/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003ethe y-axis of","                            the default coordinate system.\u003c/documentation\u003e\u003c/constant\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"line(real,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line line(real a, point A = point(currentcoordsys, (0, 0)))","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the line passing through 'A' with an","   angle (in the coordinate system of A) 'a' in degrees.","   line(point, real) is also defined.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return line(A, A + point(A.coordsys, A.coordsys.polar(1, radians(a))));","}","line line(point A = point(currentcoordsys, (0, 0)), real a)","{","  return line(a, A);","}","line line(int a, point A = point(currentcoordsys, (0, 0)))","{","  return line((real)a, A);","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"line(coordsys,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line line(coordsys R = currentcoordsys, real slope, real origin)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the line defined by slope and y-intercept relative to 'R'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if (slope == infinity || slope == -infinity)","    abort(\"The slope is infinite. Please, use the routine 'vline'.\");","  return line(point(R, (0, origin)), point(R, (1, origin + slope)));","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"line(coordsys,real,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line line(coordsys R = currentcoordsys, real a, real b, real c)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eRetrun the line defined by equation relative to 'R'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if (a == 0 \u0026\u0026 b == 0) abort(\"line: inconsistent equation...\");","  pair M;","  M = (a == 0) ? (0, -c/b) : (-c/a, 0);","  return line(point(R, M), point(R, M + (-b, a)));","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"vline(coordsys)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line vline(coordsys R = currentcoordsys)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn a vertical line in 'R' passing through the origin of 'R'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point P = point(R, (0, 0));","  point PP = point(R, (R.O + N)/R);","  return line(P, PP);","}","/*\u003casyxml\u003e\u003cconstant type = \"line\" signature=\"vline\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","restricted line vline = vline();/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe vertical line in the current coordinate system passing","                                  through the origin of this system.\u003c/documentation\u003e\u003c/constant\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"hline(coordsys)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line hline(coordsys R = currentcoordsys)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn a horizontal line in 'R' passing through the origin of 'R'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point P = point(R, (0, 0));","  point PP = point(R, (R.O + E)/R);","  return line(P, PP);","}","/*\u003casyxml\u003e\u003cconstant type = \"line\" signature=\"hline\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line hline = hline();/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe horizontal line in the current coordinate system passing","                       through the origin of this system.\u003c/documentation\u003e\u003c/constant\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"changecoordsys(coordsys,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line changecoordsys(coordsys R, line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the line 'l' in the coordinate system 'R'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point A = changecoordsys(R, l.A);","  point B = changecoordsys(R, l.B);","  return line(A, B);","}","","/*\u003casyxml\u003e\u003cfunction type=\"transform\" signature=\"scale(real,line,line,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","transform scale(real k, line l1, line l2, bool safe = false)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the dilatation with respect to","   'l1' in the direction of 'l2'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return scale(k, l1.A, l1.B, l2.A, l2.B, safe);","}","","/*\u003casyxml\u003e\u003cfunction type=\"transform\" signature=\"reflect(line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","transform reflect(line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the reflect about the line 'l'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return reflect((pair)l.A, (pair)l.B);","}","","/*\u003casyxml\u003e\u003cfunction type=\"transform\" signature=\"reflect(line,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","transform reflect(line l1, line l2, bool safe = false)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the reflect about the line","   'l1' in the direction of 'l2'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return scale(-1.0, l1, l2, safe);","}","","","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(line,path)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(line l, path g)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn all points of intersection of the line 'l' with the path 'g'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  // TODO utiliser la version 1.44 de intersections(path g, pair p, pair q)","  // real [] t = intersections(g, l.A, l.B);","  // coordsys R = coordsys(l);","  // return sequence(new point(int n){return point(R, point(g, t[n])/R);}, t.length);","  real [] t;","  pair[] op;","  pair A = l.A;","  pair B = l.B;","  real dy = B.y - A.y,","    dx = A.x - B.x,","    lg = length(g);","","  for (int i = 0; i \u003c lg; ++i)","    {","      pair z0 = point(g, i),","        z1 = point(g, i + 1),","        c0 = postcontrol(g, i),","        c1 = precontrol(g, i + 1),","        t3 = z1 - z0 - 3 * c1 + 3 * c0,","        t2 = 3 * z0 + 3 * c1 - 6 * c0,","        t1 = 3 * c0 - 3z0;","      real a = dy * t3.x + dx * t3.y,","        b = dy * t2.x + dx * t2.y,","        c = dy * t1.x + dx * t1.y,","        d = dy * z0.x + dx * z0.y + A.y * B.x - A.x * B.y;","","      t = cubicroots(a, b, c, d);","      for (int j = 0; j \u003c t.length; ++j)","        if (","            t[j]\u003e=0","            \u0026\u0026 (","                t[j]\u003c1","                || (","                    t[j] == 1","                    \u0026\u0026 (i == lg - 1)","                    \u0026\u0026 !cyclic(g)","                    )","                )","            ) {","          op.push(point(g, i + t[j]));","        }","    }","","  point[] opp;","  for (int i = 0; i \u003c op.length; ++i)","    opp.push(point(coordsys(l), op[i]/coordsys(l)));","  return opp;","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"intersectionpoint(line,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point intersectionpoint(line l1, line l2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point of intersection of line 'l1' with 'l2'.","   If 'l1' and 'l2' have an infinity or none point of intersection,","   this routine return (infinity, infinity).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point[] P = standardizecoordsys(l1.A, l1.B, l2.A, l2.B);","  coordsys R = P[0].coordsys;","  pair p = extension(P[0], P[1], P[2], P[3]);","  if(finite(p)){","    point p = point(R, p/R);","    if (p @ l1 \u0026\u0026 p @ l2) return p;","  }","  return point(R, (infinity, infinity));","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"parallel(point,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line parallel(point M, line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the line parallel to 'l' passing through 'M'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point A, B;","  if (M.coordsys != coordsys(l))","    {","      A = changecoordsys(M.coordsys, l.A);","      B = changecoordsys(M.coordsys, l.B);","    } else {A = l.A;B = l.B;}","  return line(M, M - A + B);","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"parallel(point,explicit vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line parallel(point M, explicit vector dir)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the line of direction 'dir' and passing through 'M'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return line(M, M + locate(dir));","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"parallel(point,explicit pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line parallel(point M, explicit pair dir)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the line of direction 'dir' and passing through 'M'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return line(M, M + vector(currentcoordsys, dir));","}","","/*\u003casyxml\u003e\u003cfunction type=\"bool\" signature=\"parallel(line,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool parallel(line l1, line l2, bool strictly = false)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn 'true' if 'l1' and 'l2' are (strictly ?) parallel.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  bool coll = collinear(l1.u, l2.u);","  return strictly ? coll \u0026\u0026 (l1 != l2) : coll;","}","","/*\u003casyxml\u003e\u003cfunction type=\"bool\" signature=\"concurrent(...line[])\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool concurrent(... line[] l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturns true if all the lines 'l' are concurrent.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if (l.length \u003c 3) abort(\"'concurrent' needs at least for three lines ...\");","  pair point = intersectionpoint(l[0], l[1]);","  bool conc;","  for (int i = 2; i \u003c l.length; ++i) {","    pair pt = intersectionpoint(l[i - 1], l[i]);","    conc = simeq(pt, point);","    if (!conc) break;","  }","  return conc;","}","","/*\u003casyxml\u003e\u003cfunction type=\"transform\" signature=\"projection(line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","transform projection(line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the orthogonal projection on 'l'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return projection(l.A, l.B);","}","","/*\u003casyxml\u003e\u003cfunction type=\"transform\" signature=\"projection(line,line,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","transform projection(line l1, line l2, bool safe = false)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the projection on (AB) in parallel of (CD).","   If 'safe = true' and (l1)//(l2) return the identity.","   If 'safe = false' and (l1)//(l2) return a infinity scaling.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return projection(l1.A, l1.B, l2.A, l2.B, safe);","}","","/*\u003casyxml\u003e\u003cfunction type=\"transform\" signature=\"vprojection(line,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","transform vprojection(line l, bool safe = false)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the projection on 'l' in parallel of N--S.","   If 'safe' is 'true' the projected point keeps the same place if 'l'","   is vertical.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  coordsys R = defaultcoordsys;","  return projection(l, line(point(R, N), point(R, S)), safe);","}","","/*\u003casyxml\u003e\u003cfunction type=\"transform\" signature=\"hprojection(line,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","transform hprojection(line l, bool safe = false)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the projection on 'l' in parallel of E--W.","   If 'safe' is 'true' the projected point keeps the same place if 'l'","   is horizontal.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  coordsys R = defaultcoordsys;","  return projection(l, line(point(R, E), point(R, W)), safe);","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"perpendicular(point,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line perpendicular(point M, line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the perpendicular line of 'l' passing through 'M'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point Mp = projection(l) * M;","  point A = Mp == l.A ? l.B : l.A;","  return line(Mp, rotate(90, Mp) * A);","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"perpendicular(point,explicit vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line perpendicular(point M, explicit vector normal)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the line passing through 'M'","   whose normal is \\param{normal}.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return perpendicular(M, line(M, M + locate(normal)));","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"perpendicular(point,explicit pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line perpendicular(point M, explicit pair normal)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the line passing through 'M'","   whose normal is \\param{normal} (given in the currentcoordsys).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return perpendicular(M, line(M, M + vector(currentcoordsys, normal)));","}","","/*\u003casyxml\u003e\u003cfunction type=\"bool\" signature=\"perpendicular(line,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool perpendicular(line l1, line l2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn 'true' if 'l1' and 'l2' are perpendicular.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return abs(dot(locate(l1.u), locate(l2.u))) \u003c epsgeo ;","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"angle(line,coordsys)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real angle(line l, coordsys R = coordsys(l))","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the angle of the oriented line 'l',","   in radian, in the interval ]-pi, pi] and relatively to 'R'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return angle(l.u, R, false);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"degrees(line,coordsys,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real degrees(line l, coordsys R = coordsys(l))","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturns the angle of the oriented line 'l' in degrees,","   in the interval [0, 360[ and relatively to 'R'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return degrees(angle(l, R));","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"sharpangle(line,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real sharpangle(line l1, line l2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the measure in radians of the sharp angle formed by 'l1' and 'l2'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  vector u1 = l1.u;","  vector u2 = (dot(l1.u, l2.u) \u003c 0) ? -l2.u : l2.u;","  real a12 = angle(locate(u2)) - angle(locate(u1));","  a12 = a12%(sgnd(a12) * pi);","  if (a12 \u003c= -pi/2) {","    a12 += pi;","  } else if (a12 \u003e pi/2) {","    a12 -= pi;","  }","  return a12;","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"angle(line,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real angle(line l1, line l2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the measure in radians of oriented angle (l1.u, l2.u).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return angle(locate(l2.u)) - angle(locate(l1.u));","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"degrees(line,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real degrees(line l1, line l2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the measure in degrees of the","   angle formed by the oriented lines 'l1' and 'l2'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return degrees(angle(l1, l2));","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"sharpdegrees(line,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real sharpdegrees(line l1, line l2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the measure in degrees of the sharp angle formed by 'l1' and 'l2'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return degrees(sharpangle(l1, l2));","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"bisector(line,line,real,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line bisector(line l1, line l2, real angle = 0, bool sharp = true)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the bisector of the angle formed by 'l1' and 'l2'","   rotated by the angle 'angle' (in degrees) around intersection point of 'l1' with 'l2'.","   If 'sharp' is true (the default), this routine returns the bisector of the sharp angle.","   Note that the returned line inherit of coordinate system of 'l1'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  line ol;","  if (l1 == l2) return l1;","  point A = intersectionpoint(l1, l2);","  if (finite(A)) {","    if(sharp) ol = rotate(sharpdegrees(l1, l2)/2 + angle, A) * l1;","    else {","      coordsys R = coordsys(l1);","      pair a = A, b = A + l1.u, c = A + l2.u;","      pair pp = extension(a, a + dir(a--b, a--c), b, b + dir(b--a, b--c));","      return rotate(angle, A) * line(A, point(R, pp/R));","    }","  } else {","    ol = l1;","  }","  return ol;","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"sector(int,int,line,line,real,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line sector(int n = 2, int p = 1, line l1, line l2, real angle = 0, bool sharp = true)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the p-th nth-sector of the angle","   formed by the oriented line 'l1' and 'l2'","   rotated by the angle 'angle' (in degrees) around the intersection point of 'l1' with 'l2'.","   If 'sharp' is true (the default), this routine returns the bisector of the sharp angle.","   Note that the returned line inherit of coordinate system of 'l1'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  line ol;","  if (l1 == l2) return l1;","  point A = intersectionpoint(l1, l2);","  if (finite(A)) {","    if(sharp) ol = rotate(p * sharpdegrees(l1, l2)/n + angle, A) * l1;","    else {","      ol = rotate(p * degrees(l1, l2)/n + angle, A) * l1;","    }","  } else {","    ol = l1;","  }","  return ol;","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"bisector(point,point,point,point,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line bisector(point A, point B, point C, point D, real angle = 0, bool sharp = true)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the bisector of the angle formed by the lines (AB) and (CD).","   \u003clook href = \"#bisector(line, line, real, bool)\"/\u003e.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point[] P = standardizecoordsys(A, B, C, D);","  return bisector(line(P[0], P[1]), line(P[2], P[3]), angle, sharp);","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"bisector(segment,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line bisector(segment s, real angle = 0)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the bisector of the segment line 's' rotated by 'angle' (in degrees) around the","   midpoint of 's'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  coordsys R = coordsys(s);","  point m = midpoint(s);","  vector dir = rotateO(90) * unit(s.A - m);","  return rotate(angle, m) * line(m + dir, m - dir);","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"bisector(point,point,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line bisector(point A, point B, real angle = 0)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the bisector of the segment line [AB] rotated by 'angle' (in degrees) around the","   midpoint of [AB].\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point[] P = standardizecoordsys(A, B);","  return bisector(segment(P[0], P[1]), angle);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"distance(point,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real distance(point M, line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the distance from 'M' to 'l'.","   distance(line, point) is also defined.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point A = changecoordsys(defaultcoordsys, l.A);","  point B = changecoordsys(defaultcoordsys, l.B);","  line ll = line(A, B);","  pair m = locate(M);","  return abs(ll.a * m.x + ll.b * m.y + ll.c)/sqrt(ll.a^2 + ll.b^2);","}","","real distance(line l, point M)","{","  return distance(M, l);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"draw(picture,Label,line,bool,bool,align,pen,arrowbar,Label,marker)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void draw(picture pic = currentpicture, Label L = \"\",","          line l, bool dirA = l.extendA, bool dirB = l.extendB,","          align align = NoAlign, pen p = currentpen,","          arrowbar arrow = None,","          Label legend = \"\", marker marker = nomarker,","          pathModifier pathModifier = NoModifier)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw the line 'l' without altering the size of picture pic.","   The boolean parameters control the infinite section.","   The global variable 'linemargin' (default value is 0) allows to modify","   the bounding box in which the line must be drawn.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(!(dirA || dirB)) draw(l.A--l.B, invisible);// l is a segment.","  Drawline(pic, L, l.A, dirP = dirA, l.B, dirQ = dirB,","           align, p, arrow,","           legend, marker, pathModifier);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"draw(picture,Label[], line[], align,pen[], arrowbar,Label,marker)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void draw(picture pic = currentpicture, Label[] L = new Label[], line[] l,","          align align = NoAlign, pen[] p = new pen[],","          arrowbar arrow = None,","          Label[] legend = new Label[], marker marker = nomarker,","          pathModifier pathModifier = NoModifier)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw each lines with the corresponding pen.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  for (int i = 0; i \u003c l.length; ++i) {","    draw(pic, L.length\u003e0 ? L[i] : \"\", l[i],","         align, p = p.length\u003e0 ? p[i] : currentpen,","         arrow, legend.length\u003e0 ? legend[i] : \"\", marker,","         pathModifier);","  }","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"draw(picture,Label[], line[], align,pen,arrowbar,Label,marker)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void draw(picture pic = currentpicture, Label[] L = new Label[], line[] l,","          align align = NoAlign, pen p,","          arrowbar arrow = None,","          Label[] legend = new Label[], marker marker = nomarker,","          pathModifier pathModifier = NoModifier)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw each lines with the same pen 'p'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  pen[] tp = sequence(new pen(int i){return p;}, l.length);","  draw(pic, L, l, align, tp, arrow, legend, marker, pathModifier);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"show(picture,line,pen)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void show(picture pic = currentpicture, line l, pen p = red)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw some informations of 'l'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  dot(\"$A$\", (pair)l.A, align = -locate(l.v), p);","  dot(\"$B$\", (pair)l.B, align = -locate(l.v), p);","  draw(l, dotted);","  draw(\"$\\vec{u}$\", locate(l.A)--locate(l.A + l.u), p, Arrow);","  draw(\"$\\vec{v}$\", locate(l.A)--locate(l.A + l.v), p, Arrow);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"sameside(point,line,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] sameside(point M, line l1, line l2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn two points on 'l1' and 'l2' respectively.","   The first point is from the same side of M relatively to 'l2',","   the second point is from the same side of M relatively to 'l1'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point[] op;","  coordsys R1 = coordsys(l1);","  coordsys R2 = coordsys(l2);","  if (parallel(l1, l2)) {","    op.push(projection(l1) * M);","    op.push(projection(l2) * M);","  } else {","    point O = intersectionpoint(l1, l2);","    if (M @ l2) op.push((sameside(M, O + l1.u, l2)) ? O + l1.u : rotate(180, O) * (O + l1.u));","    else op.push(projection(l1, l2) * M);","    if (M @ l1) op.push((sameside(M, O + l2.u, l1)) ? O + l2.u : rotate(180, O) * (O + l2.u));","    else {op.push(projection(l2, l1) * M);}","  }","  return op;","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"markangle(picture,Label,int,real,real,explicit line,explicit line,explicit pair,arrowbar,pen,filltype,margin,marker)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void markangle(picture pic = currentpicture,","               Label L = \"\", int n = 1, real radius = 0, real space = 0,","               explicit line l1, explicit line l2, explicit pair align = dir(1),","               arrowbar arrow = None, pen p = currentpen,","               filltype filltype = NoFill,","               margin margin = NoMargin, marker marker = nomarker)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eMark the angle (l1, l2) aligned in the direction 'align' relative to 'l1'.","   Commune values for 'align' are dir(real).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if (parallel(l1, l2, true)) return;","  real al = degrees(l1, defaultcoordsys);","  pair O, A, B;","  if (radius == 0) radius = markangleradius(p);","  real d = degrees(locate(l1.u));","  align = rotate(d) * align;","  if (l1 == l2) {","    O = midpoint(segment(l1.A, l1.B));","    A = l1.A;B = l1.B;","    if (sameside(rotate(sgn(angle(B-A)) * 45, O) * A, O + align, l1)) {radius = -radius;}","  } else {","    O = intersectionpoint(extend(l1), extend(l2));","    pair R = O + align;","    point [] ss = sameside(point(coordsys(l1), R/coordsys(l1)), l1, l2);","    A = ss[0];","    B = ss[1];","  }","  markangle(pic = pic, L = L, n = n, radius = radius, space = space,","            O = O, A = A, B = B,","            arrow = arrow, p = p, filltype = filltype,","            margin = margin, marker = marker);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"markangle(picture,Label,int,real,real,explicit line,explicit line,explicit vector,arrowbar,pen,filltype,margin,marker)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void markangle(picture pic = currentpicture,","               Label L = \"\", int n = 1, real radius = 0, real space = 0,","               explicit line l1, explicit line l2, explicit vector align,","               arrowbar arrow = None, pen p = currentpen,","               filltype filltype = NoFill,","               margin margin = NoMargin, marker marker = nomarker)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eMark the angle (l1, l2) in the direction 'dir' given relatively to 'l1'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  markangle(pic, L, n, radius, space, l1, l2, (pair)align, arrow,","            p, filltype, margin, marker);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"markangle(picture,Label,int,real,real,line,line,arrowbar,pen,filltype,margin,marker)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","// void markangle(picture pic = currentpicture,","//                Label L = \"\", int n = 1, real radius = 0, real space = 0,","//                explicit line l1, explicit line l2,","//                arrowbar arrow = None, pen p = currentpen,","//                filltype filltype = NoFill,","//                margin margin = NoMargin, marker marker = nomarker)","// {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eMark the oriented angle (l1, l2).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","//   if (parallel(l1, l2, true)) return;","//   real al = degrees(l1, defaultcoordsys);","//   pair O, A, B;","//   if (radius == 0) radius = markangleradius(p);","//   real d = degrees(locate(l1.u));","//   if (l1 == l2) {","//     O = midpoint(segment(l1.A, l1.B));","//   } else {","//     O = intersectionpoint(extend(l1), extend(l2));","//   }","//   A = O + locate(l1.u);","//   B = O + locate(l2.u);","//   markangle(pic = pic, L = L, n = n, radius = radius, space = space,","//             O = O, A = A, B = B,","//             arrow = arrow, p = p, filltype = filltype,","//             margin = margin, marker = marker);","// }","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"perpendicularmark(picture,line,line,real,pen,int,margin,filltype)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void perpendicularmark(picture pic = currentpicture, line l1, line l2,","                       real size = 0, pen p = currentpen, int quarter = 1,","                       margin margin = NoMargin, filltype filltype = NoFill)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw a right angle at the intersection point of lines and","   aligned in the 'quarter' nth quarter of circle formed by 'l1.u' and","   'l2.u'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point P = intersectionpoint(l1, l2);","  pair align = rotate(90 * (quarter - 1)) * dir(45);","  perpendicularmark(P, align, locate(l1.u), size, p, margin, filltype);","}","// *.........................LINES.........................*","// *=======================================================*","","// *=======================================================*","// *........................CONICS.........................*","/*\u003casyxml\u003e\u003cstruct signature=\"bqe\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","struct bqe","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eBivariate Quadratic Equation.\u003c/documentation\u003e\u003c/asyxml\u003e*/","  /*\u003casyxml\u003e\u003cproperty type = \"real[]\" signature=\"a\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  real[] a;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003ea[0] * x^2 + a[1] * x * y + a[2] * y^2 + a[3] * x + a[4] * y + a[5] = 0\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"coordsys\" signature=\"coordsys\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  coordsys coordsys;/*\u003casyxml\u003e\u003c/code\u003e\u003c/property\u003e\u003c/asyxml\u003e*/","}/*\u003casyxml\u003e\u003c/struct\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cfunction type=\"bqe\" signature=\"bqe(coordsys,real,real,real,real,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bqe bqe(coordsys R = currentcoordsys,","        real a, real b, real c, real d, real e, real f)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the bivariate quadratic equation","   a[0] * x^2 + a[1] * x * y + a[2] * y^2 + a[3] * x + a[4] * y + a[5] = 0","   relatively to the coordinate system R.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  bqe obqe;","  obqe.coordsys = R;","  obqe.a = new real[] {a, b, c, d, e, f};","  return obqe;","}","","/*\u003casyxml\u003e\u003cfunction type=\"bqe\" signature=\"changecoordsys(coordsys,bqe)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bqe changecoordsys(coordsys R, bqe bqe)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturns the bivariate quadratic equation relatively to 'R'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  pair i = coordinates(changecoordsys(R, vector(defaultcoordsys,","                                                bqe.coordsys.i)));","  pair j = coordinates(changecoordsys(R, vector(defaultcoordsys,","                                                bqe.coordsys.j)));","  pair O = coordinates(changecoordsys(R, point(defaultcoordsys,","                                               bqe.coordsys.O)));","  real a = bqe.a[0], b = bqe.a[1], c = bqe.a[2], d = bqe.a[3], f = bqe.a[4], g = bqe.a[5];","  real ux = i.x, uy = i.y;","  real vx = j.x, vy = j.y;","  real ox = O.x, oy = O.y;","  real D = ux * vy - uy * vx;","  real ap = (a * vy^2 - b * uy * vy + c * uy^2)/D^2;","  real bpp = (-2 * a * vx * vy + b * ux * vy + b * uy * vx - 2 * c * ux * uy)/D^2;","  real cp = (a * vx^2 - b * ux * vx + c * ux^2)/D^2;","  real dp = (-2a * ox * vy^2 + 2a * oy * vx * vy + 2b * ox * uy * vy-","             b * oy * ux * vy - b * oy * uy * vx - 2c * ox * uy^2 + 2c * oy * uy * ux)/D^2+","    (d * vy - f * uy)/D;","  real fp = (2a * ox * vx * vy - b * ox * ux * vy - 2a * oy * vx^2-","             b * ox * uy * vx + 2 * b * oy * ux * vx + 2c * ox * ux * uy - 2c * oy * ux^2)/D^2+","    (f * ux - d * vx)/D;","  g = (a * ox^2 * vy^2 - 2a * ox * oy * vx * vy - b * ox^2 * uy * vy + b * ox * oy * ux * vy+","       a * oy^2 * vx^2 + b * ox * oy * uy * vx - b * oy^2 * ux * vx + c * ox^2 * uy^2-","       2 * c * ox * oy * ux * uy + c * oy^2 * ux^2)/D^2+","    (d * oy * vx + f * ox * uy - d * ox * vy - f * oy * ux)/D + g;","  bqe obqe;","  obqe.a = approximate(new real[] {ap, bpp, cp, dp, fp, g});","  obqe.coordsys = R;","  return obqe;","}","","/*\u003casyxml\u003e\u003cfunction type=\"bqe\" signature=\"bqe(point,point,point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bqe bqe(point M1, point M2, point M3, point M4, point M5)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the bqe of conic passing through the five points (if possible).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  coordsys R;","  pair[] pts;","  if (samecoordsys(M1, M2, M3, M4, M5)) {","    R = M1.coordsys;","    pts= new pair[] {M1.coordinates, M2.coordinates, M3.coordinates, M4.coordinates, M5.coordinates};","  } else {","    R = defaultcoordsys;","    pts= new pair[] {M1, M2, M3, M4, M5};","  }","  real[][] M;","  real[] x;","  bqe bqe;","  bqe.coordsys = R;","  for (int i = 0; i \u003c 5; ++i) {// Try a = -1","    M[i] = new real[] {pts[i].x * pts[i].y, pts[i].y^2, pts[i].x, pts[i].y, 1};","    x[i] = pts[i].x^2;","  }","  if(abs(determinant(M)) \u003c 1e-5) {// Try c = -1","    for (int i = 0; i \u003c 5; ++i) {","      M[i] = new real[] {pts[i].x^2, pts[i].x * pts[i].y, pts[i].x, pts[i].y, 1};","      x[i] = pts[i].y^2;","    }","    real[] coef = solve(M, x);","    bqe.a = new real[] {coef[0], coef[1], -1, coef[2], coef[3], coef[4]};","  } else {","    real[] coef = solve(M, x);","    bqe.a = new real[] {-1, coef[0], coef[1], coef[2], coef[3], coef[4]};","  }","  bqe.a = approximate(bqe.a);","  return bqe;","}","","/*\u003casyxml\u003e\u003cfunction type=\"bool\" signature=\"samecoordsys(bool...bqe[])\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool samecoordsys(bool warn = true ... bqe[] bqes)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn true if all the bivariate quadratic equations have the same coordinate system.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  bool ret = true;","  coordsys t = bqes[0].coordsys;","  for (int i = 1; i \u003c bqes.length; ++i) {","    ret = (t == bqes[i].coordsys);","    if(!ret) break;","    t = bqes[i].coordsys;","  }","  if(warn \u0026\u0026 !ret)","    warning(\"coodinatesystem\",","            \"the coordinate system of two bivariate quadratic equations are not","the same. The operation will be done relatively to the default coordinate","system.\");","  return ret;","}","","/*\u003casyxml\u003e\u003cfunction type=\"real[]\" signature=\"realquarticroots(real,real,real,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real[] realquarticroots(real a, real b, real c, real d, real e)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the real roots of the quartic equation ax^4 + b^x3 + cx^2 + dx = 0.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  static real Fuzz = sqrt(realEpsilon);","  pair[] zroots = quarticroots(a, b, c, d, e);","  real[] roots;","  real p(real x){return a * x^4 + b * x^3 + c * x^2 + d * x + e;}","  real prime(real x){return 4 * a * x^3 + 3 * b * x^2 + 2 * c * x + d;}","  real x;","  bool search = true;","  int n;","  void addroot(real x)","  {","    bool exist = false;","    for (int i = 0; i \u003c roots.length; ++i) {","      if(abs(roots[i]-x) \u003c 1e-5) {exist = true; break;}","    }","    if(!exist) roots.push(x);","  }","  for(int i = 0; i \u003c zroots.length; ++i) {","    if(zroots[i].y == 0 || abs(p(zroots[i].x)) \u003c Fuzz) addroot(zroots[i].x);","    else {","      if(abs(zroots[i].y) \u003c 1e-3) {","        x = zroots[i].x;","        search = true;","        n = 200;","        while(search) {","          real tx = abs(p(x)) \u003c Fuzz ? x : newton(iterations = n, p, prime, x);","          if(tx \u003c realMax) {","            if(abs(p(tx)) \u003c Fuzz) {","              addroot(tx);","              search = false;","            } else if(n \u003c 200) n *=2;","            else {","              search = false;","            }","          } else search = false; //It's not a real root.","        }","      }","    }","  }","  return roots;","}","","/*\u003casyxml\u003e\u003cstruct signature=\"conic\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","struct conic","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003cproperty type = \"real\" signature=\"e,p,h\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  real e, p, h;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eBE CAREFUL: h = distance(F, D) and p = h * e (http://en.wikipedia.org/wiki/Ellipse)","                 While http://mathworld.wolfram.com/ takes p = distance(F,D).\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"point\" signature=\"F\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  point F;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eFocus.\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"line\" signature=\"D\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  line D;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDirectrix.\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"line\" signature=\"l\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  line[] l;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCase of degenerated conic (not yet implemented !).\u003c/documentation\u003e\u003c/property\u003e\u003c/asyxml\u003e*/","}/*\u003casyxml\u003e\u003c/struct\u003e\u003c/asyxml\u003e*/","","bool degenerate(conic c)","{","  return !finite(c.p) || !finite(c.h);","}","","/*ANCconic conic(point, line, real)ANC*/","conic conic(point F, line l, real e)","{/*DOC","   The conic section define by the eccentricity 'e', the focus 'F'","   and the directrix 'l'.","   Note that an eccentricity equal to 0 defines a circle centered at F,","   with a radius equal at the distance from 'F' to 'l'.","   If the coordinate system of 'F' and 'l' are not identical, the conic is","   attached to 'defaultcoordsys'.","   DOC*/","  if(e \u003c 0) abort(\"conic: 'e' can't be negative.\");","  conic oc;","  point[] P = standardizecoordsys(F, l.A, l.B);","  line ll;","  ll = line(P[1], P[2]);","  oc.e = e \u003c epsgeo ? 0 : e; // Handle case of circle.","  oc.F = P[0];","  oc.D = ll;","  oc.h = distance(P[0], ll);","  oc.p = abs(e) \u003c epsgeo ? oc.h : e * oc.h;","  return oc;","}","","/*\u003casyxml\u003e\u003cstruct signature=\"circle\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","struct circle","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eAll the calculus with this structure will be as exact as Asymptote can do.","   For a full precision, you must not cast 'circle' to 'path' excepted for drawing routines.\u003c/documentation\u003e\u003c/asyxml\u003e*/","  /*\u003casyxml\u003e\u003cproperty type = \"point\" signature=\"C\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  point C;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCenter\u003c/documentation\u003e\u003c/property\u003e\u003cproperty\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  real r;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eRadius\u003c/documentation\u003e\u003c/property\u003e\u003cproperty\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  line l;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eIf the radius is infinite, this line is used instead of circle.\u003c/documentation\u003e\u003c/property\u003e\u003c/asyxml\u003e*/","}/*\u003casyxml\u003e\u003c/struct\u003e\u003c/asyxml\u003e*/","","bool degenerate(circle c)","{","  return !finite(c.r);","}","","line line(circle c){","  if(finite(c.r)) abort(\"Circle can not be casted to line here.\");","  return c.l;","}","","/*\u003casyxml\u003e\u003cstruct signature=\"ellipse\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","struct ellipse","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eLook at \u003chtml\u003e\u003ca href = \"http://mathworld.wolfram.com/Ellipse.html\"\u003ehttp://mathworld.wolfram.com/Ellipse.html\u003c/a\u003e\u003c/html\u003e\u003c/documentation\u003e\u003c/asyxml\u003e*/","  /*\u003casyxml\u003e\u003cproperty type = \"point\" signature=\"F1,F2,C\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted point F1,F2,C;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eFoci and center.\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"real\" signature=\"a,b,c,e,p\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted real a,b,c,e,p;/*\u003casyxml\u003e\u003c/code\u003e\u003c/property\u003e\u003cproperty type = \"real\" signature=\"angle\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted real angle;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eValue is degrees(F2 - F1).\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"line\" signature=\"D1,D2\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted line D1,D2;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDirectrices.\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"line\" signature=\"l\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  line l;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eIf one axis is infinite, this line is used instead of ellipse.\u003c/documentation\u003e\u003c/property\u003e\u003c/asyxml\u003e*/","","  /*\u003casyxml\u003e\u003cmethod type = \"void\" signature=\"init(point,point,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  void init(point f1, point f2, real a)","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eEllipse given by foci and semimajor axis.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    point[] P = standardizecoordsys(f1, f2);","    this.F1 = P[0];","    this.F2 = P[1];","    this.C = (P[0] + P[1])/2;","    this.angle = degrees(F2 - F1, warn=false);","    this.a = a;","    if(!finite(a)) {","      this.l = line(P[0], P[1]);","      this.b = infinity;","      this.e = 0;","      this.c = 0;","    } else {","      this.c = abs(C - P[0]);","      this.b = this.c \u003c epsgeo ? a : sqrt(a^2 - c^2); // Handle case of circle.","      this.e = this.c \u003c epsgeo ? 0 : this.c/a; // Handle case of circle.","      if(this.e \u003e= 1) abort(\"ellipse.init: wrong parameter: e \u003e= 1.\");","      this.p = a * (1 - this.e^2);","      if (this.c != 0) {// directrix is not set for a circle.","        point A = this.C + (a^2/this.c) * unit(P[0]-this.C);","        this.D1 = line(A, A + rotateO(90) * unit(A - this.C));","        this.D2 = reverse(rotate(180, C) * D1);","      }","    }","  }","}/*\u003casyxml\u003e\u003c/struct\u003e\u003c/asyxml\u003e*/","","bool degenerate(ellipse el)","{","  return !finite(el.a) || !finite(el.b);","}","","/*\u003casyxml\u003e\u003cstruct signature=\"parabola\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","struct parabola","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eLook at \u003chtml\u003e\u003ca href = \"http://mathworld.wolfram.com/Parabola.html\"\u003ehttp://mathworld.wolfram.com/Parabola.html\u003c/a\u003e\u003c/html\u003e\u003c/documentation\u003e\u003cproperty type = \"point\" signature=\"F,V\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted point F,V;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eFocus and vertex\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"real\" signature=\"a,p,e = 1\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted real a,p,e = 1;/*\u003casyxml\u003e\u003c/code\u003e\u003c/property\u003e\u003cproperty type = \"real\" signature=\"angle\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted real angle;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eValue is degrees(F - V).\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"line\" signature=\"D\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted line D;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDirectrix\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"pair\" signature=\"bmin,bmax\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  pair bmin, bmax;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe (left, bottom) and (right, top) coordinates of region bounding box for drawing the parabola.","                    If unset the current picture bounding box is used instead.\u003c/documentation\u003e\u003c/property\u003e\u003c/asyxml\u003e*/","","  /*\u003casyxml\u003e\u003cmethod type = \"void\" signature=\"init(point,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  void init(point F, line directrix)","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eParabola given by focus and directrix.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    point[] P = standardizecoordsys(F, directrix.A, directrix.B);","    this.F = P[0];","    line l = line(P[1], P[2]);","    this.D = l;","    this.a = distance(P[0], l)/2;","    this.p = 2 * a;","    this.V = 0.5 * (F + projection(D) * P[0]);","    this.angle = degrees(F - V, warn=false);","  }","}/*\u003casyxml\u003e\u003c/struct\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cstruct signature=\"hyperbola\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","struct hyperbola","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003chtml\u003eLook at \u003ca href = \"http://mathworld.wolfram.com/Hyperbola.html\"\u003ehttp://mathworld.wolfram.com/Hyperbola.html\u003c/a\u003e\u003c/html\u003e\u003c/documentation\u003e\u003cproperty type = \"point\" signature=\"F1,F2\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted point F1,F2;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eFoci.\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"point\" signature=\"C,V1,V2\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted point C,V1,V2;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCenter and vertices.\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"real\" signature=\"a,b,c,e,p\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted real a,b,c,e,p;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"real\" signature=\"angle\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted real angle;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eValue is degrees(F2 - F1).\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"line\" signature=\"D1,D2,A1,A2\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted line D1,D2,A1,A2;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDirectrices and asymptotes.\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"pair\" signature=\"bmin,bmax\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  pair bmin, bmax; /*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe (left, bottom) and (right, top) coordinates of region bounding box for drawing the hyperbola.","                     If unset the current picture bounding box is used instead.\u003c/documentation\u003e\u003c/property\u003e\u003c/asyxml\u003e*/","","  /*\u003casyxml\u003e\u003cmethod type = \"void\" signature=\"init(point,point,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  void init(point f1, point f2, real a)","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eHyperbola given by foci and semimajor axis.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    point[] P = standardizecoordsys(f1, f2);","    this.F1 = P[0];","    this.F2 = P[1];","    this.C = (P[0] + P[1])/2;","    this.angle = degrees(F2 - F1, warn=false);","    this.a = a;","    this.c = abs(C - P[0]);","    this.e = this.c/a;","    if(this.e \u003c= 1) abort(\"hyperbola.init: wrong parameter: e \u003c= 1.\");","    this.b = a * sqrt(this.e^2 - 1);","    this.p = a * (this.e^2 - 1);","    point A = this.C + (a^2/this.c) * unit(P[0]-this.C);","    this.D1 = line(A, A + rotate(90,this.C.coordsys.O) * unit(A - this.C));","    this.D2 = reverse(rotate(180, C) * D1);","    this.V1 = C + a * unit(F1 - C);","    this.V2 = C + a * unit(F2 - C);","    this.A1 = line(C, V1 + b * unit(rotateO(-90) * (C - V1)));","    this.A2 = line(C, V1 + b * unit(rotateO(90) * (C - V1)));","  }","}/*\u003casyxml\u003e\u003c/struct\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cvariable type=\"int\" signature=\"conicnodesfactor\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","int conicnodesfactor = 1;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eFactor for the node number of all conics.\u003c/documentation\u003e\u003c/variable\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cvariable type=\"int\" signature=\"circlenodesnumberfactor\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","int circlenodesnumberfactor = 100;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eFactor for the node number of circles.\u003c/documentation\u003e\u003c/variable\u003e\u003c/asyxml\u003e*/","/*\u003casyxml\u003e\u003cfunction type=\"int\" signature=\"circlenodesnumber(real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","int circlenodesnumber(real r)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the number of nodes for drawing a circle of radius 'r'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if (circlenodesnumberfactor \u003c 100)","    warning(\"circlenodesnumberfactor\",","            \"variable 'circlenodesnumberfactor' may be too small.\");","  int oi = ceil(circlenodesnumberfactor * abs(r)^0.1);","  oi = 45 * floor(oi/45);","  return oi == 0 ? 4 : conicnodesfactor * oi;","}","","/*\u003casyxml\u003e\u003cfunction type=\"int\" signature=\"circlenodesnumber(real,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","int circlenodesnumber(real r, real angle1, real angle2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the number of nodes to draw a circle arc.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return (r \u003e 0) ?","    ceil(circlenodesnumber(r) * abs(angle1 - angle2)/360) :","    ceil(circlenodesnumber(r) * abs((1 - abs(angle1 - angle2)/360)));","}","","/*\u003casyxml\u003e\u003cvariable type=\"int\" signature=\"ellispenodesnumberfactor\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","int ellipsenodesnumberfactor = 250;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eFactor for the node number of ellispe (non-circle).\u003c/documentation\u003e\u003c/variable\u003e\u003c/asyxml\u003e*/","/*\u003casyxml\u003e\u003cfunction type=\"int\" signature=\"ellipsenodesnumber(real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","int ellipsenodesnumber(real a, real b)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the number of nodes to draw a ellipse of axis 'a' and 'b'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if (ellipsenodesnumberfactor \u003c 250)","    write(\"ellipsenodesnumberfactor\",","          \"variable 'ellipsenodesnumberfactor' maybe too small.\");","  int tmp = circlenodesnumberfactor;","  circlenodesnumberfactor = ellipsenodesnumberfactor;","  int oi = circlenodesnumber(max(abs(a), abs(b))/min(abs(a), abs(b)));","  circlenodesnumberfactor = tmp;","  return conicnodesfactor * oi;","}","","/*\u003casyxml\u003e\u003cfunction type=\"int\" signature=\"ellipsenodesnumber(real,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","int ellipsenodesnumber(real a, real b, real angle1, real angle2, bool dir)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the number of nodes to draw an ellipse arc.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  real d;","  real da = angle2 - angle1;","  if(dir) {","    d = angle1 \u003c angle2 ? da : 360 + da;","  } else {","    d = angle1 \u003c angle2 ? -360 + da : da;","  }","  int n = floor(ellipsenodesnumber(a, b) * abs(d)/360);","  return n \u003c 5 ? 5 : n;","}","","/*\u003casyxml\u003e\u003cvariable type=\"int\" signature=\"parabolanodesnumberfactor\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","int parabolanodesnumberfactor = 100;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eFactor for the number of nodes of parabolas.\u003c/documentation\u003e\u003c/variable\u003e\u003c/asyxml\u003e*/","/*\u003casyxml\u003e\u003cfunction type=\"int\" signature=\"parabolanodesnumber(parabola,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","int parabolanodesnumber(parabola p, real angle1, real angle2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the number of nodes for drawing a parabola.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return conicnodesfactor * floor(0.01 * parabolanodesnumberfactor * abs(angle1 - angle2));","}","","/*\u003casyxml\u003e\u003cvariable type=\"int\" signature=\"hyperbolanodesnumberfactor\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","int hyperbolanodesnumberfactor = 100;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eFactor for the number of nodes of hyperbolas.\u003c/documentation\u003e\u003c/variable\u003e\u003c/asyxml\u003e*/","/*\u003casyxml\u003e\u003cfunction type=\"int\" signature=\"hyperbolanodesnumber(hyperbola,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","int hyperbolanodesnumber(hyperbola h, real angle1, real angle2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the number of nodes for drawing an hyperbola.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return conicnodesfactor * floor(0.01 * hyperbolanodesnumberfactor * abs(angle1 - angle2)/h.e);","}","","/*\u003casyxml\u003e\u003coperator type = \"conic\" signature=\"+(conic,explicit point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","conic operator +(conic c, explicit point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return conic(c.F + M, c.D + M, c.e);","}","/*\u003casyxml\u003e\u003coperator type = \"conic\" signature=\"-(conic,explicit point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","conic operator -(conic c, explicit point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return conic(c.F - M, c.D - M, c.e);","}","/*\u003casyxml\u003e\u003coperator type = \"conic\" signature=\"+(conic,explicit pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","conic operator +(conic c, explicit pair m)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  point M = point(c.F.coordsys, m);","  return conic(c.F + M, c.D + M, c.e);","}","/*\u003casyxml\u003e\u003coperator type = \"conic\" signature=\"-(conic,explicit pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","conic operator -(conic c, explicit pair m)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  point M = point(c.F.coordsys, m);","  return conic(c.F - M, c.D - M, c.e);","}","/*\u003casyxml\u003e\u003coperator type = \"conic\" signature=\"+(conic,vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","conic operator +(conic c, vector v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return conic(c.F + v, c.D + v, c.e);","}","/*\u003casyxml\u003e\u003coperator type = \"conic\" signature=\"-(conic,vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","conic operator -(conic c, vector v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return conic(c.F - v, c.D - v, c.e);","}","","/*\u003casyxml\u003e\u003cfunction type=\"coordsys\" signature=\"coordsys(conic)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","coordsys coordsys(conic co)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the coordinate system of 'co'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return co.F.coordsys;","}","","/*\u003casyxml\u003e\u003cfunction type=\"conic\" signature=\"changecoordsys(coordsys,conic)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","conic changecoordsys(coordsys R, conic co)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eChange the coordinate system of 'co' to 'R'\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  line l = changecoordsys(R, co.D);","  point F = changecoordsys(R, co.F);","  return conic(F, l, co.e);","}","","/*\u003casyxml\u003e\u003ctypedef type = \"polarconicroutine\" return = \"path\" params = \"conic, real, real, int, bool\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","typedef path polarconicroutine(conic co, real angle1, real angle2, int n, bool direction);/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eRoutine type used to draw conics from 'angle1' to 'angle2'\u003c/documentation\u003e\u003c/typedef\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cfunction type=\"path\" signature=\"arcfromfocus(conic,real,real,int,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","path arcfromfocus(conic co, real angle1, real angle2, int n = 400, bool direction = CCW)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the path of the conic section 'co' from angle1 to angle2 in degrees,","   drawing in the given direction, with n nodes.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  guide op;","  if (n \u003c 1) return op;","  if (angle1 \u003e angle2) {","    path g = arcfromfocus(co, angle2, angle1, n, !direction);","    return g == nullpath ? g : reverse(g);","  }","  point O = projection(co.D) * co.F;","  pair i = unit(locate(co.F) - locate(O));","  pair j = rotate(90) * i;","  coordsys Rp = cartesiansystem(co.F, i, j);","  real a1 = direction ? radians(angle1) : radians(angle2);","  real a2 = direction ? radians(angle2) : radians(angle1) + 2 * pi;","  real step = n == 1 ? 0 : (a2 - a1)/(n - 1);","  real a, r;","  for (int i = 0; i \u003c n; ++i) {","    a = a1 + i * step;","    if(co.e \u003e= 1) {","      r = 1 - co.e * cos(a);","      if(r \u003e epsgeo) {","        r = co.p/r;","        op = op--Rp * Rp.polar(r, a);","      }","    } else {","      r = co.p/(1 - co.e * cos(a));","      op = op..Rp * Rp.polar(r, a);","    }","  }","  if(co.e \u003c 1 \u0026\u0026 abs(abs(a2 - a1) - 2 * pi) \u003c epsgeo) op = (path)op..cycle;","","  return (direction ? op : op == nullpath ? op :reverse(op));","}","","/*\u003casyxml\u003e\u003cvariable type=\"polarconicroutine\" signature=\"currentpolarconicroutine\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","polarconicroutine currentpolarconicroutine = arcfromfocus;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDefault routine used to cast conic section to path.\u003c/documentation\u003e\u003c/variable\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"angpoint(conic,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point angpoint(conic co, real angle)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point of 'co' whose the angular (in degrees)","   coordinate is 'angle' (mesured from the focus of 'co', relatively","   to its 'natural coordinate system').\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  coordsys R = coordsys(co);","  return point(R, point(arcfromfocus(co, angle, angle, 1, CCW), 0)/R);","}","","/*\u003casyxml\u003e\u003coperator type = \"bool\" signature=\"@(point,conic)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool operator @(point M, conic co)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn true iff 'M' on 'co'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  if(co.e == 0) return abs(abs(co.F - M) - co.p) \u003c 10 * epsgeo;","  return abs(co.e * distance(M, co.D) - abs(co.F - M)) \u003c 10 * epsgeo;","}","","/*\u003casyxml\u003e\u003cfunction type=\"coordsys\" signature=\"coordsys(ellipse)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","coordsys coordsys(ellipse el)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the coordinate system of 'el'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return el.F1.coordsys;","}","","/*\u003casyxml\u003e\u003cfunction type=\"coordsys\" signature=\"canonicalcartesiansystem(ellipse)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","coordsys canonicalcartesiansystem(ellipse el)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the canonical cartesian system of the ellipse 'el'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(degenerate(el)) return cartesiansystem(el.l.A, el.l.u, el.l.v);","  pair O = locate(el.C);","  pair i = el.e == 0 ? el.C.coordsys.i : unit(locate(el.F1) - O);","  pair j = rotate(90) * i;","  return cartesiansystem(O, i, j);","}","","/*\u003casyxml\u003e\u003cfunction type=\"coordsys\" signature=\"canonicalcartesiansystem(parabola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","coordsys canonicalcartesiansystem(parabola p)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the canonical cartesian system of a parabola,","   so that Origin = vertex of 'p' and directrix: x = -a.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point A = projection(p.D) * p.F;","  pair O = locate((A + p.F)/2);","  pair i = unit(locate(p.F) - O);","  pair j = rotate(90) * i;","  return cartesiansystem(O, i, j);","}","","/*\u003casyxml\u003e\u003cfunction type=\"coordsys\" signature=\"canonicalcartesiansystem(hyperbola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","coordsys canonicalcartesiansystem(hyperbola h)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the canonical cartesian system of an hyperbola.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  pair O = locate(h.C);","  pair i = unit(locate(h.F2) - O);","  pair j = rotate(90) * i;","  return cartesiansystem(O, i, j);","}","","/*\u003casyxml\u003e\u003cfunction type=\"ellipse\" signature=\"ellipse(point,point,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","ellipse ellipse(point F1, point F2, real a)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the ellipse whose the foci are 'F1' and 'F2'","   and the semimajor axis is 'a'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  ellipse oe;","  oe.init(F1, F2, a);","  return oe;","}","","/*\u003casyxml\u003e\u003cconstant type = \"bool\" signature=\"byfoci,byvertices\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","restricted bool byfoci = true, byvertices = false;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eConstants useful for the routine 'hyperbola(point P1, point P2, real ae, bool byfoci = byfoci)'\u003c/documentation\u003e\u003c/constant\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cfunction type=\"hyperbola\" signature=\"hyperbola(point,point,real,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","hyperbola hyperbola(point P1, point P2, real ae, bool byfoci = byfoci)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eif 'byfoci = true':","   return the hyperbola whose the foci are 'P1' and 'P2'","   and the semimajor axis is 'ae'.","   else return the hyperbola whose vertexes are 'P1' and 'P2' with eccentricity 'ae'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  hyperbola oh;","  point[] P = standardizecoordsys(P1, P2);","  if(byfoci) {","    oh.init(P[0], P[1], ae);","  } else {","    real a = abs(P[0]-P[1])/2;","    vector V = unit(P[0]-P[1]);","    point F1 = P[0] + a * (ae - 1) * V;","    point F2 = P[1]-a * (ae - 1) * V;","    oh.init(F1, F2, a);","  }","  return oh;","}","","/*\u003casyxml\u003e\u003cfunction type=\"ellipse\" signature=\"ellipse(point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","ellipse ellipse(point F1, point F2, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the ellipse passing through 'M' whose the foci are 'F1' and 'F2'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  real a = abs(F1 - M) + abs(F2 - M);","  return ellipse(F1, F2, finite(a) ? a/2 : a);","}","","/*\u003casyxml\u003e\u003cfunction type=\"ellipse\" signature=\"ellipse(point,real,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","ellipse ellipse(point C, real a, real b, real angle = 0)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the ellipse centered at 'C' with semimajor axis 'a' along C--C + dir(angle),","   semiminor axis 'b' along the perpendicular.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  ellipse oe;","  coordsys R = C.coordsys;","  angle += degrees(R.i);","  if(a \u003c b) {angle += 90; real tmp = a; a = b; b = tmp;}","  if(finite(a) \u0026\u0026 finite(b)) {","    real c = sqrt(abs(a^2 - b^2));","    point f1, f2;","    if(abs(a - b) \u003c epsgeo) {","      f1 = C; f2 = C;","    } else {","      f1 = point(R, (locate(C) + rotate(angle) * (-c, 0))/R);","      f2 = point(R, (locate(C) + rotate(angle) * (c, 0))/R);","    }","    oe.init(f1, f2, a);","  } else {","    if(finite(b) || !finite(a)) oe.init(C, C + R.polar(1, angle), infinity);","    else oe.init(C, C + R.polar(1, 90 + angle), infinity);","  }","  return oe;","}","","/*\u003casyxml\u003e\u003cfunction type=\"ellipse\" signature=\"ellipse(bqe)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","ellipse ellipse(bqe bqe)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the ellipse a[0] * x^2 + a[1] * xy + a[2] * y^2 + a[3] * x + a[4] * y + a[5] = 0","   given in the coordinate system of 'bqe' with a[i] = bque.a[i].","   \u003curl href = \"http://mathworld.wolfram.com/QuadraticCurve.html\"/\u003e","   \u003curl href = \"http://mathworld.wolfram.com/Ellipse.html\"/\u003e.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  bqe lbqe = changecoordsys(defaultcoordsys, bqe);","  real a = lbqe.a[0], b = lbqe.a[1]/2, c = lbqe.a[2], d = lbqe.a[3]/2, f = lbqe.a[4]/2, g = lbqe.a[5];","  coordsys R = bqe.coordsys;","  string message = \"ellipse: the given equation is not an equation of an ellipse.\";","  real u = b^2 * g + d^2 * c + f^2 * a;","  real delta = a * c * g + b * f * d + d * b * f - u;","  if(abs(delta) \u003c epsgeo) abort(message);","  real j = b^2 - a * c;","  real i = a + c;","  real dd = j * (sgnd(c - a) * sqrt((a - c)^2 + 4 * (b^2)) - c-a);","  real ddd = j * (-sgnd(c - a) * sqrt((a - c)^2 + 4 * (b^2)) - c-a);","","  if(abs(ddd) \u003c epsgeo || abs(dd) \u003c epsgeo ||","     j \u003e= -epsgeo || delta/sgnd(i) \u003e 0) abort(message);","","  real x = (c * d - b * f)/j, y = (a * f - b * d)/j;","  // real dir = abs(b) \u003c epsgeo ? 0 : pi/2-0.5 * acot(0.5 * (c-a)/b);","  real dir = abs(b) \u003c epsgeo ? 0 : 0.5 * acot(0.5 * (c - a)/b);","  if(dir * (c - a) * b \u003c 0) dir = dir \u003c 0 ? dir + pi/2 : dir - pi/2;","  real cd = cos(dir), sd = sin(dir);","  real t = a * cd^2 - 2 * b * cd * sd + c * sd^2;","  real tt = a * sd^2 + 2 * b * cd * sd + c * cd^2;","  real gg = -g + ((d * cd - f * sd)^2)/t + ((d * sd + f * cd)^2)/tt;","  t = t/gg; tt = tt/gg;","  // The equation of the ellipse is t * (x - center.x)^2 + tt * (y - center.y)^2 = 1;","  real aa, bb;","  aa = sqrt(2 * (u - 2 * b * d * f - a * c * g)/dd);","  bb = sqrt(2 * (u - 2 * b * d * f - a * c * g)/ddd);","  a = t \u003e tt ? max(aa, bb) : min(aa, bb);","  b = t \u003e tt ? min(aa, bb) : max(aa, bb);","  return ellipse(point(R, (x, y)/R),","                 a, b, degrees(pi/2 - dir - angle(R.i)));","}","","/*\u003casyxml\u003e\u003cfunction type=\"ellipse\" signature=\"ellipse(point,point,point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","ellipse ellipse(point M1, point M2, point M3, point M4, point M5)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the ellipse passing through the five points (if possible)\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return ellipse(bqe(M1, M2, M3, M4, M5));","}","","/*\u003casyxml\u003e\u003cfunction type=\"bool\" signature=\"inside(ellipse,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool inside(ellipse el, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn 'true' iff 'M' is inside 'el'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return abs(el.F1 - M) + abs(el.F2 - M) - 2 * el.a \u003c -epsgeo;","}","","/*\u003casyxml\u003e\u003cfunction type=\"bool\" signature=\"inside(parabola,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool inside(parabola p, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn 'true' if 'M' is inside 'p'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return distance(p.D, M) - abs(p.F - M) \u003e epsgeo;","}","","/*\u003casyxml\u003e\u003cfunction type=\"parabola\" signature=\"parabola(point,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","parabola parabola(point F, line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the parabola whose focus is 'F' and directrix is 'l'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  parabola op;","  op.init(F, l);","  return op;","}","","/*\u003casyxml\u003e\u003cfunction type=\"parabola\" signature=\"parabola(point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","parabola parabola(point F, point vertex)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the parabola whose focus is 'F' and vertex is 'vertex'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  parabola op;","  point[] P = standardizecoordsys(F, vertex);","  point A = rotate(180, P[1]) * P[0];","  point B = A + rotateO(90) * unit(P[1]-A);","  op.init(P[0], line(A, B));","  return op;","}","","/*\u003casyxml\u003e\u003cfunction type=\"parabola\" signature=\"parabola(point,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","parabola parabola(point F, real a, real angle)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the parabola whose focus is F, latus rectum is 4a and","   the angle of the axis of symmetry (in the coordinate system of F) is 'angle'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  parabola op;","  coordsys R = F.coordsys;","  point A = F - point(R, R.polar(2a, radians(angle)));","  point B = A + point(R, R.polar(1, radians(90 + angle)));","  op.init(F, line(A, B));","  return op;","}","","/*\u003casyxml\u003e\u003cfunction type=\"bool\" signature=\"isparabola(bqe)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool isparabola(bqe bqe)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn true iff 'bqe' is the equation of a parabola.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  bqe lbqe = changecoordsys(defaultcoordsys, bqe);","  real a = lbqe.a[0], b = lbqe.a[1]/2, c = lbqe.a[2], d = lbqe.a[3]/2, f = lbqe.a[4]/2, g = lbqe.a[5];","  real delta = a * c * g + b * f * d + d * b * f - (b^2 * g + d^2 * c + f^2 * a);","  return (abs(delta) \u003e epsgeo \u0026\u0026 abs(b^2 - a * c) \u003c epsgeo);","}","","/*\u003casyxml\u003e\u003cfunction type=\"parabola\" signature=\"parabola(bqe)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","parabola parabola(bqe bqe)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the parabola a[0]x^2 + a[1]xy + a[2]y^2 + a[3]x + a[4]y + a[5]] = 0 (a[n] means bqe.a[n]).","   \u003curl href = \"http://mathworld.wolfram.com/QuadraticCurve.html\"/\u003e","   \u003curl href = \"http://mathworld.wolfram.com/Parabola.html\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  bqe lbqe = changecoordsys(defaultcoordsys, bqe);","  real a = lbqe.a[0], b = lbqe.a[1]/2, c = lbqe.a[2], d = lbqe.a[3]/2, f = lbqe.a[4]/2, g = lbqe.a[5];","  string message = \"parabola: the given equation is not an equation of a parabola.\";","  real delta = a * c * g + b * f * d + d * b * f - (b^2 * g + d^2 * c + f^2 * a);","  if(abs(delta) \u003c 10 * epsgeo || abs(b^2 - a * c) \u003e 10 * epsgeo) abort(message);","  real dir = abs(b) \u003c epsgeo ? 0 : 0.5 * acot(0.5 * (c - a)/b);","  if(dir * (c - a) * b \u003c 0) dir = dir \u003c 0 ? dir + pi/2 : dir - pi/2;","  real cd = cos(dir), sd = sin(dir);","  real ap = a * cd^2 - 2 * b * cd * sd + c * sd^2;","  real cp = a * sd^2 + 2 * b * cd * sd + c * cd^2;","  real dp = d * cd - f * sd;","  real fp = d * sd + f * cd;","  real gp = g;","  parabola op;","  coordsys R = bqe.coordsys;","  // The equation of the parabola is ap * x'^2 + cp * y'^2 + 2dp * x'+2fp * y'+gp = 0","  if (abs(ap) \u003c epsgeo) {/* directrix parallel to the rotated(dir) y-axis","                            equation: (y-vertex.y)^2 = 4 * a * (x-vertex)","                         */","    pair pvertex = rotate(degrees(-dir)) * (0.5(-gp + fp^2/cp)/dp, -fp/cp);","    real a = -0.5 * dp/cp;","    point vertex = point(R, pvertex/R);","    point focus = point(R, (pvertex + a * expi(-dir))/R);","    op = parabola(focus, vertex);","","  } else {/* directrix parallel to the rotated(dir) x-axis","             equation: (x-vertex)^2 = 4 * a * (y-vertex.y)","          */","    pair pvertex = rotate(degrees(-dir)) * (-dp/ap, 0.5 * (-gp + dp^2/ap)/fp);","    real a = -0.5 * fp/ap;","    point vertex = point(R, pvertex/R);","    point focus = point(R, (pvertex + a * expi(pi/2 - dir))/R);","    op = parabola(focus, vertex);","  }","  return op;","}","","/*\u003casyxml\u003e\u003cfunction type=\"parabola\" signature=\"parabola(point,point,point,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","parabola parabola(point M1, point M2, point M3, line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the parabola passing through the three points with its directix","   parallel to the line 'l'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  coordsys R;","  pair[] pts;","  if (samecoordsys(M1, M2, M3)) {","    R = M1.coordsys;","  } else {","    R = defaultcoordsys;","  }","  real gle = degrees(l);","  coordsys Rp = cartesiansystem(R.O, rotate(gle) * R.i, rotate(gle) * R.j);","  pts = new pair[] {coordinates(changecoordsys(Rp, M1)),","                    coordinates(changecoordsys(Rp, M2)),","                    coordinates(changecoordsys(Rp, M3))};","  real[][] M;","  real[] x;","  for (int i = 0; i \u003c 3; ++i) {","    M[i] = new real[] {pts[i].x, pts[i].y, 1};","    x[i] = -pts[i].x^2;","  }","  real[] coef = solve(M, x);","  return parabola(changecoordsys(R, bqe(Rp, 1, 0, 0, coef[0], coef[1], coef[2])));","}","","/*\u003casyxml\u003e\u003cfunction type=\"parabola\" signature=\"parabola(point,point,point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","parabola parabola(point M1, point M2, point M3, point M4, point M5)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the parabola passing through the five points.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return parabola(bqe(M1, M2, M3, M4, M5));","}","","/*\u003casyxml\u003e\u003cfunction type=\"hyperbola\" signature=\"hyperbola(point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","hyperbola hyperbola(point F1, point F2, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the hyperbola passing through 'M' whose the foci are 'F1' and 'F2'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  real a = abs(abs(F1 - M) - abs(F2 - M));","  return hyperbola(F1, F2, finite(a) ? a/2 : a);","}","","/*\u003casyxml\u003e\u003cfunction type=\"hyperbola\" signature=\"hyperbola(point,real,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","hyperbola hyperbola(point C, real a, real b, real angle = 0)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the hyperbola centered at 'C' with semimajor axis 'a' along C--C + dir(angle),","   semiminor axis 'b' along the perpendicular.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  hyperbola oh;","  coordsys R = C.coordsys;","  angle += degrees(R.i);","  real c = sqrt(a^2 + b^2);","  point f1 = point(R, (locate(C) + rotate(angle) * (-c, 0))/R);","  point f2 = point(R, (locate(C) + rotate(angle) * (c, 0))/R);","  oh.init(f1, f2, a);","  return oh;","}","","/*\u003casyxml\u003e\u003cfunction type=\"hyperbola\" signature=\"hyperbola(bqe)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","hyperbola hyperbola(bqe bqe)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the hyperbola a[0]x^2 + a[1]xy + a[2]y^2 + a[3]x + a[4]y + a[5]] = 0 (a[n] means bqe.a[n]).","   \u003curl href = \"http://mathworld.wolfram.com/QuadraticCurve.html\"/\u003e","   \u003curl href = \"http://mathworld.wolfram.com/Hyperbola.html\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  bqe lbqe = changecoordsys(defaultcoordsys, bqe);","  real a = lbqe.a[0], b = lbqe.a[1]/2, c = lbqe.a[2], d = lbqe.a[3]/2, f = lbqe.a[4]/2, g = lbqe.a[5];","  string message = \"hyperbola: the given equation is not an equation of a hyperbola.\";","  real delta = a * c * g + b * f * d + d * b * f - (b^2 * g + d^2 * c + f^2 * a);","  if(abs(delta) \u003c 10 * epsgeo || abs(b^2 - a * c) \u003c 0) abort(message);","  real dir = abs(b) \u003c epsgeo ? 0 : 0.5 * acot(0.5 * (c - a)/b);","  real cd = cos(dir), sd = sin(dir);","  real ap = a * cd^2 - 2 * b * cd * sd + c * sd^2;","  real cp = a * sd^2 + 2 * b * cd * sd + c * cd^2;","  real dp = d * cd - f * sd;","  real fp = d * sd + f * cd;","  real gp = -g + dp^2/ap + fp^2/cp;","  hyperbola op;","  coordsys R = bqe.coordsys;","  real j = b^2 - a * c;","  point C = point(R, ((c * d - b * f)/j, (a * f - b * d)/j)/R);","  real aa = gp/ap, bb = gp/cp;","  real a = sqrt(abs(aa)), b = sqrt(abs(bb));","  if(aa \u003c 0) {dir -= pi/2; aa = a; a = b; b = aa;}","  return hyperbola(C, a, b, degrees(-dir - angle(R.i)));","}","","/*\u003casyxml\u003e\u003cfunction type=\"hyperbola\" signature=\"hyperbola(point,point,point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","hyperbola hyperbola(point M1, point M2, point M3, point M4, point M5)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the hyperbola passing through the five points (if possible).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return hyperbola(bqe(M1, M2, M3, M4, M5));","}","","/*\u003casyxml\u003e\u003cfunction type=\"hyperbola\" signature=\"conj(hyperbola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","hyperbola conj(hyperbola h)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eConjugate.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return hyperbola(h.C, h.b, h.a, 90 + h.angle);","}","","/*\u003casyxml\u003e\u003cfunction type=\"circle\" signature=\"circle(explicit point,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle circle(explicit point C, real r)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCircle given by center and radius.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  circle oc = new circle;","  oc.C = C;","  oc.r = r;","  if(!finite(r)) oc.l = line(C, C + vector(C.coordsys, (1, 0)));","  return oc;","}","","/*\u003casyxml\u003e\u003cfunction type=\"circle\" signature=\"circle(point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle circle(point A, point B)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the circle of diameter AB.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  real r;","  circle oc;","  real a = abs(A), b = abs(B);","  if(finite(a) \u0026\u0026 finite(b)) {","    oc = circle((A + B)/2, abs(A - B)/2);","  } else {","    oc.r = infinity;","    if(finite(abs(A))) oc.l = line(A, A + unit(B));","    else {","      if(finite(abs(B))) oc.l = line(B, B + unit(A));","      else if(finite(abs(A - B)/2)) oc = circle((A + B)/2, abs(A - B)/2); else","        oc.l = line(A, B);","    }","  }","  return oc;","}","","/*\u003casyxml\u003e\u003cfunction type=\"circle\" signature=\"circle(segment)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle circle(segment s)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the circle of diameter 's'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return circle(s.A, s.B);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"circumcenter(point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point circumcenter(point A, point B, point C)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the circumcenter of triangle ABC.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point[] P = standardizecoordsys(A, B, C);","  coordsys R = P[0].coordsys;","  pair a = A, b = B, c = C;","  pair mAB = (a + b)/2;","  pair mAC = (a + c)/2;","  pair pp = extension(mAB, rotate(90, mAB) * a, mAC, rotate(90, mAC) * c);","  return point(R, pp/R);","}","","/*\u003casyxml\u003e\u003cfunction type=\"circle\" signature=\"circle(point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle circle(point A, point B, point C)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the circumcircle of the triangle ABC.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(collinear(A - B, A - C)) {","    circle oc;","    oc.r = infinity;","    oc.C = (A + B + C)/3;","    oc.l = line(oc.C, oc.C == A ? B : A);","    return oc;","  }","  point c = circumcenter(A, B, C);","  return circle(c, abs(c - A));","}","","/*\u003casyxml\u003e\u003cfunction type=\"circle\" signature=\"circumcircle(point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle circumcircle(point A, point B, point C)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the circumcircle of the triangle ABC.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return circle(A, B, C);","}","","/*\u003casyxml\u003e\u003coperator type = \"circle\" signature=\"*(real,explicit circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle operator *(real x, explicit circle c)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eMultiply the radius of 'c'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return finite(c.r) ? circle(c.C, x * c.r) : c;","}","circle operator *(int x, explicit circle c)","{","  return finite(c.r) ? circle(c.C, x * c.r) : c;","}","/*\u003casyxml\u003e\u003coperator type = \"circle\" signature=\"/(explicit circle,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle operator /(explicit circle c, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDivide the radius of 'c'\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return finite(c.r) ? circle(c.C, c.r/x) : c;","}","circle operator /(explicit circle c, int x)","{","  return finite(c.r) ? circle(c.C, c.r/x) : c;","}","/*\u003casyxml\u003e\u003coperator type = \"circle\" signature=\"+(explicit circle,explicit point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle operator +(explicit circle c, explicit point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eTranslation of 'c'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return circle(c.C + M, c.r);","}","/*\u003casyxml\u003e\u003coperator type = \"circle\" signature=\"-(explicit circle,explicit point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle operator -(explicit circle c, explicit point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eTranslation of 'c'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return circle(c.C - M, c.r);","}","/*\u003casyxml\u003e\u003coperator type = \"circle\" signature=\"+(explicit circle,pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle operator +(explicit circle c, pair m)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eTranslation of 'c'.","   'm' represent coordinates in the coordinate system where 'c' is defined.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return circle(c.C + m, c.r);","}","/*\u003casyxml\u003e\u003coperator type = \"circle\" signature=\"-(explicit circle,pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle operator -(explicit circle c, pair m)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eTranslation of 'c'.","   'm' represent coordinates in the coordinate system where 'c' is defined.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return circle(c.C - m, c.r);","}","/*\u003casyxml\u003e\u003coperator type = \"circle\" signature=\"+(explicit circle,vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle operator +(explicit circle c, vector m)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eTranslation of 'c'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return circle(c.C + m, c.r);","}","/*\u003casyxml\u003e\u003coperator type = \"circle\" signature=\"-(explicit circle,vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle operator -(explicit circle c, vector m)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eTranslation of 'c'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return circle(c.C - m, c.r);","}","/*\u003casyxml\u003e\u003coperator type = \"real\" signature=\"^(point,explicit circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real operator ^(point M, explicit circle c)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe power of 'M' with respect to the circle 'c'\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return xpart((abs(locate(M) - locate(c.C)), c.r)^2);","}","/*\u003casyxml\u003e\u003coperator type = \"bool\" signature=\"@(point,explicit circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool operator @(point M, explicit circle c)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn true iff 'M' is on the circle 'c'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return finite(c.r) ?","    abs(abs(locate(M) - locate(c.C)) - abs(c.r)) \u003c= 10 * epsgeo :","    M @ c.l;","}","","/*\u003casyxml\u003e\u003coperator type = \"ellipse\" signature=\"cast(circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","ellipse operator cast(circle c)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return finite(c.r) ? ellipse(c.C, c.r, c.r, 0) : ellipse(c.l.A, c.l.B, infinity);","}","","/*\u003casyxml\u003e\u003coperator type = \"circle\" signature=\"cast(ellipse)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle operator ecast(ellipse el)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  circle oc;","  bool infb = (!finite(el.a) || !finite(el.b));","  if(!infb \u0026\u0026 abs(el.a - el.b) \u003e epsgeo)","    abort(\"Can not cast ellipse with different axis values to circle\");","  oc = circle(el.C, infb ? infinity : el.a);","  oc.l = el.l.copy();","  return oc;","}","","/*\u003casyxml\u003e\u003coperator type = \"ellipse\" signature=\"cast(conic)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","ellipse operator ecast(conic co)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast a conic to an ellipse (can be a circle).\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  if(degenerate(co) \u0026\u0026 co.e \u003c 1) return ellipse(co.l[0].A, co.l[0].B, infinity);","  ellipse oe;","  if(co.e \u003c 1) {","    real a = co.p/(1 - co.e^2);","    real c = co.e * a;","    vector v = co.D.v;","    if(!sameside(co.D.A + v, co.F, co.D)) v = -v;","    point f2 = co.F + 2 * c * v;","    f2 = changecoordsys(co.F.coordsys, f2);","    oe = a == 0 ? ellipse(co.F, co.p, co.p, 0) : ellipse(co.F, f2, a);","  } else","    abort(\"casting: The conic section is not an ellipse.\");","  return oe;","}","","/*\u003casyxml\u003e\u003coperator type = \"parabola\" signature=\"cast(conic)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","parabola operator ecast(conic co)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast a conic to a parabola.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  parabola op;","  if(abs(co.e - 1) \u003e epsgeo) abort(\"casting: The conic section is not a parabola.\");","  op.init(co.F, co.D);","  return op;","}","","/*\u003casyxml\u003e\u003coperator type = \"conic\" signature=\"cast(parabola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","conic operator cast(parabola p)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast a parabola to a conic section.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return conic(p.F, p.D, 1);","}","","/*\u003casyxml\u003e\u003coperator type = \"hyperbola\" signature=\"cast(conic)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","hyperbola operator ecast(conic co)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast a conic section to an hyperbola.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  hyperbola oh;","  if(co.e \u003e 1) {","    real a = co.p/(co.e^2 - 1);","    real c = co.e * a;","    vector v = co.D.v;","    if(sameside(co.D.A + v, co.F, co.D)) v = -v;","    point f2 = co.F + 2 * c * v;","    f2 = changecoordsys(co.F.coordsys, f2);","    oh = hyperbola(co.F, f2, a);","  } else","    abort(\"casting: The conic section is not an hyperbola.\");","  return oh;","}","","/*\u003casyxml\u003e\u003coperator type = \"conic\" signature=\"cast(hyperbola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","conic operator cast(hyperbola h)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eHyperbola to conic section.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return conic(h.F1, h.D1, h.e);","}","","/*\u003casyxml\u003e\u003coperator type = \"conic\" signature=\"cast(ellipse)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","conic operator cast(ellipse el)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eEllipse to conic section.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  conic oc;","  if(abs(el.c) \u003e epsgeo) {","    real x = el.a^2/el.c;","    point O = (el.F1 + el.F2)/2;","    point A = O + x * unit(el.F1 - el.F2);","    oc = conic(el.F1, perpendicular(A, line(el.F1, el.F2)), el.e);","  } else {//The ellipse is a circle","    coordsys R = coordsys(el);","    point M = el.F1 + point(R, R.polar(el.a, 0));","    line l = line(rotate(90, M) * el.F1, M);","    oc = conic(el.F1, l, 0);","  }","  if(degenerate(el)) {","    oc.p = infinity;","    oc.h = infinity;","    oc.l = new line[]{el.l};","  }","  return oc;","}","","/*\u003casyxml\u003e\u003coperator type = \"conic\" signature=\"cast(circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","conic operator cast(circle c)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCircle to conic section.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return (conic)((ellipse)c);","}","","/*\u003casyxml\u003e\u003coperator type = \"circle\" signature=\"cast(conic)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle operator ecast(conic c)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eConic section to circle.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  ellipse el = (ellipse)c;","  circle oc;","  if(abs(el.a - el.b) \u003c epsgeo) {","    oc = circle(el.C, el.a);","    if(degenerate(c)) oc.l = c.l[0];","  }","  else abort(\"Can not cast this conic to a circle\");","  return oc;","}","","/*\u003casyxml\u003e\u003coperator type = \"ellipse\" signature=\"*(transform,ellipse)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","ellipse operator *(transform t, ellipse el)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide transform * ellipse.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  if(!degenerate(el)) {","    point[] ep;","    for (int i = 0; i \u003c 360; i += 72) {","      ep.push(t * angpoint(el, i));","    }","    ellipse oe = ellipse(ep[0], ep[1], ep[2], ep[3], ep[4]);","    if(angpoint(oe, 0) != ep[0]) return ellipse(oe.F2, oe.F1, oe.a);","    return oe;","  }","  return ellipse(t * el.l.A, t * el.l.B, infinity);","}","","/*\u003casyxml\u003e\u003coperator type = \"parabola\" signature=\"*(transform,parabola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","parabola operator *(transform t, parabola p)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide transform * parabola.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  point[] P;","  P.push(t * angpoint(p, 45));","  P.push(t * angpoint(p, -45));","  P.push(t * angpoint(p, 180));","  parabola op = parabola(P[0], P[1], P[2], t * p.D);","  op.bmin = p.bmin;","  op.bmax = p.bmax;","","  return op;","}","","/*\u003casyxml\u003e\u003coperator type = \"ellipse\" signature=\"*(transform,circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","ellipse operator *(transform t, circle c)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide transform * circle.","   For example, 'circle C = scale(2) * circle' and 'ellipse E = xscale(2) * circle' are valid","   but 'circle C = xscale(2) * circle' is invalid.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return t * ((ellipse)c);","}","","/*\u003casyxml\u003e\u003coperator type = \"hyperbola\" signature=\"*(transform,hyperbola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","hyperbola operator *(transform t, hyperbola h)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide transform * hyperbola.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  if (t == identity()) {","    return h;","  }","","  point[] ep;","  for (int i = 90; i \u003c= 270; i += 45) {","    ep.push(t * angpoint(h, i));","  }","","  hyperbola oe = hyperbola(ep[0], ep[1], ep[2], ep[3], ep[4]);","  if(angpoint(oe, 90) != ep[0]) {","    oe = hyperbola(oe.F2, oe.F1, oe.a);","  }","","  oe.bmin = h.bmin;","  oe.bmax = h.bmax;","","  return oe;","}","","/*\u003casyxml\u003e\u003coperator type = \"conic\" signature=\"*(transform,conic)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","conic operator *(transform t, conic co)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide transform * conic.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  if(co.e \u003c 1) return (t * ((ellipse)co));","  if(co.e == 1) return (t * ((parabola)co));","  return (t * ((hyperbola)co));","}","","/*\u003casyxml\u003e\u003coperator type = \"ellipse\" signature=\"*(real,ellipse)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","ellipse operator *(real x, ellipse el)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eIdentical but more efficient (rapid) than 'scale(x, el.C) * el'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return degenerate(el) ? el : ellipse(el.C, x * el.a, x * el.b, el.angle);","}","","/*\u003casyxml\u003e\u003coperator type = \"ellipse\" signature=\"/(ellipse,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","ellipse operator /(ellipse el, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eIdentical but more efficient (rapid) than 'scale(1/x, el.C) * el'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return degenerate(el) ? el : ellipse(el.C, el.a/x, el.b/x, el.angle);","}","","/*\u003casyxml\u003e\u003cfunction type=\"path\" signature=\"arcfromcenter(ellipse,real,real,int,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","path arcfromcenter(ellipse el, real angle1, real angle2,","                   bool direction=CCW,","                   int n=ellipsenodesnumber(el.a,el.b,angle1,angle2,direction))","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the path of the ellipse 'el' from angle1 to angle2 in degrees,","   drawing in the given direction, with n nodes.","   The angles are mesured relatively to the  axis (C,x-axis) where C is","   the center of the ellipse.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(degenerate(el)) abort(\"arcfromcenter: can not convert degenerated ellipse to path.\");","  if (angle1 \u003e angle2)","    return reverse(arcfromcenter(el, angle2, angle1, !direction, n));","","  guide op;","  coordsys Rp=coordsys(el);","  if (n \u003c 1) return op;","","  interpolate join = operator ..;","  real stretch = max(el.a/el.b, el.b/el.a);","","  if (stretch \u003e 10) {","    n *= floor(stretch/5);","    join = operator --;","  }","","  real a1 = direction ? radians(angle1) : radians(angle2);","  real a2 = direction ? radians(angle2) : radians(angle1) + 2 * pi;","  real step=(a2 - a1)/(n != 1 ? n-1 : 1);","  real a, r;","  real da = radians(el.angle);","","  for (int i=0; i \u003c n; ++i) {","    a = a1 + i * step;","    r = el.b/sqrt(1 - (el.e * cos(a))^2);","    op = join(op, Rp*Rp.polar(r, da + a));","  }","","  return shift(el.C.x*Rp.i + el.C.y*Rp.j) * (direction ? op : reverse(op));","}","","/*\u003casyxml\u003e\u003cfunction type=\"path\" signature=\"arcfromcenter(hyperbola,real,real,int,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","path arcfromcenter(hyperbola h, real angle1, real angle2,","                   int n = hyperbolanodesnumber(h, angle1, angle2),","                   bool direction = CCW)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the path of the hyperbola 'h' from angle1 to angle2 in degrees,","   drawing in the given direction, with n nodes.","   The angles are mesured relatively to the axis (C, x-axis) where C is","   the center of the hyperbola.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  guide op;","  coordsys Rp = coordsys(h);","  if (n \u003c 1) return op;","  if (angle1 \u003e angle2) {","    path g = reverse(arcfromcenter(h, angle2, angle1, n, !direction));","    return g == nullpath ? g : reverse(g);","  }","  real a1 = direction ? radians(angle1) : radians(angle2);","  real a2 = direction ? radians(angle2) : radians(angle1) + 2 * pi;","  real step = (a2 - a1)/(n != 1 ? n - 1 : 1);","  real a, r;","  typedef guide interpolate(... guide[]);","  interpolate join = operator ..;","  real da = radians(h.angle);","  for (int i = 0; i \u003c n; ++i) {","    a = a1 + i * step;","    r = (h.b * cos(a))^2 - (h.a * sin(a))^2;","    if(r \u003e epsgeo) {","      r = sqrt(h.a^2 * h.b^2/r);","      op = join(op, Rp * Rp.polar(r, a + da));","      join = operator ..;","    } else join = operator --;","  }","  return shift(h.C.x * Rp.i + h.C.y * Rp.j)*","    (direction ? op : op == nullpath ? op : reverse(op));","}","","/*\u003casyxml\u003e\u003cfunction type=\"path\" signature=\"arcfromcenter(explicit conic,real,real,int,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","path arcfromcenter(explicit conic co, real angle1, real angle2,","                   int n, bool direction = CCW)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eUse arcfromcenter(ellipse, ...) or arcfromcenter(hyperbola, ...) depending of","   the eccentricity of 'co'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  path g;","  if(co.e \u003c 1)","    g = arcfromcenter((ellipse)co, angle1,","                      angle2, direction, n);","  else if(co.e \u003e 1)","    g = arcfromcenter((hyperbola)co, angle1,","                      angle2, n, direction);","  else abort(\"arcfromcenter: does not exist for a parabola.\");","  return g;","}","","/*\u003casyxml\u003e\u003cconstant type = \"polarconicroutine\" signature=\"fromCenter\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","restricted polarconicroutine fromCenter = arcfromcenter;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/constant\u003e\u003c/asyxml\u003e*/","/*\u003casyxml\u003e\u003cconstant type = \"polarconicroutine\" signature=\"fromFocus\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","restricted polarconicroutine fromFocus = arcfromfocus;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/constant\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cfunction type=\"bqe\" signature=\"equation(ellipse)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bqe equation(ellipse el)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the coefficients of the equation of the ellipse in its coordinate system:","   bqe.a[0] * x^2 + bqe.a[1] * x * y + bqe.a[2] * y^2 + bqe.a[3] * x + bqe.a[4] * y + bqe.a[5] = 0.","   One can change the coordinate system of 'bqe' using the routine 'changecoordsys'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  pair[] pts;","  for (int i = 0; i \u003c 360; i += 72)","    pts.push(locate(angpoint(el, i)));","","  real[][] M;","  real[] x;","  for (int i = 0; i \u003c 5; ++i) {","    M[i] = new real[] {pts[i].x * pts[i].y, pts[i].y^2, pts[i].x, pts[i].y, 1};","    x[i] = -pts[i].x^2;","  }","  real[] coef = solve(M, x);","  bqe bqe = changecoordsys(coordsys(el),","                           bqe(defaultcoordsys,","                               1, coef[0], coef[1], coef[2], coef[3], coef[4]));","  bqe.a = approximate(bqe.a);","  return bqe;","}","","/*\u003casyxml\u003e\u003cfunction type=\"bqe\" signature=\"equation(parabola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bqe equation(parabola p)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the coefficients of the equation of the parabola in its coordinate system.","   bqe.a[0] * x^2 + bqe.a[1] * x * y + bqe.a[2] * y^2 + bqe.a[3] * x + bqe.a[4] * y + bqe.a[5] = 0","   One can change the coordinate system of 'bqe' using the routine 'changecoordsys'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  coordsys R = canonicalcartesiansystem(p);","  parabola tp = (parabola) changecoordsys(R, p);","  point A = projection(tp.D) * point(R, (0, 0));","  real a = abs(A);","  return changecoordsys(coordsys(p),","                        bqe(R, 0, 0, 1, -4 * a, 0, 0));","}","","/*\u003casyxml\u003e\u003cfunction type=\"bqe\" signature=\"equation(hyperbola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bqe equation(hyperbola h)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the coefficients of the equation of the hyperbola in its coordinate system.","   bqe.a[0] * x^2 + bqe.a[1] * x * y + bqe.a[2] * y^2 + bqe.a[3] * x + bqe.a[4] * y + bqe.a[5] = 0","   One can change the coordinate system of 'bqe' using the routine 'changecoordsys'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  coordsys R = canonicalcartesiansystem(h);","  return changecoordsys(coordsys(h),","                        bqe(R, 1/h.a^2, 0, -1/h.b^2, 0, 0, -1));","}","","/*\u003casyxml\u003e\u003coperator type = \"path\" signature=\"cast(ellipse)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","path operator cast(ellipse el)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast ellipse to path.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  if(degenerate(el))","    abort(\"Casting degenerated ellipse to path is not possible.\");","  int n = el.e == 0 ? circlenodesnumber(el.a) : ellipsenodesnumber(el.a, el.b);","  return arcfromcenter(el, 0.0, 360, CCW, n)\u0026cycle;","}","","/*\u003casyxml\u003e\u003coperator type = \"path\" signature=\"cast(circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","path operator cast(circle c)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast circle to path.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return (path)((ellipse)c);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real[]\" signature=\"bangles(picture,parabola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real[] bangles(picture pic = currentpicture, parabola p)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the array {ma, Ma} where 'ma' and 'Ma' are respectively","   the smaller and the larger angles for which the parabola 'p' is included","   in the bounding box of the picture 'pic'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  pair bmin, bmax;","  pair[] b;","  if (p.bmin == p.bmax) {","    bmin = pic.userMin();","    bmax = pic.userMax();","  } else {","    bmin = p.bmin;bmax = p.bmax;","  }","  if(bmin.x == bmax.x || bmin.y == bmax.y || !finite(abs(bmin)) || !finite(abs(bmax)))","    return new real[] {0, 0};","  b[0] = bmin;","  b[1] = (bmax.x, bmin.y);","  b[2] = bmax;","  b[3] = (bmin.x, bmax.y);","  real[] eq = changecoordsys(defaultcoordsys, equation(p)).a;","  pair[] inter;","  for (int i = 0; i \u003c 4; ++i) {","    pair[] tmp = intersectionpoints(b[i], b[(i + 1)%4], eq);","    for (int j = 0; j \u003c tmp.length; ++j) {","      if(dot(b[i]-tmp[j], b[(i + 1)%4]-tmp[j]) \u003c= epsgeo)","        inter.push(tmp[j]);","    }","  }","  pair F = p.F, V = p.V;","  real d = degrees(F - V);","  real[] a = sequence(new real(int n){","      return (360 - d + degrees(inter[n]-F))%360;","    }, inter.length);","  real ma = a.length != 0 ? min(a) : 0, Ma= a.length != 0 ? max(a) : 0;","  return new real[] {ma, Ma};","}","","/*\u003casyxml\u003e\u003cfunction type=\"real[][]\" signature=\"bangles(picture,hyperbola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real[][] bangles(picture pic = currentpicture, hyperbola h)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the array {{ma1, Ma1}, {ma2, Ma2}} where 'maX' and 'MaX' are respectively","   the smaller and the bigger angles (from h.FX) for which the hyperbola 'h' is included","   in the bounding box of the picture 'pic'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  pair bmin, bmax;","  pair[] b;","  if (h.bmin == h.bmax) {","    bmin = pic.userMin();","    bmax = pic.userMax();","  } else {","    bmin = h.bmin;bmax = h.bmax;","  }","  if(bmin.x == bmax.x || bmin.y == bmax.y || !finite(abs(bmin)) || !finite(abs(bmax)))","    return new real[][] {{0, 0}, {0, 0}};","  b[0] = bmin;","  b[1] = (bmax.x, bmin.y);","  b[2] = bmax;","  b[3] = (bmin.x, bmax.y);","  real[] eq = changecoordsys(defaultcoordsys, equation(h)).a;","  pair[] inter0, inter1;","  pair C = locate(h.C);","  pair F1 = h.F1;","  for (int i = 0; i \u003c 4; ++i) {","    pair[] tmp = intersectionpoints(b[i], b[(i + 1)%4], eq);","    for (int j = 0; j \u003c tmp.length; ++j) {","      if(dot(b[i]-tmp[j], b[(i + 1)%4]-tmp[j]) \u003c= epsgeo) {","        if(dot(F1 - C, tmp[j]-C) \u003e 0) inter0.push(tmp[j]);","        else inter1.push(tmp[j]);","      }","    }","  }","  real d = degrees(F1 - C);","  real[] ma, Ma;","  pair[][] inter = new pair[][] {inter0, inter1};","  for (int i = 0; i \u003c 2; ++i) {","    real[] a = sequence(new real(int n){","        return (360 - d + degrees(inter[i][n]-F1))%360;","      }, inter[i].length);","    ma[i] = a.length != 0 ? min(a) : 0;","    Ma[i] = a.length != 0 ? max(a) : 0;","  }","  return new real[][] {{ma[0], Ma[0]}, {ma[1], Ma[1]}};","}","","/*\u003casyxml\u003e\u003coperator type = \"path\" signature=\"cast(parabola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","path operator cast(parabola p)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast parabola to path.","   If possible, the returned path is restricted to the actual bounding box","   of the current picture if the variables 'p.bmin' and 'p.bmax' are not set else","   the bounding box of box(p.bmin, p.bmax) is used instead.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  real[] bangles = bangles(p);","  int n = parabolanodesnumber(p, bangles[0], bangles[1]);","  return arcfromfocus(p, bangles[0], bangles[1], n, CCW);","}","","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"draw(picture,Label,circle,align,pen,arrowbar,arrowbar,margin,Label,marker)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void draw(picture pic = currentpicture, Label L = \"\", circle c,","          align align = NoAlign, pen p = currentpen,","          arrowbar arrow = None, arrowbar bar = None,","          margin margin = NoMargin, Label legend = \"\", marker marker = nomarker)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(degenerate(c)) draw(pic, L, c.l, align, p, arrow, legend, marker);","  else draw(pic, L, (path)c, align, p, arrow, bar, margin, legend, marker);","}","","void fill(picture pic = currentpicture, circle c, pen p = currentpen)","{","  if (!degenerate(c)) fill(pic, (path)c, p);","}","","void filldraw(picture pic = currentpicture, circle c, pen fillpen = currentpen, pen drawpen = currentpen)","{","  fill(pic, c, fillpen);","  draw(pic, c, drawpen);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"draw(picture,Label,ellipse,align,pen,arrowbar,arrowbar,margin,Label,marker)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void draw(picture pic = currentpicture, Label L = \"\", ellipse el,","          align align = NoAlign, pen p = currentpen,","          arrowbar arrow = None, arrowbar bar = None,","          margin margin = NoMargin, Label legend = \"\", marker marker = nomarker)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003eDraw the ellipse 'el' if it is not degenerated else draw 'el.l'.\u003c/function\u003e\u003c/asyxml\u003e*/","  if(degenerate(el)) draw(pic, L, el.l, align, p, arrow, legend, marker);","  else draw(pic, L, (path)el, align, p, arrow, bar, margin, legend, marker);","}","","void fill(picture pic = currentpicture, ellipse el, pen p = currentpen)","{","  if (!degenerate(el)) fill(pic, (path)el, p);","}","","void filldraw(picture pic = currentpicture, ellipse el, pen fillpen = currentpen, pen drawpen = currentpen)","{","  fill(pic, el, fillpen);","  draw(pic, el, drawpen);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"draw(picture,Label,parabola,align,pen,arrowbar,arrowbar,margin,Label,marker)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void draw(picture pic = currentpicture, Label L = \"\", parabola parabola,","          align align = NoAlign, pen p = currentpen,","          arrowbar arrow = None, arrowbar bar = None,","          margin margin = NoMargin, Label legend = \"\", marker marker = nomarker)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw the parabola 'p' on 'pic' without (if possible) altering the","   size of picture pic.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  pic.add(new void (frame f, transform t, transform T, pair m, pair M) {","      // Reduce the bounds by the size of the pen and the margins.","      m -= min(p); M -= max(p);","      parabola.bmin = inverse(t) * m;","      parabola.bmax = inverse(t) * M;","      picture tmp;","      path pp = t * ((path) (T * parabola));","","      if (pp != nullpath) {","        draw(tmp, L, pp, align, p, arrow, bar, NoMargin, legend, marker);","        add(f, tmp.fit());","      }","    }, true);","","  pair m = pic.userMin(), M = pic.userMax();","  if(m != M) {","    pic.addBox(truepoint(SW), truepoint(NE));","  }","}","","/*\u003casyxml\u003e\u003coperator type = \"path\" signature=\"cast(hyperbola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","path operator cast(hyperbola h)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast hyperbola to path.","   If possible, the returned path is restricted to the actual bounding box","   of the current picture unless the variables 'h.bmin' and 'h.bmax'","   are set; in this case the bounding box of box(h.bmin, h.bmax) is used instead.","   Only the branch on the side of 'h.F1' is considered.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  real[][] bangles = bangles(h);","  int n = hyperbolanodesnumber(h, bangles[0][0], bangles[0][1]);","  return arcfromfocus(h, bangles[0][0], bangles[0][1], n, CCW);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"draw(picture,Label,hyperbola,align,pen,arrowbar,arrowbar,margin,Label,marker)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void draw(picture pic = currentpicture, Label L = \"\", hyperbola h,","          align align = NoAlign, pen p = currentpen,","          arrowbar arrow = None, arrowbar bar = None,","          margin margin = NoMargin, Label legend = \"\", marker marker = nomarker)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw the hyperbola 'h' on 'pic' without (if possible) altering the","   size of the picture pic.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  pic.add(new void (frame f, transform t, transform T, pair m, pair M) {","      // Reduce the bounds by the size of the pen and the margins.","      m -= min(p); M -= max(p);","      h.bmin = inverse(t) * m;","      h.bmax = inverse(t) * M;","      path hp;","","      picture tmp;","      hp = t * ((path) (T * h));","      if (hp != nullpath) {","        draw(tmp, L, hp, align, p, arrow, bar, NoMargin, legend, marker);","      }","","      hyperbola ht = hyperbola(h.F2, h.F1, h.a);","      ht.bmin = h.bmin;","      ht.bmax = h.bmax;","","      hp = t * ((path) (T * ht));","      if (hp != nullpath) {","        draw(tmp, \"\", hp, align, p, arrow, bar, NoMargin, marker);","      }","","      add(f, tmp.fit());","    }, true);","","  pair m = pic.userMin(), M = pic.userMax();","  if(m != M)","    pic.addBox(truepoint(SW), truepoint(NE));","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"draw(picture,Label,explicit conic,align,pen,arrowbar,arrowbar,margin,Label,marker)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void draw(picture pic = currentpicture, Label L = \"\", explicit conic co,","          align align = NoAlign, pen p = currentpen,","          arrowbar arrow = None, arrowbar bar = None,","          margin margin = NoMargin, Label legend = \"\", marker marker = nomarker)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eUse one of the routine 'draw(ellipse, ...)',","   'draw(parabola, ...)' or 'draw(hyperbola, ...)' depending of the value of eccentricity of 'co'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(co.e == 0)","    draw(pic, L, (circle)co, align, p, arrow, bar, margin, legend, marker);","  else","    if(co.e \u003c 1) draw(pic, L, (ellipse)co, align, p, arrow, bar, margin, legend, marker);","    else","      if(co.e == 1) draw(pic, L, (parabola)co, align, p, arrow, bar, margin, legend, marker);","      else","        if(co.e \u003e 1) draw(pic, L, (hyperbola)co, align, p, arrow, bar, margin, legend, marker);","        else abort(\"draw: unknown conic.\");","}","","/*\u003casyxml\u003e\u003cfunction type=\"int\" signature=\"conicnodesnumber(conic,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","int conicnodesnumber(conic co, real angle1, real angle2, bool dir = CCW)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the number of node to draw a conic arc.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  int oi;","  if(co.e == 0) {","    circle c = (circle)co;","    oi = circlenodesnumber(c.r, angle1, angle2);","  } else if(co.e \u003c 1) {","    ellipse el = (ellipse)co;","    oi = ellipsenodesnumber(el.a, el.b, angle1, angle2, dir);","  } else if(co.e == 1) {","    parabola p = (parabola)co;","    oi = parabolanodesnumber(p, angle1, angle2);","  } else {","    hyperbola h = (hyperbola)co;","    oi = hyperbolanodesnumber(h, angle1, angle2);","  }","  return oi;","}","","/*\u003casyxml\u003e\u003coperator type = \"path\" signature=\"cast(conic)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","path operator cast(conic co)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast conic section to path.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  if(co.e \u003c 1) return (path)((ellipse)co);","  if(co.e == 1) return (path)((parabola)co);","  return (path)((hyperbola)co);","}","","/*\u003casyxml\u003e\u003cfunction type=\"bqe\" signature=\"equation(explicit conic)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bqe equation(explicit conic co)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the coefficients of the equation of conic section in its coordinate system:","   bqe.a[0] * x^2 + bqe.a[1] * x * y + bqe.a[2] * y^2 + bqe.a[3] * x + bqe.a[4] * y + bqe.a[5] = 0.","   One can change the coordinate system of 'bqe' using the routine 'changecoordsys'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  bqe obqe;","  if(co.e == 0)","    obqe = equation((circle)co);","  else","    if(co.e \u003c 1) obqe = equation((ellipse)co);","    else","      if(co.e == 1) obqe = equation((parabola)co);","      else","        if(co.e \u003e 1) obqe = equation((hyperbola)co);","        else abort(\"draw: unknown conic.\");","  return obqe;","}","","/*\u003casyxml\u003e\u003cfunction type=\"string\" signature=\"conictype(bqe)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","string conictype(bqe bqe)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturned values are \"ellipse\" or \"parabola\" or \"hyperbola\"","   depending of the conic section represented by 'bqe'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  bqe lbqe = changecoordsys(defaultcoordsys, bqe);","  string os = \"degenerated\";","  real a = lbqe.a[0], b = lbqe.a[1]/2, c = lbqe.a[2], d = lbqe.a[3]/2, f = lbqe.a[4]/2, g = lbqe.a[5];","  real delta = a * c * g + b * f * d + d * b * f - (b^2 * g + d^2 * c + f^2 * a);","  if(abs(delta) \u003c 10 * epsgeo) return os;","  real J = a * c - b^2;","  real I = a + c;","  if(J \u003e epsgeo) {","    if(delta/I \u003c -epsgeo);","    os = \"ellipse\";","  } else {","    if(abs(J) \u003c epsgeo) os = \"parabola\"; else os = \"hyperbola\";","  }","  return os;","}","","/*\u003casyxml\u003e\u003cfunction type=\"conic\" signature=\"conic(point,point,point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","conic conic(point M1, point M2, point M3, point M4, point M5)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the conic passing through 'M1', 'M2', 'M3', 'M4' and 'M5' if the conic is not degenerated.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  bqe bqe = bqe(M1, M2, M3, M4, M5);","  string ct = conictype(bqe);","  if(ct == \"degenerated\") abort(\"conic: degenerated conic passing through five points.\");","  if(ct == \"ellipse\") return ellipse(bqe);","  if(ct == \"parabola\") return parabola(bqe);","  return hyperbola(bqe);","}","","/*\u003casyxml\u003e\u003cfunction type=\"coordsys\" signature=\"canonicalcartesiansystem(hyperbola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","coordsys canonicalcartesiansystem(explicit conic co)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the canonical cartesian system of the conic 'co'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(co.e \u003c 1) return canonicalcartesiansystem((ellipse)co);","  else if(co.e == 1) return canonicalcartesiansystem((parabola)co);","  return canonicalcartesiansystem((hyperbola)co);","}","","/*\u003casyxml\u003e\u003cfunction type=\"bqe\" signature=\"canonical(bqe)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bqe canonical(bqe bqe)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the bivariate quadratic equation relative to the","   canonical coordinate system of the conic section represented by 'bqe'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  string type = conictype(bqe);","  if(type == \"\") abort(\"canonical: the equation can not be performed.\");","  bqe obqe;","  if(type == \"ellipse\") {","    ellipse el = ellipse(bqe);","    obqe = changecoordsys(canonicalcartesiansystem(el), equation(el));","  } else {","    if(type == \"parabola\") {","      parabola p = parabola(bqe);","      obqe = changecoordsys(canonicalcartesiansystem(p), equation(p));","    } else {","      hyperbola h = hyperbola(bqe);","      obqe = changecoordsys(canonicalcartesiansystem(h), equation(h));","    }","  }","  return obqe;","}","","/*\u003casyxml\u003e\u003cfunction type=\"conic\" signature=\"conic(bqe)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","conic conic(bqe bqe)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the conic section represented by the bivariate quartic equation 'bqe'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  string type = conictype(bqe);","  if(type == \"\") abort(\"canonical: the equation can not be performed.\");","  conic oc;","  if(type == \"ellipse\") {","    oc = ellipse(bqe);","  } else {","    if(type == \"parabola\") oc = parabola(bqe); else oc = hyperbola(bqe);","  }","  return oc;","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"arclength(circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real arclength(circle c)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return c.r * 2 * pi;","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"focusToCenter(ellipse,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real focusToCenter(ellipse el, real a)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the angle relatively to the center of 'el' for the angle 'a'","   given relatively to the focus of 'el'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  pair p = point(fromFocus(el, a, a, 1, CCW), 0);","  pair c = locate(el.C);","  real d = degrees(p - c) - el.angle;","  d = abs(d) \u003c epsgeo ? 0 : d; // Avoid -1e-15","  return d%(sgnd(a) * 360);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"centerToFocus(ellipse,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real centerToFocus(ellipse el, real a)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the angle relatively to the focus of 'el' for the angle 'a'","   given relatively to the center of 'el'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  pair P = point(fromCenter(el, a, a, 1, CCW), 0);","  pair F1 = locate(el.F1);","  pair F2 = locate(el.F2);","  real d = degrees(P - F1) - degrees(F2 - F1);","  d = abs(d) \u003c epsgeo ? 0 : d; // Avoid -1e-15","  return d%(sgnd(a) * 360);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"arclength(ellipse)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real arclength(ellipse el)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return degenerate(el) ? infinity : 4 * el.a * elle(pi/2, el.e);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"arclength(ellipse,real,real,bool,polarconicroutine)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real arclength(ellipse el, real angle1, real angle2,","               bool direction = CCW,","               polarconicroutine polarconicroutine = currentpolarconicroutine)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the length of the arc of the ellipse between 'angle1'","   and 'angle2'.","   'angle1' and 'angle2' must be in the interval ]-360;+oo[ if polarconicroutine = fromFocus,","   ]-oo;+oo[ if polarconicroutine = fromCenter.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(degenerate(el)) return infinity;","  if(angle1 \u003e angle2) return arclength(el, angle2, angle1, !direction, polarconicroutine);","  //   path g;int n = 1000;","  //   if(el.e == 0) g = arcfromcenter(el, angle1, angle2, n, direction);","  //   if(el.e != 1) g = polarconicroutine(el, angle1, angle2, n, direction);","  //   write(\"with path = \", arclength(g));","  if(polarconicroutine == fromFocus) {","    //   dot(point(fromFocus(el, angle1, angle1, 1, CCW), 0), 2mm + blue);","    //   dot(point(fromFocus(el, angle2, angle2, 1, CCW), 0), 2mm + blue);","    //   write(\"fromfocus1 = \", angle1);","    //   write(\"fromfocus2 = \", angle2);","    real gle1 = focusToCenter(el, angle1);","    real gle2 = focusToCenter(el, angle2);","    if((gle1 - gle2) * (angle1 - angle2) \u003e 0) {","      angle1 = gle1; angle2 = gle2;","    } else {","      angle1 = gle2; angle2 = gle1;","    }","    //   dot(point(fromCenter(el, angle1, angle1, 1, CCW), 0), 1mm + red);","    //   dot(point(fromCenter(el, angle2, angle2, 1, CCW), 0), 1mm + red);","    //   write(\"fromcenter1 = \", angle1);","    //   write(\"fromcenter2 = \", angle2);","  }","  if(angle1 \u003c 0 || angle2 \u003c 0) return arclength(el, 180 + angle1, 180 + angle2, direction, fromCenter);","  real a1 = direction ? angle1 : angle2;","  real a2 = direction ? angle2 : angle1 + 360;","  real elleq = el.a * elle(pi/2, el.e);","  real S(real a)","  {//Return the arclength from 0 to the angle 'a' (in degrees)","    // given form the center of the ellipse.","    real gle = atan(el.a * tan(radians(a))/el.b)+","      pi * (((a%90 == 0 \u0026\u0026 a != 0) ? floor(a/90) - 1 : floor(a/90)) -","            ((a%180 == 0) ? 0 : floor(a/180)) -","            (a%360 == 0 ? floor(a/(360)) : 0));","    /* // Uncomment to visualize the used branches","       unitsize(2cm, 1cm);","       import graph;","","       real xmin = 0, xmax = 3pi;","","       xlimits( xmin, xmax);","       ylimits( 0, 10);","       yaxis( \"y\" , LeftRight(), RightTicks(pTick=.8red, ptick = lightgrey, extend = true));","       xaxis( \"x - value\", BottomTop(), Ticks(Label(\"$%.2f$\", red), Step = pi/2, step = pi/4, pTick=.8red, ptick = lightgrey, extend = true));","","       real p2 = pi/2;","       real f(real t)","       {","       return atan(0.6 * tan(t))+","       pi * ((t%p2 == 0 \u0026\u0026 t != 0) ? floor(t/p2) - 1 : floor(t/p2)) -","       ((t%pi == 0) ? 0 : pi * floor(t/pi)) - (t%(2pi) == 0 ? pi * floor(t/(2 * pi)) : 0);","       }","","       draw(graph(f, xmin, xmax, 100));","       write(degrees(f(pi/2)));","       write(degrees(f(pi)));","       write(degrees(f(3pi/2)));","       write(degrees(f(2pi)));","       draw(graph(new real(real t){return t;}, xmin, xmax, 3));","    */","    return elleq - el.a * elle(pi/2 - gle, el.e);","  }","  return S(a2) - S(a1);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"arclength(parabola,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real arclength(parabola p, real angle)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the arclength from 180 to 'angle' given from focus in the","   canonical coordinate system of 'p'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  real a = p.a; /* In canonicalcartesiansystem(p) the equation of p","                   is x = y^2/(4a) */","  // integrate(sqrt(1 + (x/(2 * a))^2), x);","  real S(real t){return 0.5 * t * sqrt(1 + t^2/(4 * a^2)) + a * asinh(t/(2 * a));}","  real R(real gle){return 2 * a/(1 - Cos(gle));}","  real t = Sin(angle) * R(angle);","  return S(t);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"arclength(parabola,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real arclength(parabola p, real angle1, real angle2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the arclength from 'angle1' to 'angle2' given from","   focus in the canonical coordinate system of 'p'\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return arclength(p, angle1) - arclength(p, angle2);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"arclength(parabola p)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real arclength(parabola p)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the length of the arc of the parabola bounded to the bounding","   box of the current picture.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  real[] b = bangles(p);","  return arclength(p, b[0], b[1]);","}","// *........................CONICS.........................*","// *=======================================================*","","// *=======================================================*","// *.......................ABSCISSA........................*","/*\u003casyxml\u003e\u003cstruct signature=\"abscissa\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","struct abscissa","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide abscissa structure on a curve used in the routine-like 'point(object, abscissa)'","   where object can be 'line','segment','ellipse','circle','conic'...\u003c/documentation\u003e\u003cproperty type = \"real\" signature=\"x\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  real x;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe abscissa value.\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"int\" signature=\"system\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  int system;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e0 = relativesystem; 1 = curvilinearsystem; 2 = angularsystem; 3 = nodesystem\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"polarconicroutine\" signature=\"polarconicroutine\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  polarconicroutine polarconicroutine = fromCenter;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe routine used with angular system and two foci conic section.","                                                     Possible values are 'formCenter' and 'formFocus'.\u003c/documentation\u003e\u003c/property\u003e\u003c/asyxml\u003e*/","  /*\u003casyxml\u003e\u003cmethod type = \"abscissa\" signature=\"copy()\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  abscissa copy()","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn a copy of this abscissa.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    abscissa oa = new abscissa;","    oa.x = this.x;","    oa.system = this.system;","    oa.polarconicroutine = this.polarconicroutine;","    return oa;","  }","}/*\u003casyxml\u003e\u003c/struct\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cconstant type = \"int\" signature=\"relativesystem,curvilinearsystem,angularsystem,nodesystem\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","restricted int relativesystem = 0, curvilinearsystem = 1, angularsystem = 2, nodesystem = 3;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eConstant used to set the abscissa system.\u003c/documentation\u003e\u003c/constant\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003coperator type = \"abscissa\" signature=\"cast(explicit position)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa operator cast(explicit position position)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast position to abscissa.","   If 'position' is relative, the abscissa is relative else it's a curvilinear abscissa.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  abscissa oarcc;","  oarcc.x = position.position.x;","  oarcc.system = position.relative ? relativesystem : curvilinearsystem;","  return oarcc;","}","","/*\u003casyxml\u003e\u003coperator type = \"abscissa\" signature=\"+(real,explicit abscissa)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa operator +(real x, explicit abscissa a)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide 'real + abscissa'.","   Return abscissa b so that b.x = a.x + x.","   +(explicit abscissa, real), -(real, explicit abscissa) and -(explicit abscissa, real) are also defined.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  abscissa oa = a.copy();","  oa.x = a.x + x;","  return oa;","}","","abscissa operator +(explicit abscissa a, real x)","{","  return x + a;","}","abscissa operator +(int x, explicit abscissa a)","{","  return ((real)x) + a;","}","","/*\u003casyxml\u003e\u003coperator type = \"abscissa\" signature=\"-(explicit abscissa a)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa operator -(explicit abscissa a)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the abscissa b so that b.x = -a.x.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  abscissa oa;","  oa.system = a.system;","  oa.x = -a.x;","  return oa;","}","","abscissa operator -(real x, explicit abscissa a)","{","  abscissa oa;","  oa.system = a.system;","  oa.x = x - a.x;","  return oa;","}","abscissa operator -(explicit abscissa a, real x)","{","  abscissa oa;","  oa.system = a.system;","  oa.x = a.x - x;","  return oa;","}","abscissa operator -(int x, explicit abscissa a)","{","  return ((real)x) - a;","}","","/*\u003casyxml\u003e\u003coperator type = \"abscissa\" signature=\"*(real,abscissa)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa operator *(real x, explicit abscissa a)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide 'real * abscissa'.","   Return abscissa b so that b.x = x * a.x.","   *(explicit abscissa, real), /(real, explicit abscissa) and /(explicit abscissa, real) are also defined.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  abscissa oa;","  oa.system = a.system;","  oa.x = a.x * x;","  return oa;","}","abscissa operator *(explicit abscissa a, real x)","{","  return x * a;","}","","abscissa operator /(real x, explicit abscissa a)","{","  abscissa oa;","  oa.system = a.system;","  oa.x = x/a.x;","  return oa;","}","abscissa operator /(explicit abscissa a, real x)","{","  abscissa oa;","  oa.system = a.system;","  oa.x = a.x/x;","  return oa;","}","","abscissa operator /(int x, explicit abscissa a)","{","  return ((real)x)/a;","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"relabscissa(real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa relabscissa(real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn a relative abscissa.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return (abscissa)(Relative(x));","}","abscissa relabscissa(int x)","{","  return (abscissa)(Relative(x));","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"curabscissa(real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa curabscissa(real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn a curvilinear abscissa.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return (abscissa)((position)x);","}","abscissa curabscissa(int x)","{","  return (abscissa)((position)x);","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"angabscissa(real,polarconicroutine)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa angabscissa(real x, polarconicroutine polarconicroutine = currentpolarconicroutine)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn a angular abscissa.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  abscissa oarcc;","  oarcc.x = x;","  oarcc.polarconicroutine = polarconicroutine;","  oarcc.system = angularsystem;","  return oarcc;","}","abscissa angabscissa(int x, polarconicroutine polarconicroutine = currentpolarconicroutine)","{","  return angabscissa((real)x, polarconicroutine);","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"nodabscissa(real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa nodabscissa(real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn an abscissa as time on the path.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  abscissa oarcc;","  oarcc.x = x;","  oarcc.system = nodesystem;","  return oarcc;","}","abscissa nodabscissa(int x)","{","  return nodabscissa((real)x);","}","","/*\u003casyxml\u003e\u003coperator type = \"abscissa\" signature=\"cast(real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa operator cast(real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast real to abscissa, precisely 'nodabscissa'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return nodabscissa(x);","}","abscissa operator cast(int x)","{","  return nodabscissa((real)x);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"point(circle,abscissa)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(circle c, abscissa l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point of 'c' which has the abscissa 'l.x'","   according to the abscissa system 'l.system'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  coordsys R = c.C.coordsys;","  if (l.system == nodesystem)","    return point(R, point((path)c, l.x)/R);","  if (l.system == relativesystem)","    return c.C + point(R, R.polar(c.r, 2 * pi * l.x));","  if (l.system == curvilinearsystem)","    return c.C + point(R, R.polar(c.r, l.x/c.r));","  if (l.system == angularsystem)","    return c.C + point(R, R.polar(c.r, radians(l.x)));","  abort(\"point: bad abscissa system.\");","  return (0, 0);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"point(ellipse,abscissa)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(ellipse el, abscissa l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point of 'el' which has the abscissa 'l.x'","   according to the abscissa system 'l.system'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(el.e == 0) return point((circle)el, l);","  coordsys R = coordsys(el);","  if (l.system == nodesystem)","    return point(R, point((path)el, l.x)/R);","  if (l.system == relativesystem) {","    return point(el, curabscissa((l.x%1) * arclength(el)));","  }","  if (l.system == curvilinearsystem) {","    real a1 = 0, a2 = 360, cx = 0;","    real aout = a1;","    real x = abs(l.x)%arclength(el);","    while (abs(cx - x) \u003e epsgeo) {","      aout = (a1 + a2)/2;","      cx = arclength(el, 0, aout, CCW, fromCenter); //fromCenter is speeder","      if(cx \u003e x) a2 = (a1 + a2)/2; else a1 = (a1 + a2)/2;","    }","    path pel = fromCenter(el, sgn(l.x) * aout, sgn(l.x) * aout, 1, CCW);","    return point(R, point(pel, 0)/R);","  }","  if (l.system == angularsystem) {","    return point(R, point(l.polarconicroutine(el, l.x, l.x, 1, CCW), 0)/R);","  }","  abort(\"point: bad abscissa system.\");","  return (0, 0);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"point(parabola,abscissa)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(parabola p, abscissa l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point of 'p' which has the abscissa 'l.x'","   according to the abscissa system 'l.system'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  coordsys R = coordsys(p);","  if (l.system == nodesystem)","    return point(R, point((path)p, l.x)/R);","  if (l.system == relativesystem) {","    real[] b = bangles(p);","    real al = sgn(l.x) \u003e 0 ? arclength(p, 180, b[1]) : arclength(p, 180, b[0]);","    return point(p, curabscissa(abs(l.x) * al));","  }","  if (l.system == curvilinearsystem) {","    real a1 = 1e-3, a2 = 360 - 1e-3, cx = infinity;","    while (abs(cx - l.x) \u003e epsgeo) {","      cx = arclength(p, 180, (a1 + a2)/2);","      if(cx \u003e l.x) a2 = (a1 + a2)/2; else a1 = (a1 + a2)/2;","    }","    path pp = fromFocus(p, a1, a1, 1, CCW);","    return point(R, point(pp, 0)/R);","  }","  if (l.system == angularsystem) {","    return point(R, point(fromFocus(p, l.x, l.x, 1, CCW), 0)/R);","  }","  abort(\"point: bad abscissa system.\");","  return (0, 0);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"point(hyperbola,abscissa)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(hyperbola h, abscissa l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point of 'h' which has the abscissa 'l.x'","   according to the abscissa system 'l.system'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  coordsys R = coordsys(h);","  if (l.system == nodesystem)","    return point(R, point((path)h, l.x)/R);","  if (l.system == relativesystem) {","    abort(\"point(hyperbola, relativeSystem) is not implemented...","Try relpoint((path)your_hyperbola, x);\");","  }","  if (l.system == curvilinearsystem) {","    abort(\"point(hyperbola, curvilinearSystem) is not implemented...\");","  }","  if (l.system == angularsystem) {","    return point(R, point(l.polarconicroutine(h, l.x, l.x, 1, CCW), 0)/R);","  }","  abort(\"point: bad abscissa system.\");","  return (0, 0);","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"point(conic,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(explicit conic co, abscissa l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the curvilinear abscissa of 'M' on the conic 'co'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(co.e == 0) return point((circle)co, l);","  if(co.e \u003c 1) return point((ellipse)co, l);","  if(co.e == 1) return point((parabola)co, l);","  return point((hyperbola)co, l);","}","","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"point(line,abscissa)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(line l, abscissa x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point of 'l' which has the abscissa 'l.x' according to the abscissa system 'l.system'.","   Note that the origin is l.A, and point(l, relabscissa(x)) returns l.A + x.x * vector(l.B - l.A).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  coordsys R = l.A.coordsys;","  if (x.system == nodesystem)","    return l.A + (x.x \u003c 0 ? 0 : x.x \u003e 1 ? 1 : x.x) * vector(l.B - l.A);","  if (x.system == relativesystem)","    return l.A + x.x * vector(l.B - l.A);","  if (x.system == curvilinearsystem)","    return l.A + x.x * l.u;","  if (x.system == angularsystem)","    abort(\"point: what the meaning of angular abscissa on line ?.\");","  abort(\"point: bad abscissa system.\");","  return (0, 0);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"point(line,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(line l, explicit real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point between node l.A and l.B (x \u003c= 0 means l.A, x \u003e=1 means l.B).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(l, nodabscissa(x));","}","point point(line l, explicit int x)","{","  return point(l, nodabscissa(x));","}","","/*\u003casyxml\u003e\u003cfunction type=\"circle\" signature=\"point(explicit circle,explicit real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(explicit circle c, explicit real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point between node floor(x) and floor(x) + 1.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(c, nodabscissa(x));","}","point point(explicit circle c, explicit int x)","{","  return point(c, nodabscissa(x));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"point(explicit ellipse,explicit real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(explicit ellipse el, explicit real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point between node floor(x) and floor(x) + 1.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(el, nodabscissa(x));","}","point point(explicit ellipse el, explicit int x)","{","  return point(el, nodabscissa(x));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"point(explicit parabola,explicit real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(explicit parabola p, explicit real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point between node floor(x) and floor(x) + 1.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(p, nodabscissa(x));","}","point point(explicit parabola p, explicit int x)","{","  return point(p, nodabscissa(x));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"point(explicit hyperbola,explicit real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(explicit hyperbola h, explicit real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point between node floor(x) and floor(x) + 1.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(h, nodabscissa(x));","}","point point(explicit hyperbola h, explicit int x)","{","  return point(h, nodabscissa(x));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"point(explicit conic,explicit real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(explicit conic co, explicit real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point between node floor(x) and floor(x) + 1.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point op;","  if(co.e == 0) op = point((circle)co, nodabscissa(x));","  else if(co.e \u003c 1) op = point((ellipse)co, nodabscissa(x));","  else if(co.e == 1) op = point((parabola)co, nodabscissa(x));","  else op = point((hyperbola)co, nodabscissa(x));","  return op;","}","point point(explicit conic co, explicit int x)","{","  return point(co, (real)x);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"relpoint(line,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point relpoint(line l, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the relative point of 'l' (0 means l.A,","   1 means l.B, x means l.A + x * vector(l.B - l.A) ).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(l, Relative(x));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"relpoint(explicit circle,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point relpoint(explicit circle c, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the relative point of 'c' (0 means origin, 1 means end).","   Origin is c.center + c.r * (1, 0).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(c, Relative(x));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"relpoint(explicit ellipse,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point relpoint(explicit ellipse el, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the relative point of 'el' (0 means origin, 1 means end).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(el, Relative(x));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"relpoint(explicit parabola,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point relpoint(explicit parabola p, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the relative point of the path of the parabola","   bounded by the bounding box of the current picture.","   0 means origin, 1 means end, where the origin is the vertex of 'p'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(p, Relative(x));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"relpoint(explicit hyperbola,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point relpoint(explicit hyperbola h, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eNot yet implemented... \u003clook href = \"point(hyperbola, abscissa)\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(h, Relative(x));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"relpoint(explicit conic,explicit real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point relpoint(explicit conic co, explicit real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the relative point of 'co' (0 means origin, 1 means end).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point op;","  if(co.e == 0) op = point((circle)co, Relative(x));","  else if(co.e \u003c 1) op = point((ellipse)co, Relative(x));","  else if(co.e == 1) op = point((parabola)co, Relative(x));","  else op = point((hyperbola)co, Relative(x));","  return op;","}","point relpoint(explicit conic co, explicit int x)","{","  return relpoint(co, (real)x);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"angpoint(explicit circle,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point angpoint(explicit circle c, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point of 'c' in the direction 'x' measured in degrees.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(c, angabscissa(x));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"angpoint(explicit ellipse,real,polarconicroutine)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point angpoint(explicit ellipse el, real x,","               polarconicroutine polarconicroutine = currentpolarconicroutine)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point of 'el' in the direction 'x'","   measured in degrees according to 'polarconicroutine'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return el.e == 0 ? angpoint((circle) el, x) : point(el, angabscissa(x, polarconicroutine));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"angpoint(explicit parabola,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point angpoint(explicit parabola p, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point of 'p' in the direction 'x' measured in degrees.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(p, angabscissa(x));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"angpoint(explicit hyperbola,real,polarconicroutine)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point angpoint(explicit hyperbola h, real x,","               polarconicroutine polarconicroutine = currentpolarconicroutine)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point of 'h' in the direction 'x'","   measured in degrees according to 'polarconicroutine'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(h, angabscissa(x, polarconicroutine));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"curpoint(line,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point curpoint(line l, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point of 'l' which has the curvilinear abscissa 'x'.","   Origin is l.A.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(l, curabscissa(x));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"curpoint(explicit circle,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point curpoint(explicit circle c, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point of 'c' which has the curvilinear abscissa 'x'.","   Origin is c.center + c.r * (1, 0).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(c, curabscissa(x));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"curpoint(explicit ellipse,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point curpoint(explicit ellipse el, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point of 'el' which has the curvilinear abscissa 'el'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(el, curabscissa(x));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"curpoint(explicit parabola,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point curpoint(explicit parabola p, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point of 'p' which has the curvilinear abscissa 'x'.","   Origin is the vertex of 'p'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(p, curabscissa(x));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"curpoint(conic,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point curpoint(conic co, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point of 'co' which has the curvilinear abscissa 'x'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point op;","  if(co.e == 0) op = point((circle)co, curabscissa(x));","  else if(co.e \u003c 1) op = point((ellipse)co, curabscissa(x));","  else if(co.e == 1) op = point((parabola)co, curabscissa(x));","  else op = point((hyperbola)co, curabscissa(x));","  return op;","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"angabscissa(circle,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa angabscissa(circle c, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the angular abscissa of 'M' on the circle 'c'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(!(M @ c)) abort(\"angabscissa: the point is not on the circle.\");","  abscissa oa;","  oa.system = angularsystem;","  oa.x = degrees(M - c.C);","  if(oa.x \u003c 0) oa.x+=360;","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"angabscissa(ellipse,point,polarconicroutine)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa angabscissa(ellipse el, point M,","                     polarconicroutine polarconicroutine = currentpolarconicroutine)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the angular abscissa of 'M' on the ellipse 'el' according to 'polarconicroutine'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(!(M @ el)) abort(\"angabscissa: the point is not on the ellipse.\");","  abscissa oa;","  oa.system = angularsystem;","  oa.polarconicroutine = polarconicroutine;","  oa.x = polarconicroutine == fromCenter ? degrees(M - el.C) : degrees(M - el.F1);","  oa.x -= el.angle;","  if(oa.x \u003c 0) oa.x += 360;","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"angabscissa(hyperbola,point,polarconicroutine)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa angabscissa(hyperbola h, point M,","                     polarconicroutine polarconicroutine = currentpolarconicroutine)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the angular abscissa of 'M' on the hyperbola 'h' according to 'polarconicroutine'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(!(M @ h)) abort(\"angabscissa: the point is not on the hyperbola.\");","  abscissa oa;","  oa.system = angularsystem;","  oa.polarconicroutine = polarconicroutine;","  oa.x = polarconicroutine == fromCenter ? degrees(M - h.C) : degrees(M - h.F1) + 180;","  oa.x -= h.angle;","  if(oa.x \u003c 0) oa.x += 360;","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"angabscissa(parabola,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa angabscissa(parabola p, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the angular abscissa of 'M' on the parabola 'p'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(!(M @ p)) abort(\"angabscissa: the point is not on the parabola.\");","  abscissa oa;","  oa.system = angularsystem;","  oa.polarconicroutine = fromFocus;// Not used","  oa.x = degrees(M - p.F);","  oa.x -= p.angle;","  if(oa.x \u003c 0) oa.x += 360;","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"angabscissa(conic,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa angabscissa(explicit conic co, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the angular abscissa of 'M' on the conic 'co'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(co.e == 0) return angabscissa((circle)co, M);","  if(co.e \u003c 1) return angabscissa((ellipse)co, M);","  if(co.e == 1) return angabscissa((parabola)co, M);","  return angabscissa((hyperbola)co, M);","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"curabscissa(line,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa curabscissa(line l, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the curvilinear abscissa of 'M' on the line 'l'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(!(M @ extend(l))) abort(\"curabscissa: the point is not on the line.\");","  abscissa oa;","  oa.system = curvilinearsystem;","  oa.x = sgn(dot(M - l.A, l.B - l.A)) * abs(M - l.A);","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"curabscissa(circle,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa curabscissa(circle c, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the curvilinear abscissa of 'M' on the circle 'c'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(!(M @ c)) abort(\"curabscissa: the point is not on the circle.\");","  abscissa oa;","  oa.system = curvilinearsystem;","  oa.x = pi * angabscissa(c, M).x * c.r/180;","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"curabscissa(ellipse,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa curabscissa(ellipse el, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the curvilinear abscissa of 'M' on the ellipse 'el'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(!(M @ el)) abort(\"curabscissa: the point is not on the ellipse.\");","  abscissa oa;","  oa.system = curvilinearsystem;","  real a = angabscissa(el, M, fromCenter).x;","  oa.x = arclength(el, 0, a, fromCenter);","  oa.polarconicroutine = fromCenter;","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"curabscissa(parabola,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa curabscissa(parabola p, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the curvilinear abscissa of 'M' on the parabola 'p'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(!(M @ p)) abort(\"curabscissa: the point is not on the parabola.\");","  abscissa oa;","  oa.system = curvilinearsystem;","  real a = angabscissa(p, M).x;","  oa.x = arclength(p, 180, a);","  oa.polarconicroutine = fromFocus; // Not used.","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"curabscissa(conic,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa curabscissa(conic co, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the curvilinear abscissa of 'M' on the conic 'co'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(co.e \u003e 1) abort(\"curabscissa: not implemented for this hyperbola.\");","  if(co.e == 0) return curabscissa((circle)co, M);","  if(co.e \u003c 1) return curabscissa((ellipse)co, M);","  return curabscissa((parabola)co, M);","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"nodabscissa(line,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa nodabscissa(line l, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the node abscissa of 'M' on the line 'l'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(!(M @ (segment)l)) abort(\"nodabscissa: the point is not on the segment.\");","  abscissa oa;","  oa.system = nodesystem;","  oa.x = abs(M - l.A)/abs(l.A - l.B);","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"nodabscissa(circle,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa nodabscissa(circle c, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the node abscissa of 'M' on the circle 'c'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(!(M @ c)) abort(\"nodabscissa: the point is not on the circle.\");","  abscissa oa;","  oa.system = nodesystem;","  oa.x = intersect((path)c, locate(M))[0];","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"nodabscissa(ellipse,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa nodabscissa(ellipse el, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the node abscissa of 'M' on the ellipse 'el'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(!(M @ el)) abort(\"nodabscissa: the point is not on the ellipse.\");","  abscissa oa;","  oa.system = nodesystem;","  oa.x = intersect((path)el, M)[0];","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"nodabscissa(parabola,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa nodabscissa(parabola p, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the node abscissa OF 'M' on the parabola 'p'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(!(M @ p)) abort(\"nodabscissa: the point is not on the parabola.\");","  abscissa oa;","  oa.system = nodesystem;","  path pg = p;","  real[] t = intersect(pg, M, 1e-5);","  if(t.length == 0) abort(\"nodabscissa: the point is not on the path of the parabola.\");","  oa.x = t[0];","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"nodabscissa(conic,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa nodabscissa(conic co, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the node abscissa of 'M' on the conic 'co'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(co.e \u003e 1) abort(\"nodabscissa: not implemented for hyperbola.\");","  if(co.e == 0) return nodabscissa((circle)co, M);","  if(co.e \u003c 1) return nodabscissa((ellipse)co, M);","  return nodabscissa((parabola)co, M);","}","","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"relabscissa(line,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa relabscissa(line l, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the relative abscissa of 'M' on the line 'l'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(!(M @ extend(l))) abort(\"relabscissa: the point is not on the line.\");","  abscissa oa;","  oa.system = relativesystem;","  oa.x = sgn(dot(M - l.A, l.B - l.A)) * abs(M - l.A)/abs(l.A - l.B);","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"relabscissa(circle,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa relabscissa(circle c, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the relative abscissa of 'M' on the circle 'c'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(!(M @ c)) abort(\"relabscissa: the point is not on the circle.\");","  abscissa oa;","  oa.system = relativesystem;","  oa.x = angabscissa(c, M).x/360;","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"relabscissa(ellipse,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa relabscissa(ellipse el, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the relative abscissa of 'M' on the ellipse 'el'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(!(M @ el)) abort(\"relabscissa: the point is not on the ellipse.\");","  abscissa oa;","  oa.system = relativesystem;","  oa.x = curabscissa(el, M).x/arclength(el);","  oa.polarconicroutine = fromFocus;","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"relabscissa(conic,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa relabscissa(conic co, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the relative abscissa of 'M'","   on the conic 'co'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(co.e \u003e 1) abort(\"relabscissa: not implemented for hyperbola and parabola.\");","  if(co.e == 1) return relabscissa((parabola)co, M);","  if(co.e == 0) return relabscissa((circle)co, M);","  return relabscissa((ellipse)co, M);","}","// *.......................ABSCISSA........................*","// *=======================================================*","","// *=======================================================*","// *.........................ARCS..........................*","/*\u003casyxml\u003e\u003cstruct signature=\"arc\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","struct arc {","  /*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eImplement oriented ellipse (included circle) arcs.","    All the calculus with this structure will be as exact as Asymptote can do.","    For a full precision, you must not cast 'arc' to 'path' excepted for drawing routines.","    \u003c/documentation\u003e\u003cproperty type = \"ellipse\" signature=\"el\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  ellipse el;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe support of the arc.\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"real\" signature=\"angle0\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted real angle0 = 0;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eInternal use: rotating a circle does not modify the origin point,this variable stocks the eventual angle rotation. This value is not used for ellipses which are not circles.\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"real\" signature=\"angle1,angle2\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted  real angle1, angle2;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eValues (in degrees) in ]-360, 360[.\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"bool\" signature=\"direction\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  bool direction = CCW;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe arc will be drawn from 'angle1' to 'angle2' rotating in the direction 'direction'.\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"polarconicroutine\" signature=\"polarconicroutine\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  polarconicroutine polarconicroutine = currentpolarconicroutine;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe routine to which the angles refer.","                                                                   If 'el' is a circle 'fromCenter' is always used.\u003c/documentation\u003e\u003c/property\u003e\u003c/asyxml\u003e*/","","  /*\u003casyxml\u003e\u003cmethod type = \"void\" signature=\"setangles(real,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  void setangles(real a0, real a1, real a2)","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eSet the angles.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    if (a1 \u003c 0 \u0026\u0026 a2 \u003c 0) {","      a1 += 360;","      a2 += 360;","    }","    this.angle0 = a0%(sgnd(a0) * 360);","    this.angle1 = a1%(sgnd(a1) * 360);","    this.angle2 = a2%(sgnd(2) * 360);","  }","","  /*\u003casyxml\u003e\u003cmethod type = \"void\" signature=\"init(ellipse,real,real,real,polarconicroutine,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  void init(ellipse el, real angle0 = 0, real angle1, real angle2,","            polarconicroutine polarconicroutine,","            bool direction = CCW)","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eConstructor.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    if(abs(angle1 - angle2) \u003e 360) abort(\"arc: |angle1 - angle2| \u003e 360.\");","    this.el = el;","    this.setangles(angle0, angle1, angle2);","    this.polarconicroutine = polarconicroutine;","    this.direction = direction;","  }","","  /*\u003casyxml\u003e\u003cmethod type = \"arc\" signature=\"copy()\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  arc copy()","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCopy the arc.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    arc oa = new arc;","    oa.el = this.el;","    oa.direction = this.direction;","    oa.polarconicroutine = this.polarconicroutine;","    oa.angle1 = this.angle1;","    oa.angle2 = this.angle2;","    oa.angle0 = this.angle0;","    return oa;","  }","}/*\u003casyxml\u003e\u003c/struct\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cfunction type=\"polarconicroutine\" signature=\"polarconicroutine(ellipse)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","polarconicroutine polarconicroutine(conic co)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the default routine used to draw a conic.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(co.e == 0) return fromCenter;","  if(co.e == 1) return fromFocus;","  return currentpolarconicroutine;","}","","/*\u003casyxml\u003e\u003cfunction type=\"arc\" signature=\"arc(ellipse,real,real,polarconicroutine,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","arc arc(ellipse el, real angle1, real angle2,","        polarconicroutine polarconicroutine = polarconicroutine(el),","        bool direction = CCW)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the ellipse arc from 'angle1' to 'angle2' with respect to 'polarconicroutine' and rotating in the direction 'direction'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  arc oa;","  oa.init(el, 0, angle1, angle2, polarconicroutine, direction);","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"arc\" signature=\"complementary(arc)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","arc complementary(arc a)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the complementary of 'a'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  arc oa;","  oa.init(a.el, a.angle0, a.angle2, a.angle1, a.polarconicroutine, a.direction);","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"arc\" signature=\"reverse(arc)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","arc reverse(arc a)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn arc 'a' oriented in reverse direction.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  arc oa;","  oa.init(a.el, a.angle0, a.angle2, a.angle1, a.polarconicroutine, !a.direction);","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"degrees(arc)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real degrees(arc a)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the measure in degrees of the oriented arc 'a'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  real or;","  real da = a.angle2 - a.angle1;","  if(a.direction) {","    or = a.angle1 \u003c a.angle2 ? da : 360 + da;","  } else {","    or = a.angle1 \u003c a.angle2 ? -360 + da : da;","  }","  return or;","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"angle(a)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real angle(arc a)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the measure in radians of the oriented arc 'a'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return radians(degrees(a));","}","","/*\u003casyxml\u003e\u003cfunction type=\"int\" signature=\"arcnodesnumber(explicit arc)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","int arcnodesnumber(explicit arc a)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the number of nodes to draw the arc 'a'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return ellipsenodesnumber(a.el.a, a.el.b, a.angle1, a.angle2, a.direction);","}","","private path arctopath(arc a, int n)","{","  if(a.el.e == 0) return arcfromcenter(a.el, a.angle0 + a.angle1, a.angle0 + a.angle2, a.direction, n);","  if(a.el.e != 1) return a.polarconicroutine(a.el, a.angle1, a.angle2, n, a.direction);","  return arcfromfocus(a.el, a.angle1, a.angle2, n, a.direction);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"angpoint(arc,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point angpoint(arc a, real angle)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point given by its angular position (in degrees) relative to the arc 'a'.","   If 'angle \u003e degrees(a)' or 'angle \u003c 0' the returned point is on the extended arc.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  pair p;","  if(a.el.e == 0) {","    real gle = a.angle0 + a.angle1 + (a.direction ? angle : -angle);","    p = point(arcfromcenter(a.el, gle, gle, CCW, 1), 0);","  }","  else {","    real gle = a.angle1 + (a.direction ? angle : -angle);","    p = point(a.polarconicroutine(a.el, gle, gle, 1, CCW), 0);","  }","  return point(coordsys(a.el), p/coordsys(a.el));","}","","/*\u003casyxml\u003e\u003coperator type = \"path\" signature=\"cast(explicit arc)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","path operator cast(explicit arc a)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast arc to path.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return arctopath(a, arcnodesnumber(a));","}","","/*\u003casyxml\u003e\u003coperator type = \"guide\" signature=\"cast(explicit arc)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","guide operator cast(explicit arc a)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast arc to guide.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return arctopath(a, arcnodesnumber(a));","}","","/*\u003casyxml\u003e\u003coperator type = \"arc\" signature=\"*(transform,explicit arc)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","arc operator *(transform t, explicit arc a)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide transform * arc.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  pair[] P, PP;","  path g = arctopath(a, 3);","  real a0, a1 = a.angle1, a2 = a.angle2, ap1, ap2;","  bool dir = a.direction;","  P[0] = t * point(g, 0);","  P[1] = t * point(g, 2);","  ellipse el = t * a.el;","  arc oa;","  a0 = (a.angle0 + angle(shiftless(t)))%360;","  pair C;","  if(a.polarconicroutine == fromCenter) C = el.C; else C = el.F1;","  real d = abs(locate(el.F2 - el.F1)) \u003e epsgeo ?","    degrees(locate(el.F2 - el.F1)) : a0 + degrees(el.C.coordsys.i);","  ap1 = (degrees(P[0]-C, false) - d)%360;","  ap2 = (degrees(P[1]-C, false) - d)%360;","  oa.init(el, a0, ap1, ap2, a.polarconicroutine, dir);","  g = arctopath(oa, 3);","  PP[0] = point(g, 0);","  PP[1] = point(g, 2);","  if((a1 - a2) * (ap1 - ap2) \u003c 0) {// Handle reflection.","    dir=!a.direction;","    oa.init(el, a0, ap1, ap2, a.polarconicroutine, dir);","  }","  return oa;","}","","/*\u003casyxml\u003e\u003coperator type = \"arc\" signature=\"*(real,explicit arc)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","arc operator *(real x, explicit arc a)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide real * arc.","   Return the arc subtracting and adding '(x - 1) * degrees(a)/2' to 'a.angle1' and 'a.angle2' respectively.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  real a1, a2, gle;","  gle = (x - 1) * degrees(a)/2;","  a1 = a.angle1 - gle;","  a2 = a.angle2 + gle;","  arc oa;","  oa.init(a.el, a.angle0, a1, a2, a.polarconicroutine, a.direction);","  return oa;","}","arc operator *(int x, explicit arc a){return (real)x * a;}","/*\u003casyxml\u003e\u003coperator type = \"arc\" signature=\"/(real,explicit arc)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","arc operator /(explicit arc a, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide arc/real.","   Return the arc subtracting and adding '(1/x - 1) * degrees(a)/2' to 'a.angle1' and 'a.angle2' respectively.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return (1/x) * a;","}","/*\u003casyxml\u003e\u003coperator type = \"arc\" signature=\"+(explicit arc,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","arc operator +(explicit arc a, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide arc + point.","   Return shifted arc.","   'operator +(explicit arc, point)', 'operator +(explicit arc, vector)' and 'operator -(explicit arc, vector)' are also defined.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return shift(M) * a;","}","arc operator -(explicit arc a, point M){return a + (-M);}","arc operator +(explicit arc a, vector v){return shift(locate(v)) * a;}","arc operator -(explicit arc a, vector v){return a + (-v);}","","","/*\u003casyxml\u003e\u003coperator type = \"bool\" signature=\"@(point,arc)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","bool operator @(point M, arc a)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn true iff 'M' is on the arc 'a'.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  if (!(M @ a.el)) return false;","  coordsys R = defaultcoordsys;","  path ap = arctopath(a, 3);","  line l = line(point(R, point(ap, 0)), point(R, point(ap, 2)));","  return sameside(M, point(R, point(ap, 1)), l);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"draw(picture,Label,arc,align,pen,arrowbar,arrowbar,margin,Label,marker)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void draw(picture pic = currentpicture, Label L = \"\", arc a,","          align align = NoAlign, pen p = currentpen,","          arrowbar arrow = None, arrowbar bar = None, margin margin = NoMargin,","          Label legend = \"\", marker marker = nomarker)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw 'arc' adding the pen returned by 'addpenarc(p)' to the pen 'p'.","   \u003clook href = \"#addpenarc\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  draw(pic, L, (path)a, align, addpenarc(p), arrow, bar, margin, legend, marker);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"arclength(arc)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real arclength(arc a)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe arc length of 'a'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return arclength(a.el, a.angle1, a.angle2, a.direction, a.polarconicroutine);","}","","private point ppoint(arc a, real x)","{// Return the point of the arc proportionally to its length.","  point oP;","  if(a.el.e == 0) { // Case of circle.","    oP = angpoint(a, x * abs(degrees(a)));","  } else { // Ellipse and not circle.","    if(!a.direction) {","      transform t = reflect(line(a.el.F1, a.el.F2));","      return t * ppoint(t * a, x);","    }","","    real angle1 = a.angle1, angle2 = a.angle2;","    if(a.polarconicroutine == fromFocus) {","      //       dot(point(fromFocus(a.el, angle1, angle1, 1, CCW), 0), 2mm + blue);","      //       dot(point(fromFocus(a.el, angle2, angle2, 1, CCW), 0), 2mm + blue);","      //       write(\"fromfocus1 = \", angle1);","      //       write(\"fromfocus2 = \", angle2);","      real gle1 = focusToCenter(a.el, angle1);","      real gle2 = focusToCenter(a.el, angle2);","      if((gle1 - gle2) * (angle1 - angle2) \u003e 0) {","        angle1 = gle1; angle2 = gle2;","      } else {","        angle1 = gle2; angle2 = gle1;","      }","      //       write(\"fromcenter1 = \", angle1);","      //       write(\"fromcenter2 = \", angle2);","      //       dot(point(fromCenter(a.el, angle1, angle1, 1, CCW), 0), 1mm + red);","      //       dot(point(fromCenter(a.el, angle2, angle2, 1, CCW), 0), 1mm + red);","    }","","    if(angle1 \u003e angle2) {","      arc ta = a.copy();","      ta.polarconicroutine = fromCenter;","      ta.setangles(a0 = a.angle0, a1 = angle1 - 360, a2 = angle2);","      return ppoint(ta, x);","    }","    ellipse co = a.el;","    real gle, a1, a2, cx = 0;","    bool direction;","    if(x \u003e= 0) {","      a1 = angle1;","      a2 = a1 + 360;","      direction = CCW;","    } else {","      a1 = angle1 - 360;","      a2 = a1 - 360;","      direction = CW;","    }","    gle = a1;","    real L = arclength(co, angle1, angle2, a.direction, fromCenter);","    real tx = L * abs(x)%arclength(co);","    real aout = a1;","    while(abs(cx - tx) \u003e epsgeo) {","      aout = (a1 + a2)/2;","      cx = abs(arclength(co, gle, aout, direction, fromCenter));","      if(cx \u003e tx) a2 = (a1 + a2)/2 ; else a1 = (a1 + a2)/2;","    }","    pair p = point(arcfromcenter(co, aout, aout, CCW, 1), 0);","    oP = point(coordsys(co), p/coordsys(co));","  }","  return oP;","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"point(arc,abscissa)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(arc a, abscissa l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point of 'a' which has the abscissa 'l.x'","   according to the abscissa system 'l.system'.","   Note that 'a.polarconicroutine' is used instead of 'l.polarconicroutine'.","   \u003clook href = \"#struct abscissa\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  real posx;","  arc ta = a.copy();","  ellipse co = a.el;","  if (l.system == relativesystem) {","    posx = l.x;","  } else","    if (l.system == curvilinearsystem) {","      real tl;","      if(co.e == 0) {","        tl = curabscissa(a.el, angpoint(a.el, a.angle0 + a.angle1)).x;","        return curpoint(a.el, tl + (a.direction ? l.x : -l.x));","      } else {","        tl = curabscissa(a.el, angpoint(a.el, a.angle1, a.polarconicroutine)).x;","        return curpoint(a.el, tl + (a.direction ? l.x : -l.x));","      }","    } else","      if (l.system == nodesystem) {","        coordsys R = coordsys(co);","        return point(R, point((path)a, l.x)/R);","      } else","        if (l.system == angularsystem) {","          return angpoint(a, l.x);","        } else abort(\"point: bad abscissa system.\");","  return ppoint(ta, posx);","}","","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"point(arc,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(arc a, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point between node floor(t) and floor(t) + 1.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(a, nodabscissa(x));","}","pair point(explicit arc a, int x)","{","  return point(a, nodabscissa(x));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"relpoint(arc,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point relpoint(arc a, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the relative point of 'a'.","   If x \u003e 1 or x \u003c 0, the returned point is on the extended arc.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(a, relabscissa(x));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"curpoint(arc,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point curpoint(arc a, real x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point of 'a' which has the curvilinear abscissa 'x'.","   If x \u003c 0 or x \u003e arclength(a), the returned point is on the extended arc.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(a, curabscissa(x));","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"angabscissa(arc,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa angabscissa(arc a, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the angular abscissa of 'M' according to the arc 'a'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(!(M @ a.el))","    abort(\"angabscissa: the point is not on the extended arc.\");","  abscissa oa;","  oa.system = angularsystem;","  oa.polarconicroutine = a.polarconicroutine;","  real am = angabscissa(a.el, M, a.polarconicroutine).x;","  oa.x = (am - a.angle1 - (a.el.e == 0 ? a.angle0 : 0))%360;","  oa.x = a.direction ? oa.x : 360 - oa.x;","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"curabscissa(arc,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa curabscissa(arc a, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the curvilinear abscissa according to the arc 'a'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  ellipse el = a.el;","  if(!(M @ el))","    abort(\"angabscissa: the point is not on the extended arc.\");","  abscissa oa;","  oa.system = curvilinearsystem;","  real xm = curabscissa(el, M).x;","  real a0 = el.e == 0 ? a.angle0 : 0;","  real am = curabscissa(el, angpoint(el, a.angle1 + a0, a.polarconicroutine)).x;","  real l = arclength(el);","  oa.x = (xm - am)%l;","  oa.x = a.direction ? oa.x : l - oa.x;","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"nodabscissa(arc,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa nodabscissa(arc a, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the node abscissa according to the arc 'a'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(!(M @ a))","    abort(\"nodabscissa: the point is not on the arc.\");","  abscissa oa;","  oa.system = nodesystem;","  oa.x = intersect((path)a, M)[0];","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"abscissa\" signature=\"relabscissa(arc,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","abscissa relabscissa(arc a, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the relative abscissa according to the arc 'a'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  ellipse el = a.el;","  if(!( M @ el))","    abort(\"relabscissa: the point is not on the prolonged arc.\");","  abscissa oa;","  oa.system = relativesystem;","  oa.x = curabscissa(a, M).x/arclength(a);","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"markarc(picture,Label,int,real,real,arc,arrowbar,pen,pen,margin,marker)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void markarc(picture pic = currentpicture,","             Label L = \"\",","             int n = 1, real radius = 0, real space = 0,","             arc a,","             pen sectorpen = currentpen,","             pen markpen = sectorpen,","             margin margin = NoMargin,","             arrowbar arrow = None,","             marker marker = nomarker)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  real Da = degrees(a);","  pair p1 = point(a, 0);","  pair p2 = relpoint(a, 1);","  pair c = a.polarconicroutine == fromCenter ? locate(a.el.C) : locate(a.el.F1);","  if(radius == 0) radius = markangleradius(markpen);","  if(abs(Da) \u003e 180) radius = -radius;","  radius = (a.direction ? 1 : -1) * sgnd(Da) * radius;","  draw(c--p1^^c--p2, sectorpen);","  markangle(pic = pic, L = L, n = n, radius = radius, space = space,","            A = p1, O = c, B = p2,","            arrow = arrow, p = markpen, margin = margin,","            marker = marker);","}","// *.........................ARCS..........................*","// *=======================================================*","","// *=======================================================*","// *........................MASSES.........................*","/*\u003casyxml\u003e\u003cstruct signature=\"mass\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","struct mass {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003cproperty type = \"point\" signature=\"M\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  point M;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"real\" signature=\"m\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  real m;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/property\u003e\u003c/asyxml\u003e*/","}/*\u003casyxml\u003e\u003c/struct\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cfunction type=\"mass\" signature=\"mass(point,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","mass mass(point M, real m)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eConstructor of mass point.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  mass om;","  om.M = M;","  om.m = m;","  return om;","}","","/*\u003casyxml\u003e\u003coperator type = \"point\" signature=\"cast(mass)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator cast(mass m)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast mass point to point.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  point op;","  op = m.M;","  op.m = m.m;","  return op;","}","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"point(explicit mass)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(explicit mass m){return m;}/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast","                                         'm' to point\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003coperator type = \"mass\" signature=\"cast(point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","mass operator cast(point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast point to mass point.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  mass om;","  om.M = M;","  om.m = M.m;","  return om;","}","/*\u003casyxml\u003e\u003cfunction type=\"mass\" signature=\"mass(explicit point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","mass mass(explicit point P)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast 'P' to mass.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return mass(P, P.m);","}","","/*\u003casyxml\u003e\u003coperator type = \"point[]\" signature=\"cast(mass[])\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] operator cast(mass[] m)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast mass[] to point[].\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  point[] op;","  for(mass am : m) op.push(point(am));","  return op;","}","","/*\u003casyxml\u003e\u003coperator type = \"mass[]\" signature=\"cast(point[])\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","mass[] operator cast(point[] P)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast point[] to mass[].\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  mass[] om;","  for(point op : P) om.push(mass(op));","  return om;","}","","/*\u003casyxml\u003e\u003cfunction type=\"mass\" signature=\"mass(coordsys,explicit pair,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","mass mass(coordsys R, explicit pair p, real m)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the mass which has coordinates","   'p' with respect to 'R' and weight 'm'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(R, p, m);// Using casting.","}","","/*\u003casyxml\u003e\u003coperator type = \"mass\" signature=\"cast(pair)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","mass operator cast(pair m){return mass((point)m, 1);}/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast pair to mass point.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","/*\u003casyxml\u003e\u003coperator type = \"path\" signature=\"cast(mass)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","path operator cast(mass M){return M.M;}/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast mass point to path.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","/*\u003casyxml\u003e\u003coperator type = \"guide\" signature=\"cast(mass)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","guide operator cast(mass M){return M.M;}/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast mass to guide.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003coperator type = \"mass\" signature=\"+(mass,mass)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","mass operator +(mass M1, mass M2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide mass + mass.","   mass - mass is also defined.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return mass(M1.M + M2.M, M1.m + M2.m);","}","mass operator -(mass M1, mass M2)","{","  return mass(M1.M - M2.M, M1.m - M2.m);","}","","/*\u003casyxml\u003e\u003coperator type = \"mass\" signature=\"*(real,mass)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","mass operator *(real x, explicit mass M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide real * mass.","   The resulted mass is the mass of 'M' multiplied by 'x' .","   mass/real, mass + real and mass - real are also defined.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return mass(M.M, x * M.m);","}","mass operator *(int x, explicit mass M){return mass(M.M, x * M.m);}","mass operator /(explicit mass M, real x){return mass(M.M, M.m/x);}","mass operator /(explicit mass M, int x){return mass(M.M, M.m/x);}","mass operator +(explicit mass M, real x){return mass(M.M, M.m + x);}","mass operator +(explicit mass M, int x){return mass(M.M, M.m + x);}","mass operator -(explicit mass M, real x){return mass(M.M, M.m - x);}","mass operator -(explicit mass M, int x){return mass(M.M, M.m - x);}","/*\u003casyxml\u003e\u003coperator type = \"mass\" signature=\"*(transform,mass)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","mass operator *(transform t, mass M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide transform * mass.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return mass(t * M.M, M.m);","}","","/*\u003casyxml\u003e\u003cfunction type=\"mass\" signature=\"masscenter(... mass[])\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","mass masscenter(... mass[] M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the center of the masses 'M'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point[] P;","  for (int i = 0; i \u003c M.length; ++i)","    P.push(M[i].M);","  P = standardizecoordsys(currentcoordsys, true ... P);","  real m = M[0].m;","  point oM = M[0].m * P[0];","  for (int i = 1; i \u003c M.length; ++i) {","    oM += M[i].m * P[i];","    m += M[i].m;","  }","  if (m == 0) abort(\"masscenter: the sum of masses is null.\");","  return mass(oM/m, m);","}","","/*\u003casyxml\u003e\u003cfunction type=\"string\" signature=\"massformat(string,string,mass)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","string massformat(string format = defaultmassformat,","                  string s, mass M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the string formated by 'format' with the mass value.","   In the parameter 'format', %L will be replaced by 's'.","   \u003clook href = \"#defaultmassformat\"/\u003e.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return format == \"\" ? s :","    format(replace(format, \"%L\", replace(s, \"$\", \"\")), M.m);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"label(picture,Label,explicit mass,align,string,pen,filltype)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void label(picture pic = currentpicture, Label L, explicit mass M,","           align align = NoAlign, string format = defaultmassformat,","           pen p = nullpen, filltype filltype = NoFill)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw label returned by massformat(format, L, M) at coordinates of M.","   \u003clook href = \"#massformat(string, string, mass)\"/\u003e.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  Label lL = L.copy();","  lL.s = massformat(format, lL.s, M);","  Label L = Label(lL, M.M, align, p, filltype);","  add(pic, L);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"dot(picture,Label,explicit mass,align,string,pen)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void dot(picture pic = currentpicture, Label L, explicit mass M, align align = NoAlign,","         string format = defaultmassformat, pen p = currentpen)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw a dot with label 'L' as","   label(picture, Label, explicit mass, align, string, pen, filltype) does.","   \u003clook href = \"#label(picture, Label, mass, align, string, pen, filltype)\"/\u003e.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  Label lL = L.copy();","  lL.s = massformat(format, lL.s, M);","  lL.position(locate(M.M));","  lL.align(align, E);","  lL.p(p);","  dot(pic, M.M, p);","  add(pic, lL);","}","// *........................MASSES.........................*","// *=======================================================*","","// *=======================================================*","// *.......................TRIANGLES.......................*","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"orthocenter(point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point orthocenter(point A, point B, point C)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the orthocenter of the triangle ABC.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point[] P = standardizecoordsys(A, B, C);","  coordsys R = P[0].coordsys;","  pair pp = extension(A, projection(P[1], P[2]) * P[0], B, projection(P[0], P[2]) * P[1]);","  return point(R, pp/R);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"centroid(point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point centroid(point A, point B, point C)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the centroid of the triangle ABC.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return (A + B + C)/3;","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"incenter(point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point incenter(point A, point B, point C)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the center of the incircle of the triangle ABC.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point[] P = standardizecoordsys(A, B, C);","  coordsys R = P[0].coordsys;","  pair a = A, b = B, c = C;","  pair pp = extension(a, a + dir(a--b, a--c), b, b + dir(b--a, b--c));","  return point(R, pp/R);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"inradius(point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real inradius(point A, point B, point C)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the radius of the incircle of the triangle ABC.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point IC = incenter(A, B, C);","  return abs(IC - projection(A, B) * IC);","}","","/*\u003casyxml\u003e\u003cfunction type=\"circle\" signature=\"incircle(point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle incircle(point A, point B, point C)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the incircle of the triangle ABC.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point IC = incenter(A, B, C);","  return circle(IC, abs(IC - projection(A, B) * IC));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"excenter(point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point excenter(point A, point B, point C)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the center of the excircle of the triangle tangent with (AB).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point[] P = standardizecoordsys(A, B, C);","  coordsys R = P[0].coordsys;","  pair a = A, b = B, c = C;","  pair pp = extension(a, a + rotate(90) * dir(a--b, a--c), b, b + rotate(90) * dir(b--a, b--c));","  return point(R, pp/R);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"exradius(point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real exradius(point A, point B, point C)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the radius of the excircle of the triangle ABC with (AB).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point EC = excenter(A, B, C);","  return abs(EC - projection(A, B) * EC);","}","","/*\u003casyxml\u003e\u003cfunction type=\"circle\" signature=\"excircle(point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle excircle(point A, point B, point C)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the excircle of the triangle ABC tangent with (AB).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point center = excenter(A, B, C);","  real radius = abs(center - projection(B, C) * center);","  return circle(center, radius);","}","","private int[] numarray = {1, 2, 3};","numarray.cyclic = true;","","/*\u003casyxml\u003e\u003cstruct signature=\"triangle\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","struct triangle {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/asyxml\u003e*/","","  /*\u003casyxml\u003e\u003cstruct signature=\"vertex\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  struct vertex {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eStructure used to communicate the vertex of a triangle.\u003c/documentation\u003e\u003cproperty type = \"int\" signature=\"n\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","    int n;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e1 means VA,2 means VB,3 means VC,4 means VA etc...\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"triangle\" signature=\"triangle\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","    triangle t;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe triangle to which the vertex refers.\u003c/documentation\u003e\u003c/property\u003e\u003c/asyxml\u003e*/","  }/*\u003casyxml\u003e\u003c/struct\u003e\u003c/asyxml\u003e*/","","  /*\u003casyxml\u003e\u003cproperty type = \"point\" signature=\"A,B,C\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted point A, B, C;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe vertices of the triangle (as point).\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"vertex\" signature=\"VA, VB, VC\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  restricted vertex VA, VB, VC;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe vertices of the triangle (as vertex).","                                 Note that the vertex structure contains the triangle to wish it refers.\u003c/documentation\u003e\u003c/property\u003e\u003c/asyxml\u003e*/","  VA.n = 1;VB.n = 2;VC.n = 3;","","  /*\u003casyxml\u003e\u003cmethod type = \"vertex\" signature=\"vertex(int)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  vertex vertex(int n)","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn numbered vertex.","     'n' is 1 means VA, 2 means VB, 3 means VC, 4 means VA etc...\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    n = numarray[n - 1];","    if(n == 1) return VA;","    else if(n == 2) return VB;","    return VC;","  }","","  /*\u003casyxml\u003e\u003cmethod type = \"point\" signature=\"point(int)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  point point(int n)","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn numbered point.","     n is 1 means A, 2 means B, 3 means C, 4 means A etc...\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    n = numarray[n - 1];","    if(n == 1) return A;","    else if(n == 2) return B;","    return C;","  }","","  /*\u003casyxml\u003e\u003cmethod type = \"void\" signature=\"init(point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  void init(point A, point B, point C)","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eConstructor.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    point[] P = standardizecoordsys(A, B, C);","    this.A = P[0];","    this.B = P[1];","    this.C = P[2];","    VA.t = this; VB.t = this; VC.t = this;","  }","","  /*\u003casyxml\u003e\u003cmethod type = \"void\" signature=\"operator init(point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  void operator init(point A, point B, point C)","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eFor backward compatibility.","     Provide the routine 'triangle(point A, point B, point C)'.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    this.init(A, B, C);","  }","","  /*\u003casyxml\u003e\u003cmethod type = \"void\" signature=\"init(real,real,real,real,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  void operator init(real b, real alpha, real c, real angle = 0, point A = (0, 0))","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eFor backward compatibility.","     Provide the routine 'triangle(real b, real alpha, real c, real angle = 0, point A = (0, 0))","     which returns the triangle ABC rotated by 'angle' (in degrees) and where b = AC, degrees(A) = alpha, AB = c.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    coordsys R = A.coordsys;","    this.init(A, A + R.polar(c, radians(angle)), A + R.polar(b, radians(angle + alpha)));","  }","","  /*\u003casyxml\u003e\u003cmethod type = \"real\" signature=\"a(),b(),c()\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  real a()","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the length BC.","     b() and c() are also defined and return the length AC and AB respectively.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    return length(C - B);","  }","  real b() {return length(A - C);}","  real c() {return length(B - A);}","","  private real det(pair a, pair b) {return a.x * b.y - a.y * b.x;}","","  /*\u003casyxml\u003e\u003cmethod type = \"real\" signature=\"area()\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  real area()","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    pair a = locate(A), b = locate(B), c = locate(C);","    return 0.5 * abs(det(a, b) + det(b, c) + det(c, a));","  }","","  /*\u003casyxml\u003e\u003cmethod type = \"real\" signature=\"alpha(),beta(),gamma()\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  real alpha()","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the measure (in degrees) of the angle A.","     beta() and gamma() are also defined and return the measure of the angles B and C respectively.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    return degrees(acos((b()^2 + c()^2 - a()^2)/(2b() * c())));","  }","  real beta()  {return degrees(acos((c()^2 + a()^2 - b()^2)/(2c() * a())));}","  real gamma() {return degrees(acos((a()^2 + b()^2 - c()^2)/(2a() * b())));}","","  /*\u003casyxml\u003e\u003cmethod type = \"path\" signature=\"Path()\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  path Path()  // retained for backward compatibility","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe path of the triangle.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    return A--B--C--cycle;","  }","","  /*\u003casyxml\u003e\u003cstruct signature=\"side\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  struct side","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eStructure used to communicate the side of a triangle.\u003c/documentation\u003e\u003cproperty type = \"int\" signature=\"n\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","    int n;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e1 or 0 means [AB],-1 means [BA],2 means [BC],-2 means [CB] etc.\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"triangle\" signature=\"triangle\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","    triangle t;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe triangle to which the side refers.\u003c/documentation\u003e\u003c/property\u003e\u003c/asyxml\u003e*/","  }/*\u003casyxml\u003e\u003c/struct\u003e\u003c/asyxml\u003e*/","","  /*\u003casyxml\u003e\u003cproperty type = \"side\" signature=\"AB\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  side AB;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eFor the routines using the structure 'side', triangle.AB means 'side AB'.","            BA, AC, CA etc are also defined.\u003c/documentation\u003e\u003c/property\u003e\u003c/asyxml\u003e*/","  AB.n = 1; AB.t = this;","  side BA; BA.n = -1; BA.t = this;","  side BC; BC.n = 2; BC.t = this;","  side CB; CB.n = -2; CB.t = this;","  side CA; CA.n = 3; CA.t = this;","  side AC; AC.n = -3; AC.t = this;","","  /*\u003casyxml\u003e\u003cmethod type = \"side\" signature=\"side(int)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  side side(int n)","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn numbered side.","     n is 1 means AB, -1 means BA, 2 means BC, -2 means CB, etc.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    if(n == 0) abort('Invalid side number.');","    int an = numarray[abs(n)-1];","    if(an == 1) return n \u003e 0 ? AB : BA;","    else if(an == 2) return n \u003e 0 ? BC : CB;","    return n \u003e 0 ? CA : AC;","  }","","  /*\u003casyxml\u003e\u003cmethod type = \"line\" signature=\"line(int)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  line line(int n)","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the numbered line.\u003c/documentation\u003e\u003c/method\u003e\u003c/asyxml\u003e*/","    if(n == 0) abort('Invalid line number.');","    int an = numarray[abs(n)-1];","    if(an == 1) return n \u003e 0 ? line(A, B) : line(B, A);","    else if(an == 2) return n \u003e 0 ? line(B, C) : line(C, B);","    return n \u003e 0 ? line(C, A) : line(A, C);","  }","","}/*\u003casyxml\u003e\u003c/struct\u003e\u003c/asyxml\u003e*/","","path operator cast(triangle t) { return t.A -- t.B -- t.C -- cycle; }","","from triangle unravel side; // The structure 'side' is now available outside the triangle structure.","from triangle unravel vertex; // The structure 'vertex' is now available outside the triangle structure.","","triangle[] operator ^^(triangle[] t1, triangle t2)","{","  triangle[] T;","  for (int i = 0; i \u003c t1.length; ++i) T.push(t1[i]);","  T.push(t2);","  return T;","}","","triangle[] operator ^^(... triangle[] t)","{","  triangle[] T;","  for (int i = 0; i \u003c t.length; ++i) {","    T.push(t[i]);","  }","  return T;","}","","/*\u003casyxml\u003e\u003coperator type = \"line\" signature=\"cast(side)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line operator cast(side side)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast side to (infinite) line.","   Most routine with line parameters works with side parameters.","   One can use the code 'segment(a_side)' to obtain a line segment.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  triangle t = side.t;","  return t.line(side.n);","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"line(explicit side)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line line(explicit side side)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn 'side' as line.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return (line)side;","}","","/*\u003casyxml\u003e\u003cfunction type=\"segment\" signature=\"segment(explicit side)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","segment segment(explicit side side)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn 'side' as segment.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return (segment)(line)side;","}","","/*\u003casyxml\u003e\u003coperator type = \"point\" signature=\"cast(vertex)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator cast(vertex V)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast vertex to point.","   Most routine with point parameters works with vertex parameters.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return V.t.point(V.n);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"point(explicit vertex)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(explicit vertex V)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the point corresponding to the vertex 'V'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return (point)V;","}","","/*\u003casyxml\u003e\u003cfunction type=\"side\" signature=\"opposite(vertex)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","side opposite(vertex V)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the opposite side of vertex 'V'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return V.t.side(numarray[abs(V.n)]);","}","","/*\u003casyxml\u003e\u003cfunction type=\"vertex\" signature=\"opposite(side)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","vertex opposite(side side)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the opposite vertex of side 'side'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return side.t.vertex(numarray[abs(side.n) + 1]);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"midpoint(side)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point midpoint(side side)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return midpoint(segment(side));","}","","/*\u003casyxml\u003e\u003coperator type = \"triangle\" signature=\"*(transform,triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","triangle operator *(transform T, triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide transform * triangle.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return triangle(T * t.A, T * t.B, T * t.C);","}","","/*\u003casyxml\u003e\u003cfunction type=\"triangle\" signature=\"triangleAbc(real,real,real,real,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","triangle triangleAbc(real alpha, real b, real c, real angle = 0, point A = (0, 0))","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the triangle ABC rotated by 'angle' with BAC = alpha, AC = b and AB = c.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  triangle T;","  coordsys R = A.coordsys;","  T.init(A, A + R.polar(c, radians(angle)), A + R.polar(b, radians(angle + alpha)));","  return T;","}","","/*\u003casyxml\u003e\u003cfunction type=\"triangle\" signature=\"triangleabc(real,real,real,real,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","triangle triangleabc(real a, real b, real c, real angle = 0, point A = (0, 0))","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the triangle ABC rotated by 'angle' with BC = a, AC = b and AB = c.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  triangle T;","  coordsys R = A.coordsys;","  T.init(A, A + R.polar(c, radians(angle)), A + R.polar(b, radians(angle) + acos((b^2 + c^2 - a^2)/(2 * b * c))));","  return T;","}","","/*\u003casyxml\u003e\u003cfunction type=\"triangle\" signature=\"triangle(line,line,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","triangle triangle(line l1, line l2, line l3)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the triangle defined by three line.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point P1, P2, P3;","  P1 = intersectionpoint(l1, l2);","  P2 = intersectionpoint(l1, l3);","  P3 = intersectionpoint(l2, l3);","  if(!(defined(P1) \u0026\u0026 defined(P2) \u0026\u0026 defined(P3))) abort(\"triangle: two lines are parallel.\");","  return triangle(P1, P2, P3);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"foot(vertex)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point foot(vertex V)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the endpoint of the altitude from V.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return projection((line)opposite(V)) * ((point)V);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"foot(side)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point foot(side side)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the endpoint of the altitude on 'side'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return projection((line)side) * point(opposite(side));","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"altitude(vertex)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line altitude(vertex V)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the altitude passing through 'V'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return line(point(V), foot(V));","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"altitude(vertex)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line altitude(side side)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the altitude cutting 'side'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return altitude(opposite(side));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"orthocenter(triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point orthocenter(triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the orthocenter of the triangle t.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return orthocenter(t.A, t.B, t.C);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"centroid(triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point centroid(triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the centroid of the triangle 't'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return (t.A + t.B + t.C)/3;","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"circumcenter(triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point circumcenter(triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the circumcenter of the triangle 't'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return circumcenter(t.A, t.B, t.C);","}","","/*\u003casyxml\u003e\u003cfunction type=\"circle\" signature=\"circle(triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle circle(triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the circumcircle of the triangle 't'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return circle(t.A, t.B, t.C);","}","","/*\u003casyxml\u003e\u003cfunction type=\"circle\" signature=\"circumcircle(triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle circumcircle(triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the circumcircle of the triangle 't'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return circle(t.A, t.B, t.C);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"incenter(triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point incenter(triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the center of the incircle of the triangle 't'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return incenter(t.A, t.B, t.C);","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"inradius(triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real inradius(triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the radius of the incircle of the triangle 't'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return inradius(t.A, t.B, t.C);","}","","/*\u003casyxml\u003e\u003cfunction type=\"circle\" signature=\"incircle(triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle incircle(triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the the incircle of the triangle 't'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return incircle(t.A, t.B, t.C);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"excenter(side,triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point excenter(side side)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the center of the excircle tangent with the side 'side' of its triangle.","   side = 0 means AB, 1 means AC, other means BC.","   One must use the predefined sides t.AB, t.AC where 't' is a triangle....\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point op;","  triangle t = side.t;","  int n = numarray[abs(side.n) - 1];","  if(n == 1) op = excenter(t.A, t.B, t.C);","  else  if(n == 2) op = excenter(t.B, t.C, t.A);","  else op = excenter(t.C, t.A, t.B);","  return op;","}","","/*\u003casyxml\u003e\u003cfunction type=\"real\" signature=\"exradius(side,triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","real exradius(side side)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn radius of the excircle tangent with the side 'side' of its triangle.","   side = 0 means AB, 1 means BC, other means CA.","   One must use the predefined sides t.AB, t.AC where 't' is a triangle....\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  real or;","  triangle t = side.t;","  int n = numarray[abs(side.n) - 1];","  if(n == 1) or = exradius(t.A, t.B, t.C);","  else  if(n == 2) or = exradius(t.B, t.C, t.A);","  else or = exradius(t.A, t.C, t.B);","  return or;","}","","/*\u003casyxml\u003e\u003cfunction type=\"circle\" signature=\"excircle(side,triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle excircle(side side)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the excircle tangent with the side 'side' of its triangle.","   side = 0 means AB, 1 means AC, other means BC.","   One must use the predefined sides t.AB, t.AC where 't' is a triangle....\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  circle oc;","  int n = numarray[abs(side.n) - 1];","  triangle t = side.t;","  if(n == 1) oc = excircle(t.A, t.B, t.C);","  else  if(n == 2) oc = excircle(t.B, t.C, t.A);","  else oc = excircle(t.A, t.C, t.B);","  return oc;","}","","/*\u003casyxml\u003e\u003cstruct signature=\"trilinear\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","struct trilinear","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eTrilinear coordinates 'a:b:c' relative to triangle 't'.","   \u003curl href = \"http://mathworld.wolfram.com/TrilinearCoordinates.html\"/\u003e\u003c/documentation\u003e\u003cproperty type = \"real\" signature=\"a,b,c\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  real a,b,c;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe trilinear coordinates.\u003c/documentation\u003e\u003c/property\u003e\u003cproperty type = \"triangle\" signature=\"t\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  triangle t;/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe reference triangle.\u003c/documentation\u003e\u003c/property\u003e\u003c/asyxml\u003e*/","}/*\u003casyxml\u003e\u003c/struct\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cfunction type=\"trilinear\" signature=\"trilinear(triangle,real,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","trilinear trilinear(triangle t, real a, real b, real c)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the trilinear coordinates relative to 't'.","   \u003curl href = \"http://mathworld.wolfram.com/TrilinearCoordinates.html\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  trilinear ot;","  ot.a = a; ot.b = b; ot.c = c;","  ot.t = t;","  return ot;","}","","/*\u003casyxml\u003e\u003cfunction type=\"trilinear\" signature=\"trilinear(triangle,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","trilinear trilinear(triangle t, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the trilinear coordinates of 'M' relative to 't'.","   \u003curl href = \"http://mathworld.wolfram.com/TrilinearCoordinates.html\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  trilinear ot;","  pair m = locate(M);","  int sameside(pair A, pair B, pair m, pair p)","  {// Return 1 if 'm' and 'p' are same side of line (AB) else return -1.","    pair mil = (A + B)/2;","    pair mA = rotate(90, mil) * A;","    pair mB = rotate(-90, mil) * A;","    return (abs(m - mA) \u003c= abs(m - mB)) == (abs(p - mA) \u003c= abs(p - mB)) ? 1 : -1;","  }","  real det(pair a, pair b) {return a.x * b.y - a.y * b.x;}","  real area(pair a, pair b, pair c){return 0.5 * abs(det(a, b) + det(b, c) + det(c, a));}","  pair A = t.A, B = t.B, C = t.C;","  real t1 = area(B, C, m), t2 = area(C, A, m), t3 = area(A, B, m);","  ot.a = sameside(B, C, A, m) * t1/t.a();","  ot.b = sameside(A, C, B, m) * t2/t.b();","  ot.c = sameside(A, B, C, m) * t3/t.c();","  ot.t = t;","  return ot;","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"write(trilinear)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void write(trilinear tri)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  write(format(\"%f : \", tri.a) + format(\"%f : \", tri.b) + format(\"%f\", tri.c));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"trilinear(triangle,real,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(trilinear tri)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the trilinear coordinates relative to 't'.","   \u003curl href = \"http://mathworld.wolfram.com/TrilinearCoordinates.html\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  triangle t = tri.t;","  return masscenter(0.5 * t.a() * mass(t.A, tri.a),","                    0.5 * t.b() * mass(t.B, tri.b),","                    0.5 * t.c() * mass(t.C, tri.c));","}","","/*\u003casyxml\u003e\u003cfunction type=\"int[]\" signature=\"tricoef(side)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","int[] tricoef(side side)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn an array of integer (values are 0 or 1) which represents 'side'.","   For example, side = t.BC will be represented by {0, 1, 1}.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  int[] oi;","  int n = numarray[abs(side.n) - 1];","  oi.push((n == 1 || n == 3) ? 1 : 0);","  oi.push((n == 1 || n == 2) ? 1 : 0);","  oi.push((n == 2 || n == 3) ? 1 : 0);","  return oi;","}","","/*\u003casyxml\u003e\u003coperator type = \"point\" signature=\"cast(trilinear)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator cast(trilinear tri)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eCast trilinear to point.","   One may use the routine 'point(trilinear)' to force the casting.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return point(tri);","}","","/*\u003casyxml\u003e\u003ctypedef type = \"centerfunction\" return = \"real\" params = \"real, real, real\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","typedef real centerfunction(real, real, real);/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003curl href = \"http://mathworld.wolfram.com/TriangleCenterFunction.html\"/\u003e\u003c/documentation\u003e\u003c/typedef\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cfunction type=\"trilinear\" signature=\"trilinear(triangle,centerfunction,real,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","trilinear trilinear(triangle t, centerfunction f, real a = t.a(), real b = t.b(), real c = t.c())","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003curl href = \"http://mathworld.wolfram.com/TriangleCenterFunction.html\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return trilinear(t, f(a, b, c), f(b, c, a), f(c, a, b));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"symmedian(triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point symmedian(triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the symmedian point of 't'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point A, B, C;","  real a = t.a(), b = t.b(), c = t.c();","  A = trilinear(t, 0, b, c);","  B = trilinear(t, a, 0, c);","  return intersectionpoint(line(t.A, A), line(t.B, B));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"symmedian(side)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point symmedian(side side)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe symmedian point on the side 'side'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  triangle t = side.t;","  int n = numarray[abs(side.n) - 1];","  if(n == 1) return trilinear(t, t.a(), t.b(), 0);","  if(n == 2) return trilinear(t, 0, t.b(), t.c());","  return trilinear(t, t.a(), 0, t.c());","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"symmedian(vertex)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line symmedian(vertex V)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the symmedian passing through 'V'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return line(point(V), symmedian(V.t));","}","","/*\u003casyxml\u003e\u003cfunction type=\"triangle\" signature=\"cevian(triangle,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","triangle cevian(triangle t, point P)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the Cevian triangle with respect of 'P'","   \u003curl href = \"http://mathworld.wolfram.com/CevianTriangle.html\"/\u003e.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  trilinear tri = trilinear(t, locate(P));","  point A = point(trilinear(t, 0, tri.b, tri.c));","  point B = point(trilinear(t, tri.a, 0, tri.c));","  point C = point(trilinear(t, tri.a, tri.b, 0));","  return triangle(A, B, C);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"cevian(side,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point cevian(side side, point P)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the Cevian point on 'side' with respect of 'P'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  triangle t = side.t;","  trilinear tri = trilinear(t, locate(P));","  int[] s = tricoef(side);","  return point(trilinear(t, s[0] * tri.a, s[1] * tri.b, s[2] * tri.c));","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"cevian(vertex,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line cevian(vertex V, point P)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn line passing through 'V' and its Cevian image with respect of 'P'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return line(point(V), cevian(opposite(V), P));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"gergonne(triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point gergonne(triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the Gergonne point of 't'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  real f(real a, real b, real c){return 1/(a * (b + c - a));}","  return point(trilinear(t, f));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"fermat(triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] fermat(triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the Fermat points of 't'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point[] P;","  real A = t.alpha(), B = t.beta(), C = t.gamma();","  P.push(point(trilinear(t, 1/Sin(A + 60), 1/Sin(B + 60), 1/Sin(C + 60))));","  P.push(point(trilinear(t, 1/Sin(A - 60), 1/Sin(B - 60), 1/Sin(C - 60))));","  return P;","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"isotomicconjugate(triangle,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point isotomicconjugate(triangle t, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003curl href = \"http://mathworld.wolfram.com/IsotomicConjugate.html\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(!inside(t.Path(), locate(M))) abort(\"isotomic: the point must be inside the triangle.\");","  trilinear tr = trilinear(t, M);","  return point(trilinear(t, 1/(t.a()^2 * tr.a), 1/(t.b()^2 * tr.b), 1/(t.c()^2 * tr.c)));","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"isotomic(vertex,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line isotomic(vertex V, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003curl href = \"http://mathworld.wolfram.com/IsotomicConjugate.html\"/\u003e.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  side op = opposite(V);","  return line(V, rotate(180, midpoint(op)) * cevian(op, M));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"isotomic(side,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point isotomic(side side, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003curl href = \"http://mathworld.wolfram.com/IsotomicConjugate.html\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return intersectionpoint(isotomic(opposite(side), M), side);","}","","/*\u003casyxml\u003e\u003cfunction type=\"triangle\" signature=\"isotomic(triangle,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","triangle isotomic(triangle t, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003curl href = \"http://mathworld.wolfram.com/IsotomicConjugate.html\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return triangle(isotomic(t.BC, M), isotomic(t.CA, M), isotomic(t.AB, M));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"isogonalconjugate(triangle,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point isogonalconjugate(triangle t, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003curl href = \"http://mathworld.wolfram.com/IsogonalConjugate.html\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  trilinear tr = trilinear(t, M);","  return point(trilinear(t, 1/tr.a, 1/tr.b, 1/tr.c));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"isogonal(side,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point isogonal(side side, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003curl href = \"http://mathworld.wolfram.com/IsogonalConjugate.html\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return cevian(side, isogonalconjugate(side.t, M));","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"isogonal(vertex,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line isogonal(vertex V, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003curl href = \"http://mathworld.wolfram.com/IsogonalConjugate.html\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return line(V, isogonal(opposite(V), M));","}","","/*\u003casyxml\u003e\u003cfunction type=\"triangle\" signature=\"isogonal(triangle,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","triangle isogonal(triangle t, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003curl href = \"http://mathworld.wolfram.com/IsogonalConjugate.html\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return triangle(isogonal(t.BC, M), isogonal(t.CA, M), isogonal(t.AB, M));","}","","/*\u003casyxml\u003e\u003cfunction type=\"triangle\" signature=\"pedal(triangle,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","triangle pedal(triangle t, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the pedal triangle of 'M' in 't'.","   \u003curl href = \"http://mathworld.wolfram.com/PedalTriangle.html\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return triangle(projection(t.BC) * M, projection(t.AC) * M, projection(t.AB) * M);","}","","/*\u003casyxml\u003e\u003cfunction type=\"triangle\" signature=\"pedal(triangle,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line pedal(side side, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the pedal line of 'M' cutting 'side'.","   \u003curl href = \"http://mathworld.wolfram.com/PedalTriangle.html\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return line(M, projection(side) * M);","}","","/*\u003casyxml\u003e\u003cfunction type=\"triangle\" signature=\"antipedal(triangle,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","triangle antipedal(triangle t, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003curl href = \"http://mathworld.wolfram.com/AntipedalTriangle.html\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  trilinear Tm = trilinear(t, M);","  real a = Tm.a, b = Tm.b, c = Tm.c;","  real CA = Cos(t.alpha()), CB = Cos(t.beta()), CC = Cos(t.gamma());","  point A = trilinear(t, -(b + a * CC) * (c + a * CB), (c + a * CB) * (a + b * CC), (b + a * CC) * (a + c * CB));","  point B = trilinear(t, (c + b * CA) * (b + a * CC), -(c + b * CA) * (a + b * CC), (a + b * CC) * (b + c * CA));","  point C = trilinear(t, (b + c * CA) * (c + a * CB), (a + c * CB) * (c + b * CA), -(a + c * CB) * (b + c * CA));","  return triangle(A, B, C);","}","","/*\u003casyxml\u003e\u003cfunction type=\"triangle\" signature=\"extouch(triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","triangle extouch(triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the extouch triangle of the triangle 't'.","   The extouch triangle of 't' is the triangle formed by the points","   of tangency of a triangle 't' with its excircles.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point A, B, C;","  real a = t.a(), b = t.b(), c = t.c();","  A = trilinear(t, 0, (a - b + c)/b, (a + b - c)/c);","  B = trilinear(t, (-a + b + c)/a, 0, (a + b - c)/c);","  C = trilinear(t, (-a + b + c)/a, (a - b + c)/b, 0);","  return triangle(A, B, C);","}","","/*\u003casyxml\u003e\u003cfunction type=\"triangle\" signature=\"incentral(triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","triangle incentral(triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the incentral triangle of the triangle 't'.","   It is the triangle whose vertices are determined by the intersections of the","   reference triangle's angle bisectors with the respective opposite sides.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point A, B, C;","  // real a = t.a(), b = t.b(), c = t.c();","  A = trilinear(t, 0, 1, 1);","  B = trilinear(t, 1, 0, 1);","  C = trilinear(t, 1, 1, 0);","  return triangle(A, B, C);","}","","/*\u003casyxml\u003e\u003cfunction type=\"triangle\" signature=\"extouch(side)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","triangle extouch(side side)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the triangle formed by the points of tangency of the triangle referenced by 'side' with its excircles.","   One vertex of the returned triangle is on the segment 'side'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  triangle t = side.t;","  transform p1 = projection((line)t.AB);","  transform p2 = projection((line)t.AC);","  transform p3 = projection((line)t.BC);","  point EP = excenter(side);","  return triangle(p3 * EP, p2 * EP, p1 * EP);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"bisectorpoint(side)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point bisectorpoint(side side)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe intersection point of the angle bisector from the","   opposite point of 'side' with the side 'side'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  triangle t = side.t;","  int n = numarray[abs(side.n) - 1];","  if(n == 1) return trilinear(t, 1, 1, 0);","  if(n == 2) return trilinear(t, 0, 1, 1);","  return trilinear(t, 1, 0, 1);","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"bisector(vertex,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line bisector(vertex V, real angle = 0)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the interior bisector passing through 'V' rotated by angle (in degrees)","   around 'V'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return rotate(angle, point(V)) * line(point(V), incenter(V.t));","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"bisector(side)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line bisector(side side)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the bisector of the line segment 'side'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return bisector(segment(side));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"intouch(side)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point intouch(side side)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe point of tangency on the side 'side' of its incircle.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  triangle t = side.t;","  real a = t.a(), b = t.b(), c = t.c();","  int n = numarray[abs(side.n) - 1];","  if(n == 1) return trilinear(t, b * c/(-a + b + c), a * c/(a - b + c), 0);","  if(n == 2) return trilinear(t, 0, a * c/(a - b + c), a * b/(a + b - c));","  return trilinear(t, b * c/(-a + b + c), 0, a * b/(a + b - c));","}","","/*\u003casyxml\u003e\u003cfunction type=\"triangle\" signature=\"intouch(triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","triangle intouch(triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the intouch triangle of the triangle 't'.","   The intouch triangle of 't' is the triangle formed by the points","   of tangency of a triangle 't' with its incircles.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point A, B, C;","  real a = t.a(), b = t.b(), c = t.c();","  A = trilinear(t, 0, a * c/(a - b + c), a * b/(a + b - c));","  B = trilinear(t, b * c/(-a + b + c), 0, a * b/(a + b - c));","  C = trilinear(t, b * c/(-a + b + c), a * c/(a - b + c), 0);","  return triangle(A, B, C);","}","","/*\u003casyxml\u003e\u003cfunction type=\"triangle\" signature=\"tangential(triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","triangle tangential(triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the tangential triangle of the triangle 't'.","   The tangential triangle of 't' is the triangle formed by the lines","   tangent to the circumcircle of the given triangle 't' at its vertices.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point A, B, C;","  real a = t.a(), b = t.b(), c = t.c();","  A = trilinear(t, -a, b, c);","  B = trilinear(t, a, -b, c);","  C = trilinear(t, a, b, -c);","  return triangle(A, B, C);","}","","/*\u003casyxml\u003e\u003cfunction type=\"triangle\" signature=\"medial(triangle t)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","triangle medial(triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the triangle whose vertices are midpoints of the sides of 't'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return triangle(midpoint(t.BC), midpoint(t.AC), midpoint(t.AB));","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"median(vertex)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line median(vertex V)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn median from 'V'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return line(point(V), midpoint(segment(opposite(V))));","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"median(side)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line median(side side)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn median from the opposite vertex of 'side'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return median(opposite(side));","}","","/*\u003casyxml\u003e\u003cfunction type=\"triangle\" signature=\"orthic(triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","triangle orthic(triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the triangle whose vertices are endpoints of the altitudes from each of the vertices of 't'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return triangle(foot(t.BC), foot(t.AC), foot(t.AB));","}","","/*\u003casyxml\u003e\u003cfunction type=\"triangle\" signature=\"symmedial(triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","triangle symmedial(triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the symmedial triangle of 't'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point A, B, C;","  real a = t.a(), b = t.b(), c = t.c();","  A = trilinear(t, 0, b, c);","  B = trilinear(t, a, 0, c);","  C = trilinear(t, a, b, 0);","  return triangle(A, B, C);","}","","/*\u003casyxml\u003e\u003cfunction type=\"triangle\" signature=\"anticomplementary(triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","triangle anticomplementary(triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the triangle which has the given triangle 't' as its medial triangle.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  real a = t.a(), b = t.b(), c = t.c();","  real ab = a * b, bc = b * c, ca = c * a;","  point A = trilinear(t, -bc, ca, ab);","  point B = trilinear(t, bc, -ca, ab);","  point C = trilinear(t, bc, ca, -ab);","  return triangle(A, B, C);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(triangle,line,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(triangle t, line l, bool extended = false)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the intersection points.","   If 'extended' is true, the sides are lines else the sides are segments.","   intersectionpoints(line, triangle, bool) is also defined.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point[] OP;","  void addpoint(point P)","  {","    if(defined(P)) {","      bool exist = false;","      for (int i = 0; i \u003c OP.length; ++i) {","        if(P == OP[i]) {exist = true; break;}","      }","      if(!exist) OP.push(P);","    }","  }","  if(extended) {","    for (int i = 1; i \u003c= 3; ++i) {","      addpoint(intersectionpoint(t.line(i), l));","    }","  } else {","    for (int i = 1; i \u003c= 3; ++i) {","      addpoint(intersectionpoint((segment)t.line(i), l));","    }","  }","  return OP;","}","","point[] intersectionpoints(line l, triangle t, bool extended = false)","{","  return intersectionpoints(t, l, extended);","}","","/*\u003casyxml\u003e\u003cfunction type=\"vector\" signature=\"dir(vertex)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","vector dir(vertex V)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eThe direction (towards the outside of the triangle) of the interior angle bisector of 'V'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  triangle t = V.t;","  if(V.n == 1) return vector(defaultcoordsys, (-dir(t.A--t.B, t.A--t.C)));","  if(V.n == 2) return vector(defaultcoordsys, (-dir(t.B--t.A, t.B--t.C)));","  return vector(defaultcoordsys, (-dir(t.C--t.A, t.C--t.B)));","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"lvoid label(picture,Label,vertex,pair,real,pen,filltype)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void label(picture pic = currentpicture, Label L, vertex V,","           pair align = dir(V),","           real alignFactor = 1,","           pen p = nullpen, filltype filltype = NoFill)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw 'L' on picture 'pic' at vertex 'V' aligned by 'alignFactor * align'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  label(pic, L, locate(point(V)), alignFactor * align, p, filltype);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"label(picture,Label,Label,Label,triangle,real,real,pen,filltype)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void label(picture pic = currentpicture, Label LA = \"$A$\",","           Label LB = \"$B$\", Label LC = \"$C$\",","           triangle t,","           real alignAngle = 0,","           real alignFactor = 1,","           pen p = nullpen, filltype filltype = NoFill)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw labels LA, LB and LC aligned in the rotated (by 'alignAngle' in degrees) direction","   (towards the outside of the triangle) of the interior angle bisector of vertices.","   One can  individually modify the alignment by setting the Label parameter 'align'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  Label lla = LA.copy();","  lla.align(lla.align, rotate(alignAngle) * locate(dir(t.VA)));","  label(pic, LA, t.VA, align = lla.align.dir, alignFactor = alignFactor, p, filltype);","  Label llb = LB.copy();","  llb.align(llb.align, rotate(alignAngle) * locate(dir(t.VB)));","  label(pic, llb, t.VB, align = llb.align.dir, alignFactor = alignFactor, p, filltype);","  Label llc = LC.copy();","  llc.align(llc.align, rotate(alignAngle) * locate(dir(t.VC)));","  label(pic, llc, t.VC, align = llc.align.dir, alignFactor = alignFactor, p, filltype);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"show(picture,Label,Label,Label,Label,Label,Label,triangle,pen,filltype)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void show(picture pic = currentpicture,","          Label LA = \"$A$\", Label LB = \"$B$\", Label LC = \"$C$\",","          Label La = \"$a$\", Label Lb = \"$b$\", Label Lc = \"$c$\",","          triangle t, pen p = currentpen, filltype filltype = NoFill)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw triangle and labels of sides and vertices.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  pair a = locate(t.A), b = locate(t.B), c = locate(t.C);","  draw(pic, a--b--c--cycle, p);","  label(pic, LA, a, -dir(a--b, a--c), p, filltype);","  label(pic, LB, b, -dir(b--a, b--c), p, filltype);","  label(pic, LC, c, -dir(c--a, c--b), p, filltype);","  pair aligna = I * unit(c - b), alignb = I * unit(c - a), alignc = I * unit(b - a);","  pair mAB = locate(midpoint(t.AB)), mAC = locate(midpoint(t.AC)), mBC = locate(midpoint(t.BC));","  label(pic, La, b--c, align = rotate(dot(a - mBC, aligna) \u003e 0 ? 180 :0) * aligna, p);","  label(pic, Lb, a--c, align = rotate(dot(b - mAC, alignb) \u003e 0 ? 180 :0) * alignb, p);","  label(pic, Lc, a--b, align = rotate(dot(c - mAB, alignc) \u003e 0 ? 180 :0) * alignc, p);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"draw(picture,triangle,pen,marker)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void draw(picture pic = currentpicture, triangle t, pen p = currentpen, marker marker = nomarker)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw sides of the triangle 't' on picture 'pic' using pen 'p'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  draw(pic, (path)t, p, marker);","}","","void fill(picture pic = currentpicture, triangle t, pen p = currentpen)","{","  fill(pic, (path)t, p);","}","","void filldraw(picture pic = currentpicture, triangle t, pen fillpen = currentpen, pen drawpen = currentpen)","{","  fill(pic, t, fillpen);","  draw(pic, t, drawpen);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"draw(picture,triangle[],pen,marker)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void draw(picture pic = currentpicture, triangle[] ts, pen p = currentpen, marker marker = nomarker)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw sides of the triangles 't' on picture 'pic' using pen 'p'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  for(triangle t: ts) draw(pic, t, p, marker);","}","","void fill(picture pic = currentpicture, triangle[] ts, pen p = currentpen)","{","  for(triangle t: ts) fill(pic, t, p);","}","","void filldraw(picture pic = currentpicture, triangle[] ts, pen fillpen = currentpen, pen drawpen = currentpen)","{","  for(triangle t: ts) filldraw(pic, t, fillpen, drawpen);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"drawline(picture,triangle,pen)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void drawline(picture pic = currentpicture, triangle t, pen p = currentpen)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw lines of the triangle 't' on picture 'pic' using pen 'p'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  draw(t, p);","  draw(pic, line(t.A, t.B), p);","  draw(pic, line(t.A, t.C), p);","  draw(pic, line(t.B, t.C), p);","}","","/*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"dot(picture,triangle,pen)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","void dot(picture pic = currentpicture, triangle t, pen p = currentpen)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eDraw a dot at each vertex of 't'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  dot(pic, t.A^^t.B^^t.C, p);","}","// *.......................TRIANGLES.......................*","// *=======================================================*","","// *=======================================================*","// *.......................INVERSIONS......................*","/*\u003casyxml\u003e\u003cstruct signature=\"inversion\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","struct inversion","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003ehttps://mathworld.wolfram.com/Inversion.html\u003c/documentation\u003e\u003c/asyxml\u003e*/","  point C;","  real k;","  ","  /*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"init(point,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  void operator init(point C, real k)","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the inversion with respect to 'C' having circle power 'k'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","    this.C = C;","    this.k = k;","  }","  /*\u003casyxml\u003e\u003cfunction type=\"void\" signature=\"init(real,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","  void operator init(real k, point C)","  {/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the inversion with respect to 'C' having circle power 'k'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","    this.C = C;","    this.k = k;","  }","}/*\u003casyxml\u003e\u003c/struct\u003e\u003c/asyxml\u003e*/","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"inverse(inversion,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point inverse(inversion i, point P)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the inverse point of 'P' with respect to 'i'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  pair C = locate(i.C), P1 = locate(P);","  pair P2 = C + i.k / conj(P1 - C);","  return P2 / currentcoordsys;","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"radicalcenter(circle,circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point radicalcenter(circle c1, circle c2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003curl href=\"http://fr.wikipedia.org/wiki/Puissance_d'un_point_par_rapport_%C3%A0_un_cercle\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  real k = c1.r^2 - c2.r^2;","  pair C1 = locate(c1.C), C2 = locate(c2.C);","  pair D = C2 - C1;","  pair K = C1 == C2 ?","    (infinity, infinity) :","    0.5 * (C1 + C2 + k * D / abs2(D));","  return K / currentcoordsys;","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"radicalline(circle,circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line radicalline(circle c1, circle c2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003curl href=\"http://fr.wikipedia.org/wiki/Puissance_d'un_point_par_rapport_%C3%A0_un_cercle\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if (c1.C == c2.C) abort(\"radicalline: the centers must be distinct\");","  return perpendicular(radicalcenter(c1, c2), line(c1.C, c2.C));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"radicalcenter(circle,circle,circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point radicalcenter(circle c1, circle c2, circle c3)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003curl href=\"http://fr.wikipedia.org/wiki/Puissance_d'un_point_par_rapport_%C3%A0_un_cercle\"/\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return intersectionpoint(radicalline(c1, c2), radicalline(c1, c3));","}","","/*\u003casyxml\u003e\u003cfunction type=\"inversion\" signature=\"inversion(circle,circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","inversion inversion(circle c1, circle c2, real sgn = 1)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the inversion which transforms 'c1' to","   • 'c2' and positive inversion radius if 'sgn \u003e 0';","   • 'c2' and negative inversion radius if 'sgn \u003c 0';","   • 'c1' and 'c2' to 'c2' if 'sgn = 0'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(sgn == 0) {","    point O = radicalcenter(c1, c2);","    return inversion(O, O^c1);","  }","  pair C1 = locate(c1.C), C2 = locate(c2.C);","  real r1 = c1.r, r2 = sgn(sgn) * c2.r;","  pair O = (r2 * C1 + r1 * C2) / (r1 + r2);","  real k =  r1 * r2 * (1 - abs2(C2 - C1) / (r1 + r2)^2);","  return inversion(O / currentcoordsys, k);","}","","/*\u003casyxml\u003e\u003cfunction type=\"inversion\" signature=\"inversion(circle,circle,circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","inversion inversion(circle c1, circle c2, circle c3)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the inversion which transform 'c1' to 'c1', 'c2' to 'c2' and 'c3' to 'c3'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point Rc = radicalcenter(c1, c2, c3);","  return inversion(Rc, Rc^c1);","}","","circle operator cast(inversion i)","{","  return circle(i.C, sgn(i.k) * sqrt(abs(i.k)));","}","/*\u003casyxml\u003e\u003cfunction type=\"circle\" signature=\"circle(inversion)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle circle(inversion i)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the inversion circle of 'i'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return i;","}","","inversion operator cast(circle c)","{","  return inversion(c.C, sgn(c.r) * c.r^2);","}","/*\u003casyxml\u003e\u003cfunction type=\"inversion\" signature=\"inversion(circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","inversion inversion(circle c)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the inversion represented by the circle of 'c'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return c;","}","","/*\u003casyxml\u003e\u003coperator type=\"point\" signature=\"*(inversion,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point operator *(inversion i, point P)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide inversion * point.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return inverse(i, P);","}","","void lineinversion()","{","  warning(\"lineinversion\", \"the inversion of the line is not a circle.","The returned circle has an infinite radius, circle.l has been set.\");","}","","/*\u003casyxml\u003e\u003cfunction type=\"circle\" signature=\"inverse(inversion,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle inverse(inversion i, line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the inverse circle of 'l' with respect to 'i'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(i.C @ l) {","    lineinversion();","    circle c = circle(i.C, infinity);","    c.l = l;","    return c;","  }","  point A = inverse(i, l.A), B = inverse(i, l.B);","  return circle(i.C, A, B);","}","","/*\u003casyxml\u003e\u003coperator type=\"circle\" signature=\"*(inversion,line)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle operator *(inversion i, line l)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide inversion * line for lines that don't pass through the inversion center.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return inverse(i, l);","}","","/*\u003casyxml\u003e\u003cfunction type=\"circle\" signature=\"inverse(inversion,circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle inverse(inversion i, circle c)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the inverse circle of 'c' with respect to 'i'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(degenerate(c)) return inverse(i, c.l);","  if(i.C @ c) {","    lineinversion();","    point M1 = rotate(90, c.C) * i.C, M2 = rotate(-90, c.C) * i.C;","    circle c1 = circle(i.C, infinity);","    c1.l = line(inverse(i, M1), inverse(i, M2));","    return c1;","  }","  pair C1 = locate(i.C), C2 = locate(c.C);","  pair D = C2 - C1;","  real s = i.k / (abs2(D) - c.r^2);","  pair C3 = C1 + s * D;","  return circle((point)(C3 / currentcoordsys), abs(s) * c.r);","}","","/*\u003casyxml\u003e\u003coperator type=\"circle\" signature=\"*(inversion,circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","circle operator *(inversion i, circle c)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide inversion * circle.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return inverse(i, c);","}","// *.......................INVERSIONS......................*","// *=======================================================*","","// *=======================================================*","// *........................FOOTER.........................*","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(line,circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(line l, circle c)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eNote that the line 'l' may be a segment by casting.","   intersectionpoints(circle, line) is also defined.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(degenerate(c)) return new point[]{intersectionpoint(l, c.l)};","  point[] op;","  coordsys R = samecoordsys(l.A, c.C) ?","    l.A.coordsys : defaultcoordsys;","  coordsys Rp = defaultcoordsys;","  circle cc = circle(changecoordsys(Rp, c.C), c.r);","  point proj = projection(l) * c.C;","  if(proj @ cc) { // The line is a tangente of the circle.","    if(proj @ l) op.push(proj);// line may be a segement...","  } else {","    coordsys Rc = cartesiansystem(c.C, (1, 0), (0, 1));","    line ll = changecoordsys(Rc, l);","    pair[] P = intersectionpoints(ll.A.coordinates, ll.B.coordinates,","                                  1, 0, 1, 0, 0, -c.r^2);","    for (int i = 0; i \u003c P.length; ++i) {","      point inter = changecoordsys(R, point(Rc, P[i]));","      if(inter @ l) op.push(inter);","    }","  }","  return op;","}","","point[] intersectionpoints(circle c, line l)","{","  return intersectionpoints(l, c);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(line,ellipse)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(line l, ellipse el)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eNote that the line 'l' may be a segment by casting.","   intersectionpoints(ellipse, line) is also defined.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(el.e == 0) return intersectionpoints(l, (circle)el);","  if(degenerate(el)) return new point[]{intersectionpoint(l, el.l)};","  point[] op;","  coordsys R = samecoordsys(l.A, el.C) ? l.A.coordsys : defaultcoordsys;","  coordsys Rp = defaultcoordsys;","  line ll = changecoordsys(Rp, l);","  ellipse ell = (ellipse) changecoordsys(Rp, el);","  circle C = circle(ell.C, ell.a);","  point[] Ip = intersectionpoints(ll, C);","  if (Ip.length \u003e 0 \u0026\u0026","      (perpendicular(ll, line(ell.F1, Ip[0])) ||","       perpendicular(ll, line(ell.F2, Ip[0])))) {","    // http://www.mathcurve.com/courbes2d/ellipse/ellipse.shtml","    // Definition of the tangent at the antipodal point on the circle.","    // 'l' is a tangent of 'el'","    transform t = scale(el.a/el.b, el.F1, el.F2, el.C, rotate(90, el.C) * el.F1);","    point inter = inverse(t) * intersectionpoints(C, t * ll)[0];","    if(inter @ l) op.push(inter);","  } else {","    coordsys Rc = canonicalcartesiansystem(el);","    line ll = changecoordsys(Rc, l);","    pair[] P = intersectionpoints(ll.A.coordinates, ll.B.coordinates,","                                  1/el.a^2, 0, 1/el.b^2, 0, 0, -1);","    for (int i = 0; i \u003c P.length; ++i) {","      point inter = changecoordsys(R, point(Rc, P[i]));","      if(inter @ l) op.push(inter);","    }","  }","  return op;","}","","point[] intersectionpoints(ellipse el, line l)","{","  return intersectionpoints(l, el);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(line,parabola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(line l, parabola p)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eNote that the line 'l' may be a segment by casting.","   intersectionpoints(parabola, line) is also defined.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point[] op;","  coordsys R = coordsys(p);","  bool tgt = false;","  line ll = changecoordsys(R, l),","    lv = parallel(p.V, p.D);","  point M = intersectionpoint(lv, ll), tgtp;","  if(finite(M)) {// Test if 'l' is tangent to 'p'","    line l1 = bisector(line(M, p.F));","    line l2 = rotate(90, M) * lv;","    point P = intersectionpoint(l1, l2);","    tgtp = rotate(180, P) * p.F;","    tgt = (tgtp @ l);","  }","  if(tgt) {","    if(tgtp @ l) op.push(tgtp);","  } else {","    real[] eq = changecoordsys(defaultcoordsys, equation(p)).a;","    pair[] tp = intersectionpoints(locate(l.A), locate(l.B), eq);","    point inter;","    for (int i = 0; i \u003c tp.length; ++i) {","      inter = point(R, tp[i]/R);","      if(inter @ l) op.push(inter);","    }","  }","  return op;","}","","point[] intersectionpoints(parabola p, line l)","{","  return intersectionpoints(l, p);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(line,hyperbola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(line l, hyperbola h)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eNote that the line 'l' may be a segment by casting.","   intersectionpoints(hyperbola, line) is also defined.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point[] op;","  coordsys R = coordsys(h);","  point A = intersectionpoint(l, h.A1), B = intersectionpoint(l, h.A2);","  point M = 0.5*(A + B);","  bool tgt = Finite(M) ? M @ h : false;","  if(tgt) {","    if(M @ l) op.push(M);","  } else {","    real[] eq = changecoordsys(defaultcoordsys, equation(h)).a;","    pair[] tp = intersectionpoints(locate(l.A), locate(l.B), eq);","    point inter;","    for (int i = 0; i \u003c tp.length; ++i) {","      inter = point(R, tp[i]/R);","      if(inter @ l) op.push(inter);","    }","  }","  return op;","}","","point[] intersectionpoints(hyperbola h, line l)","{","  return intersectionpoints(l, h);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(line,conic)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(line l, conic co)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eNote that the line 'l' may be a segment by casting.","   intersectionpoints(conic, line) is also defined.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point[] op;","  if(co.e \u003c 1) op = intersectionpoints((ellipse)co, l);","  else","    if(co.e == 1) op = intersectionpoints((parabola)co, l);","    else op = intersectionpoints((hyperbola)co, l);","  return op;","}","","point[] intersectionpoints(conic co, line l)","{","  return intersectionpoints(l, co);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(bqe,bqe)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(bqe bqe1, bqe bqe2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the intersection of the two conic sections whose equations are 'bqe1' and 'bqe2'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  coordsys R=canonicalcartesiansystem(conic(bqe1));","  real[] a=changecoordsys(R,bqe1).a;","  real[] b=changecoordsys(R,bqe2).a;","","  static real e=100 * sqrt(realEpsilon);","  real[] x,y,c;","  point[] P;","  if(abs(a[0]-b[0]) \u003e e || abs(a[1]-b[1]) \u003e e || abs(a[2]-b[2]) \u003e e) {","    c=new real[] {a[0]*a[2]*(-2*b[0]*b[2]+b[1]^2)+a[0]^2*b[2]^2+a[2]^2*b[0]^2,","","                  2*a[0]*a[2]*b[1]*b[4]-2*a[2]*a[3]*b[0]*b[2]","                  -2*a[0]*a[2]*b[2]*b[3]+a[2]*a[3]*b[1]^2+2*a[2]^2*b[0]*b[3],","","                  a[2]*a[5]*b[1]^2-2*a[2]*a[3]*b[2]*b[3]+2*a[2]^2*b[0]*b[5]","                  +2*a[0]*a[5]*b[2]^2+a[3]^2*b[2]^2-2*a[2]*a[5]*b[0]*b[2]","                  -2*a[0]*a[2]*b[2]*b[5]+a[2]^2*b[3]^2+2*a[2]*a[3]*b[1]*b[4]","                  +a[0]*a[2]*b[4]^2,","","                  a[2]*a[3]*b[4]^2+2*a[2]^2*b[3]*b[5]-2*a[2]*a[3]*b[2]*b[5]","                  -2*a[2]*a[5]*b[2]*b[3]+2*a[2]*a[5]*b[1]*b[4],","","                  -2*a[2]*a[5]*b[2]*b[5]+a[5]^2*b[2]^2+a[2]*a[5]*b[4]^2","                  +a[2]^2*b[5]^2};","    x=realquarticroots(c[0],c[1],c[2],c[3],c[4]);","  } else {","    if(abs(b[4]) \u003e e) {","      real D=b[4]^2;","      c=new real[] {(a[0]*b[4]^2+a[2]*b[3]^2+","                     (-2*a[2]*a[3])*b[3]+a[2]*a[3]^2)/D,","                    -((-2*a[2]*b[3]+2*a[2]*a[3])*b[5]-a[3]*b[4]^2+","                      (2*a[2]*a[5])*b[3])/D,a[2]*(a[5]-b[5])^2/D+a[5]};","      x=quadraticroots(c[0],c[1],c[2]);","    } else {","      if(abs(a[3]-b[3]) \u003e e) {","        real D=b[3]-a[3];","        c=new real[] {a[2],0,a[0]*(a[5]-b[5])^2/D^2-a[3]*b[5]/D+a[5]};","        y=quadraticroots(c[0],c[1],c[2]);","        for(int i=0; i \u003c y.length; ++i) {","          c=new real[] {a[0],a[3],a[2]*y[i]^2+a[5]};","          x=quadraticroots(c[0],c[1],c[2]);","          for(int j=0; j \u003c x.length; ++j) {","            if(abs(b[0]*x[j]^2+b[1]*x[j]*y[i]+b[2]*y[i]^2+b[3]*x[j]","                   +b[4]*y[i]+b[5]) \u003c 1e-5)","              P.push(changecoordsys(currentcoordsys,point(R,(x[j],y[i]))));","          }","        }","        return P;","      } else {","        if(abs(a[5]-b[5]) \u003c e)","          abort(\"intersectionpoints: intersection of identical conics.\");","      }","    }","  }","  for(int i=0; i \u003c x.length; ++i) {","    c=new real[] {a[2],0,a[0]*x[i]^2+a[3]*x[i]+a[5]};","    y=quadraticroots(c[0],c[1],c[2]);","    for(int j=0; j \u003c y.length; ++j) {","      if(abs(b[0]*x[i]^2+b[1]*x[i]*y[j]+b[2]*y[j]^2+b[3]*x[i]+b[4]*y[j]+b[5])","         \u003c 1e-5)","        P.push(changecoordsys(currentcoordsys,point(R,(x[i],y[j]))));","    }","  }","  return P;","}","","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(conic,conic)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(conic co1, conic co2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the intersection points of the two conics.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(degenerate(co1)) return intersectionpoints(co1.l[0], co2);","  if(degenerate(co2)) return intersectionpoints(co1, co2.l[0]);","  return intersectionpoints(equation(co1), equation(co2));","}","","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(triangle,conic,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(triangle t, conic co, bool extended = false)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the intersection points.","   If 'extended' is true, the sides are lines else the sides are segments.","   intersectionpoints(conic, triangle, bool) is also defined.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(degenerate(co)) return intersectionpoints(t, co.l[0], extended);","  point[] OP;","  void addpoint(point P[])","  {","    for (int i = 0; i \u003c P.length; ++i) {","      if(defined(P[i])) {","        bool exist = false;","        for (int j = 0; j \u003c OP.length; ++j) {","          if(P[i] == OP[j]) {exist = true; break;}","        }","        if(!exist) OP.push(P[i]);","      }}}","  if(extended) {","    for (int i = 1; i \u003c= 3; ++i) {","      addpoint(intersectionpoints(t.line(i), co));","    }","  } else {","    for (int i = 1; i \u003c= 3; ++i) {","      addpoint(intersectionpoints((segment)t.line(i), co));","    }","  }","  return OP;","}","","point[] intersectionpoints(conic co, triangle t, bool extended = false)","{","  return intersectionpoints(t, co, extended);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(ellipse,ellipse)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(ellipse a, ellipse b)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  // if(degenerate(a)) return intersectionpoints(a.l, b);","  // if(degenerate(b)) return intersectionpoints(a, b.l);;","  return intersectionpoints((conic)a, (conic)b);","}","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(ellipse,circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(ellipse a, circle b)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  // if(degenerate(a)) return intersectionpoints(a.l, b);","  // if(degenerate(b)) return intersectionpoints(a, b.l);;","  return intersectionpoints((conic)a, (conic)b);","}","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(circle,ellipse)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(circle a, ellipse b)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return intersectionpoints(b, a);","}","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(ellipse,parabola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(ellipse a, parabola b)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  // if(degenerate(a)) return intersectionpoints(a.l, b);","  return intersectionpoints((conic)a, (conic)b);","}","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(parabola,ellipse)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(parabola a, ellipse b)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return intersectionpoints(b, a);","}","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(ellipse,hyperbola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(ellipse a, hyperbola b)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  // if(degenerate(a)) return intersectionpoints(a.l, b);","  return intersectionpoints((conic)a, (conic)b);","}","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(hyperbola,ellipse)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(hyperbola a, ellipse b)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return intersectionpoints(b, a);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(circle,parabola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(circle a, parabola b)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return intersectionpoints((conic)a, (conic)b);","}","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(parabola,circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(parabola a, circle b)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return intersectionpoints((conic)a, (conic)b);","}","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(circle,hyperbola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(circle a, hyperbola b)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return intersectionpoints((conic)a, (conic)b);","}","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(hyperbola,circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(hyperbola a, circle b)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return intersectionpoints((conic)a, (conic)b);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(parabola,parabola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(parabola a, parabola b)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return intersectionpoints((conic)a, (conic)b);","}","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(parabola,hyperbola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(parabola a, hyperbola b)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return intersectionpoints((conic)a, (conic)b);","}","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(hyperbola,parabola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(hyperbola a, parabola b)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return intersectionpoints((conic)a, (conic)b);","}","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(hyperbola,hyperbola)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(hyperbola a, hyperbola b)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return intersectionpoints((conic)a, (conic)b);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(circle,circle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(circle c1, circle c2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(degenerate(c1))","    return degenerate(c2) ?","      new point[]{intersectionpoint(c1.l, c2.l)} : intersectionpoints(c1.l, c2);","  if(degenerate(c2)) return intersectionpoints(c1, c2.l);","  return (c1.C == c2.C) ?","    new point[] :","    intersectionpoints(radicalline(c1, c2), c1);","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"tangent(circle,abscissa)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line tangent(circle c, abscissa x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the tangent of 'c' at 'point(c, x)'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  if(c.r == 0) abort(\"tangent: a circle with a radius equals zero has no tangent.\");","  point M = point(c, x);","  return line(rotate(90, M) * c.C, M);","}","","/*\u003casyxml\u003e\u003cfunction type=\"line[]\" signature=\"tangents(circle,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line[] tangents(circle c, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the tangents of 'c' passing through 'M'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  line[] ol;","  if(inside(c, M)) return ol;","  if(M @ c) {","    ol.push(tangent(c, relabscissa(c, M)));","  } else {","    circle cc = circle(c.C, M);","    point[] inter = intersectionpoints(c, cc);","    for (int i = 0; i \u003c inter.length; ++i)","      ol.push(tangents(c, inter[i])[0]);","  }","  return ol;","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"point(circle,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(circle c, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the intersection point of 'c'","   with the half-line '[c.C M)'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return intersectionpoints(c, line(c.C, false, M))[0];","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"tangent(circle,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line tangent(circle c, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the tangent of 'c' at the","   intersection point of the half-line'[c.C M)'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return tangents(c, point(c, M))[0];","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"point(circle,explicit vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point point(circle c, explicit vector v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the intersection point of 'c'","   with the half-line '[c.C v)'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return point(c, c.C + v);","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"tangent(circle,explicit vector)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line tangent(circle c, explicit vector v)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the tangent of 'c' at the","   point M so that vec(c.C M) is collinear to 'v' with the same sense.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  line ol = tangent(c, c.C + v);","  return dot(ol.v, v) \u003e 0 ? ol : reverse(ol);","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"tangent(ellipse,abscissa)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line tangent(ellipse el, abscissa x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the tangent of 'el' at 'point(el, x)'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point M = point(el, x);","  line l1 = line(el.F1, M);","  line l2 = line(el.F2, M);","  line ol = (l1 == l2) ? perpendicular(M, l1) : bisector(l1, l2, 90, false);","  return ol;","}","","/*\u003casyxml\u003e\u003cfunction type=\"line[]\" signature=\"tangents(ellipse,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line[] tangents(ellipse el, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the tangents of 'el' passing through 'M'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  line[] ol;","  if(inside(el, M)) return ol;","  if(M @ el) {","    ol.push(tangent(el, relabscissa(el, M)));","  } else {","    point Mp = samecoordsys(M, el.F2) ?","      M : changecoordsys(el.F2.coordsys, M);","    circle c = circle(Mp, abs(el.F1 - Mp));","    circle cc = circle(el.F2, 2 * el.a);","    point[] inter = intersectionpoints(c, cc);","    for (int i = 0; i \u003c inter.length; ++i) {","      line tl = line(inter[i], el.F2, false);","      point[] P = intersectionpoints(tl, el);","      ol.push(line(Mp, P[0]));","    }","  }","  return ol;","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"tangent(parabola,abscissa)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line tangent(parabola p, abscissa x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the tangent of 'p' at 'point(p, x)' (use the Wells method).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  line lt = rotate(90, p.V) * line(p.V, p.F);","  point P = point(p, x);","  if(P == p.V) return lt;","  point M = midpoint(segment(P, p.F));","  line l = rotate(90, M) * line(P, p.F);","  return line(P, projection(lt) * M);","}","","/*\u003casyxml\u003e\u003cfunction type=\"line[]\" signature=\"tangents(parabola,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line[] tangents(parabola p, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the tangent of 'p' at 'M' (use the Wells method).\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  line[] ol;","  if(inside(p, M)) return ol;","  if(M @ p) {","    ol.push(tangent(p, angabscissa(p, M)));","  }","  else {","    point Mt = changecoordsys(coordsys(p), M);","    circle c = circle(Mt, p.F);","    line l = rotate(90, p.V) * line(p.V, p.F);","    point[] R = intersectionpoints(l, c);","    for (int i = 0; i \u003c R.length; ++i) {","      ol.push(line(Mt, R[i]));","    }","    // An other method: http://www.du.edu/~jcalvert/math/parabola.htm","    //   point[] R = intersectionpoints(p.directrix, c);","    //   for (int i = 0; i \u003c R.length; ++i) {","    //     ol.push(bisector(segment(p.F, R[i])));","    //   }","  }","  return ol;","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"tangent(hyperbola,abscissa)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line tangent(hyperbola h, abscissa x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the tangent of 'h' at 'point(p, x)'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point M = point(h, x);","  line ol = bisector(line(M, h.F1), line(M, h.F2));","  if(sameside(h.F1, h.F2, ol) || ol == line(h.F1, h.F2)) ol = rotate(90, M) * ol;","  return ol;","}","","/*\u003casyxml\u003e\u003cfunction type=\"line[]\" signature=\"tangents(hyperbola,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line[] tangents(hyperbola h, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the tangent of 'h' at 'M'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  line[] ol;","  if(M @ h) {","    ol.push(tangent(h, angabscissa(h, M, fromCenter)));","  } else {","    coordsys cano = canonicalcartesiansystem(h);","    bqe bqe = changecoordsys(cano, equation(h));","    real a = abs(1/(bqe.a[5] * bqe.a[0])), b = abs(1/(bqe.a[5] * bqe.a[2]));","    point Mp = changecoordsys(cano, M);","    real x0 = Mp.x, y0 = Mp.y;","    if(abs(x0) \u003e epsgeo) {","      real c0 = a * y0^2/(b * x0)^2 - 1/b,","        c1 = 2 * a * y0/(b * x0^2), c2 = a/x0^2 - 1;","      real[] sol = quadraticroots(c0, c1, c2);","      for (real y:sol) {","        point tmp = changecoordsys(coordsys(h), point(cano, (a * (1 + y * y0/b)/x0, y)));","        ol.push(line(M, tmp));","      }","    } else if(abs(y0) \u003e epsgeo) {","      real y = -b/y0, x = sqrt(a * (1 + b/y0^2));","      ol.push(line(M, changecoordsys(coordsys(h), point(cano, (x, y)))));","      ol.push(line(M, changecoordsys(coordsys(h), point(cano, (-x, y)))));","    }}","  return ol;","}","","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(conic,arc)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(conic co, arc a)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eintersectionpoints(arc, circle) is also defined.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point[] op;","  point[] tp = intersectionpoints(co, (conic)a.el);","  for (int i = 0; i \u003c tp.length; ++i)","    if(tp[i] @ a) op.push(tp[i]);","  return op;","}","","point[] intersectionpoints(arc a, conic co)","{","  return intersectionpoints(co, a);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(arc,arc)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(arc a1, arc a2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003e\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point[] op;","  point[] tp = intersectionpoints(a1.el, a2.el);","  for (int i = 0; i \u003c tp.length; ++i)","    if(tp[i] @ a1 \u0026\u0026 tp[i] @ a2) op.push(tp[i]);","  return op;","}","","","/*\u003casyxml\u003e\u003cfunction type=\"point[]\" signature=\"intersectionpoints(line,arc)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point[] intersectionpoints(line l, arc a)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eintersectionpoints(arc, line) is also defined.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point[] op;","  point[] tp = intersectionpoints(a.el, l);","  for (int i = 0; i \u003c tp.length; ++i)","    if(tp[i] @ a \u0026\u0026 tp[i] @ l) op.push(tp[i]);","  return op;","}","","point[] intersectionpoints(arc a, line l)","{","  return intersectionpoints(l, a);","}","","/*\u003casyxml\u003e\u003cfunction type=\"point\" signature=\"arcsubtendedcenter(point,point,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","point arcsubtendedcenter(point A, point B, real angle)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the center of the arc retuned","   by the 'arcsubtended' routine.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point OM;","  point[] P = standardizecoordsys(A, B);","  angle = angle%(sgnd(angle) * 180);","  line bis = bisector(P[0], P[1]);","  line AB = line(P[0], P[1]);","  return intersectionpoint(bis, rotate(90 - angle, A) * AB);","}","","/*\u003casyxml\u003e\u003cfunction type=\"arc\" signature=\"arcsubtended(point,point,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","arc arcsubtended(point A, point B, real angle)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the arc circle from which the segment AB is saw with","   the angle 'angle'.","   If the point 'M' is on this arc, the oriented angle (MA, MB) is","   equal to 'angle'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point[] P = standardizecoordsys(A, B);","  line AB = line(P[0], P[1]);","  angle = angle%(sgnd(angle) * 180);","  point C = arcsubtendedcenter(P[0], P[1], angle);","  real BC = degrees(B - C)%360;","  real AC = degrees(A - C)%360;","  return arc(circle(C, abs(B - C)), BC, AC, angle \u003e 0 ? CCW : CW);","}","","/*\u003casyxml\u003e\u003cfunction type=\"arc\" signature=\"arccircle(point,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","arc arccircle(point A, point M, point B)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the CCW arc circle 'AB' passing through 'M'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  circle tc = circle(A, M, B);","  real a = degrees(A - tc.C);","  real b = degrees(B - tc.C);","  real m = degrees(M - tc.C);","","  arc oa = arc(tc, a, b);","  // TODO: use cross product to determine CWW or CW","  if (!(M @ oa)) {","    oa.direction = !oa.direction;","  }","","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"arc\" signature=\"arc(ellipse,abscissa,abscissa,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","arc arc(ellipse el, explicit abscissa x1, explicit abscissa x2, bool direction = CCW)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the arc from 'point(c, x1)' to 'point(c, x2)' in the direction 'direction'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  real a = degrees(point(el, x1) - el.C);","  real b = degrees(point(el, x2) - el.C);","  arc oa = arc(el, a - el.angle, b - el.angle, fromCenter, direction);","  return oa;","}","","/*\u003casyxml\u003e\u003cfunction type=\"arc\" signature=\"arc(ellipse,point,point,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","arc arc(ellipse el, point M, point N, bool direction = CCW)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the arc from 'M' to 'N' in the direction 'direction'.","   The points 'M' and 'N' must belong to the ellipse 'el'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return arc(el, relabscissa(el, M), relabscissa(el, N), direction);","}","","/*\u003casyxml\u003e\u003cfunction type=\"arc\" signature=\"arccircle(point,point,real,bool)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","arc arccircle(point A, point B, real angle, bool direction = CCW)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the arc circle centered on A","   from B to rotate(angle, A) * B in the direction 'direction'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point M = rotate(angle, A) * B;","  return arc(circle(A, abs(A - B)), B, M, direction);","}","","/*\u003casyxml\u003e\u003cfunction type=\"arc\" signature=\"arc(explicit arc,abscissa,abscissa)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","arc arc(explicit arc a, abscissa x1, abscissa x2)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the arc from 'point(a, x1)' to 'point(a, x2)' traversed in the direction of the arc direction.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  real a1 = angabscissa(a.el, point(a, x1), a.polarconicroutine).x;","  real a2 = angabscissa(a.el, point(a, x2), a.polarconicroutine).x;","  return arc(a.el, a1, a2, a.polarconicroutine, a.direction);","}","","/*\u003casyxml\u003e\u003cfunction type=\"arc\" signature=\"arc(explicit arc,point,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","arc arc(explicit arc a, point M, point N)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the arc from 'M' to 'N'.","   The points 'M' and 'N' must belong to the arc 'a'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return arc(a, relabscissa(a, M), relabscissa(a, N));","}","","/*\u003casyxml\u003e\u003cfunction type=\"arc\" signature=\"inverse(inversion,segment)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","arc inverse(inversion i, segment s)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the inverse arc circle of 's'","   with respect to inversion 'i'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  point Ap = inverse(i, s.A), Bp = inverse(i, s.B),","    M = inverse(i, midpoint(s));","  return arccircle(Ap, M, Bp);","}","","/*\u003casyxml\u003e\u003coperator type=\"arc\" signature=\"*(inversion,segment)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","arc operator *(inversion i, segment s)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide","   inversion * segment.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return inverse(i, s);","}","","/*\u003casyxml\u003e\u003coperator type = \"path\" signature=\"*(inversion,triangle)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","path operator *(inversion i, triangle t)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eProvide inversion * triangle.\u003c/documentation\u003e\u003c/operator\u003e\u003c/asyxml\u003e*/","  return (path)(i * segment(t.AB))--","    (path)(i * segment(t.BC))--","    (path)(i * segment(t.CA))\u0026cycle;","}","","/*\u003casyxml\u003e\u003cfunction type=\"path\" signature=\"compassmark(pair,pair,real,real)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","path compassmark(pair O, pair A, real position, real angle = 10)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn an arc centered on O with the angle 'angle' so that the position","   of 'A' on this arc makes an angle 'position * angle'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  real a = degrees(A - O);","  real pa = (a - position * angle)%360,","    pb = (a - (position - 1) * angle)%360;","  real t1 = intersect(unitcircle, (0, 0)--2 * dir(pa))[0];","  real t2 = intersect(unitcircle, (0, 0)--2 * dir(pb))[0];","  int n = length(unitcircle);","  if(t1 \u003e= t2) t1 -= n;","  return shift(O) * scale(abs(O - A)) * subpath(unitcircle, t1, t2);","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"tangent(explicit arc,abscissa)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line tangent(explicit arc a, abscissa x)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the tangent of 'a' at 'point(a, x)'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  abscissa ag = angabscissa(a, point(a, x));","  return tangent(a.el, ag + a.angle1 + (a.el.e == 0 ? a.angle0 : 0));","}","","/*\u003casyxml\u003e\u003cfunction type=\"line\" signature=\"tangent(explicit arc,point)\"\u003e\u003ccode\u003e\u003c/asyxml\u003e*/","line tangent(explicit arc a, point M)","{/*\u003casyxml\u003e\u003c/code\u003e\u003cdocumentation\u003eReturn the tangent of 'a' at 'M'.","   The points 'M' must belong to the arc 'a'.\u003c/documentation\u003e\u003c/function\u003e\u003c/asyxml\u003e*/","  return tangent(a, angabscissa(a, M));","}","","// *=======================================================*","// *.......Routines for compatibility with original geometry module........*","","path square(pair z1, pair z2)","{","  pair v = z2 - z1;","  pair z3 = z2 + I * v;","  pair z4 = z3 - v;","  return z1--z2--z3--z4--cycle;","}","","// Draw a perpendicular symbol at z aligned in the direction align","// relative to the path z--z + dir.","void perpendicular(picture pic = currentpicture, pair z, pair align,","                   pair dir = E, real size = 0, pen p = currentpen,","                   margin margin = NoMargin, filltype filltype = NoFill)","{","  perpendicularmark(pic, (point) z, align, dir, size, p, margin, filltype);","}","","","// Draw a perpendicular symbol at z aligned in the direction align","// relative to the path z--z + dir(g, 0)","void perpendicular(picture pic = currentpicture, pair z, pair align, path g,","                   real size = 0, pen p = currentpen, margin margin = NoMargin,","                   filltype filltype = NoFill)","{","  perpendicularmark(pic, (point) z, align, dir(g, 0), size, p, margin, filltype);","}","","// Return an interior arc BAC of triangle ABC, given a radius r \u003e 0.","// If r \u003c 0, return the corresponding exterior arc of radius |r|.","path arc(explicit pair B, explicit pair A, explicit pair C, real r)","{","  real BA = degrees(B - A);","  real CA = degrees(C - A);","  return arc(A, abs(r), BA, CA, (r \u003c 0) ^ ((BA-CA) % 360 \u003c 180) ? CW : CCW);","}","","point orthocentercenter(point A, point B, point C)","{","    return orthocenter(A, B, C);","}","","point orthocentercenter(triangle t)","{","  return orthocenter(t.A, t.B, t.C);","}","","// *.......End of compatibility routines........*","// *=======================================================*","","// *........................FOOTER.........................*","// *=======================================================*"],"stylingDirectives":null,"colorizedLines":null,"csv":null,"csvError":null,"dependabotInfo":{"showConfigurationBanner":false,"configFilePath":null,"networkDependabotPath":"/vectorgraphics/asymptote/network/updates","dismissConfigurationNoticePath":"/settings/dismiss-notice/dependabot_configuration_notice","configurationNoticeDismissed":null},"displayName":"geometry.asy","displayUrl":"https://github.com/vectorgraphics/asymptote/blob/master/base/geometry.asy?raw=true","headerInfo":{"blobSize":"314 KB","deleteTooltip":"You must be signed in to make or propose changes","editTooltip":"You must be signed in to make or propose changes","ghDesktopPath":"https://desktop.github.com","isGitLfs":false,"onBranch":true,"shortPath":"bbc5758","siteNavLoginPath":"/login?return_to=https%3A%2F%2Fgithub.com%2Fvectorgraphics%2Fasymptote%2Fblob%2Fmaster%2Fbase%2Fgeometry.asy","isCSV":false,"isRichtext":false,"toc":null,"lineInfo":{"truncatedLoc":"7258","truncatedSloc":"6573"},"mode":"file"},"image":false,"isCodeownersFile":null,"isPlain":false,"isValidLegacyIssueTemplate":false,"issueTemplate":null,"discussionTemplate":null,"language":"Asymptote","languageID":591605007,"large":false,"planSupportInfo":{"repoIsFork":null,"repoOwnedByCurrentUser":null,"requestFullPath":"/vectorgraphics/asymptote/blob/master/base/geometry.asy","showFreeOrgGatedFeatureMessage":null,"showPlanSupportBanner":null,"upgradeDataAttributes":null,"upgradePath":null},"publishBannersInfo":{"dismissActionNoticePath":"/settings/dismiss-notice/publish_action_from_dockerfile","releasePath":"/vectorgraphics/asymptote/releases/new?marketplace=true","showPublishActionBanner":false},"rawBlobUrl":"https://github.com/vectorgraphics/asymptote/raw/refs/heads/master/base/geometry.asy","renderImageOrRaw":false,"richText":null,"renderedFileInfo":null,"shortPath":null,"symbolsEnabled":true,"tabSize":4,"topBannersInfo":{"overridingGlobalFundingFile":false,"globalPreferredFundingPath":null,"showInvalidCitationWarning":false,"citationHelpUrl":"https://docs.github.com/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/about-citation-files","actionsOnboardingTip":null},"truncated":false,"viewable":true,"workflowRedirectUrl":null,"symbols":null},"copilotInfo":null,"copilotAccessAllowed":false,"modelsAccessAllowed":false,"modelsRepoIntegrationEnabled":false,"isMarketplaceEnabled":true,"csrf_tokens":{"/vectorgraphics/asymptote/branches":{"post":"4l33harhsvTuJxzqBiqDTIcP1LkdSre1So1BSiG-MeP1h0WeQjn4cd6tbKBJRaOUsXuRqihbN9jRoxBLxl8B2A"},"/repos/preferences":{"post":"QxNO6QkQrRsGFaDcjgAtQOOVvCJ8TYg0InLwlutA2PhjlDSRXrK6TaqClH2daRPers5Hi-B-XDshvao8Wlk1FA"}}},"title":"asymptote/base/geometry.asy at master · vectorgraphics/asymptote","appPayload":{"helpUrl":"https://docs.github.com","findFileWorkerPath":"/assets-cdn/worker/find-file-worker-b8decd09f5c5.js","findInFileWorkerPath":"/assets-cdn/worker/find-in-file-worker-92c7243ce930.js","githubDevUrl":null,"enabled_features":{"code_nav_ui_events":false,"react_blob_overlay":false,"accessible_code_button":true}}}</script>
+  <div data-target="react-app.reactRoot"></div>
+</react-app>
+</turbo-frame>
+
+
+
+  </div>
+
+</turbo-frame>
+
+    </main>
+  </div>
+
+  </div>
+
+          <footer class="footer pt-8 pb-6 f6 color-fg-muted p-responsive" role="contentinfo" >
+  <h2 class='sr-only'>Footer</h2>
+
+  
+
+
+  <div class="d-flex flex-justify-center flex-items-center flex-column-reverse flex-lg-row flex-wrap flex-lg-nowrap">
+    <div class="d-flex flex-items-center flex-shrink-0 mx-2">
+      <a aria-label="GitHub Homepage" class="footer-octicon mr-2" href="https://github.com">
+        <svg aria-hidden="true" height="24" viewBox="0 0 24 24" version="1.1" width="24" data-view-component="true" class="octicon octicon-mark-github">
+    <path d="M12 1C5.923 1 1 5.923 1 12c0 4.867 3.149 8.979 7.521 10.436.55.096.756-.233.756-.522 0-.262-.013-1.128-.013-2.049-2.764.509-3.479-.674-3.699-1.292-.124-.317-.66-1.293-1.127-1.554-.385-.207-.936-.715-.014-.729.866-.014 1.485.797 1.691 1.128.99 1.663 2.571 1.196 3.204.907.096-.715.385-1.196.701-1.471-2.448-.275-5.005-1.224-5.005-5.432 0-1.196.426-2.186 1.128-2.956-.111-.275-.496-1.402.11-2.915 0 0 .921-.288 3.024 1.128a10.193 10.193 0 0 1 2.75-.371c.936 0 1.871.123 2.75.371 2.104-1.43 3.025-1.128 3.025-1.128.605 1.513.221 2.64.111 2.915.701.77 1.127 1.747 1.127 2.956 0 4.222-2.571 5.157-5.019 5.432.399.344.743 1.004.743 2.035 0 1.471-.014 2.654-.014 3.025 0 .289.206.632.756.522C19.851 20.979 23 16.854 23 12c0-6.077-4.922-11-11-11Z"></path>
+</svg>
+</a>
+      <span>
+        &copy; 2025 GitHub,&nbsp;Inc.
+      </span>
+    </div>
+
+    <nav aria-label="Footer">
+      <h3 class="sr-only" id="sr-footer-heading">Footer navigation</h3>
+
+      <ul class="list-style-none d-flex flex-justify-center flex-wrap mb-2 mb-lg-0" aria-labelledby="sr-footer-heading">
+
+          <li class="mx-2">
+            <a data-analytics-event="{&quot;category&quot;:&quot;Footer&quot;,&quot;action&quot;:&quot;go to Terms&quot;,&quot;label&quot;:&quot;text:terms&quot;}" href="https://docs.github.com/site-policy/github-terms/github-terms-of-service" data-view-component="true" class="Link--secondary Link">Terms</a>
+          </li>
+
+          <li class="mx-2">
+            <a data-analytics-event="{&quot;category&quot;:&quot;Footer&quot;,&quot;action&quot;:&quot;go to privacy&quot;,&quot;label&quot;:&quot;text:privacy&quot;}" href="https://docs.github.com/site-policy/privacy-policies/github-privacy-statement" data-view-component="true" class="Link--secondary Link">Privacy</a>
+          </li>
+
+          <li class="mx-2">
+            <a data-analytics-event="{&quot;category&quot;:&quot;Footer&quot;,&quot;action&quot;:&quot;go to security&quot;,&quot;label&quot;:&quot;text:security&quot;}" href="https://github.com/security" data-view-component="true" class="Link--secondary Link">Security</a>
+          </li>
+
+          <li class="mx-2">
+            <a data-analytics-event="{&quot;category&quot;:&quot;Footer&quot;,&quot;action&quot;:&quot;go to status&quot;,&quot;label&quot;:&quot;text:status&quot;}" href="https://www.githubstatus.com/" data-view-component="true" class="Link--secondary Link">Status</a>
+          </li>
+
+          <li class="mx-2">
+            <a data-analytics-event="{&quot;category&quot;:&quot;Footer&quot;,&quot;action&quot;:&quot;go to docs&quot;,&quot;label&quot;:&quot;text:docs&quot;}" href="https://docs.github.com/" data-view-component="true" class="Link--secondary Link">Docs</a>
+          </li>
+
+          <li class="mx-2">
+            <a data-analytics-event="{&quot;category&quot;:&quot;Footer&quot;,&quot;action&quot;:&quot;go to contact&quot;,&quot;label&quot;:&quot;text:contact&quot;}" href="https://support.github.com?tags=dotcom-footer" data-view-component="true" class="Link--secondary Link">Contact</a>
+          </li>
+
+          <li class="mx-2" >
+  <cookie-consent-link>
+    <button
+      type="button"
+      class="Link--secondary underline-on-hover border-0 p-0 color-bg-transparent"
+      data-action="click:cookie-consent-link#showConsentManagement"
+      data-analytics-event="{&quot;location&quot;:&quot;footer&quot;,&quot;action&quot;:&quot;cookies&quot;,&quot;context&quot;:&quot;subfooter&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;cookies_link_subfooter_footer&quot;}"
+    >
+       Manage cookies
+    </button>
+  </cookie-consent-link>
+</li>
+
+<li class="mx-2">
+  <cookie-consent-link>
+    <button
+      type="button"
+      class="Link--secondary underline-on-hover border-0 p-0 color-bg-transparent text-left"
+      data-action="click:cookie-consent-link#showConsentManagement"
+      data-analytics-event="{&quot;location&quot;:&quot;footer&quot;,&quot;action&quot;:&quot;dont_share_info&quot;,&quot;context&quot;:&quot;subfooter&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;label&quot;:&quot;dont_share_info_link_subfooter_footer&quot;}"
+    >
+      Do not share my personal information
+    </button>
+  </cookie-consent-link>
+</li>
+
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+
+    <ghcc-consent id="ghcc" class="position-fixed bottom-0 left-0" style="z-index: 999999"
+      data-locale="en"
+      data-initial-cookie-consent-allowed=""
+      data-cookie-consent-required="false"
+    ></ghcc-consent>
+
+
+
+  <div id="ajax-error-message" class="ajax-error-message flash flash-error" hidden>
+    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-alert">
+    <path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path>
+</svg>
+    <button type="button" class="flash-close js-ajax-error-dismiss" aria-label="Dismiss error">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-x">
+    <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
+</svg>
+    </button>
+    You can’t perform that action at this time.
+  </div>
+
+    <template id="site-details-dialog">
+  <details class="details-reset details-overlay details-overlay-dark lh-default color-fg-default hx_rsm" open>
+    <summary role="button" aria-label="Close dialog"></summary>
+    <details-dialog class="Box Box--overlay d-flex flex-column anim-fade-in fast hx_rsm-dialog hx_rsm-modal">
+      <button class="Box-btn-octicon m-0 btn-octicon position-absolute right-0 top-0" type="button" aria-label="Close dialog" data-close-dialog>
+        <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-x">
+    <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
+</svg>
+      </button>
+      <div class="octocat-spinner my-6 js-details-dialog-spinner"></div>
+    </details-dialog>
+  </details>
+</template>
+
+    <div class="Popover js-hovercard-content position-absolute" style="display: none; outline: none;">
+  <div class="Popover-message Popover-message--bottom-left Popover-message--large Box color-shadow-large" style="width:360px;">
+  </div>
+</div>
+
+    <template id="snippet-clipboard-copy-button">
+  <div class="zeroclipboard-container position-absolute right-0 top-0">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn js-clipboard-copy m-2 p-0" data-copy-feedback="Copied!" data-tooltip-direction="w">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon m-2">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none m-2">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div>
+</template>
+<template id="snippet-clipboard-copy-button-unpositioned">
+  <div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div>
+</template>
+
+
+
+
+    </div>
+    <div id="js-global-screen-reader-notice" class="sr-only mt-n1" aria-live="polite" aria-atomic="true" ></div>
+    <div id="js-global-screen-reader-notice-assertive" class="sr-only mt-n1" aria-live="assertive" aria-atomic="true"></div>
+  </body>
+</html>
+
