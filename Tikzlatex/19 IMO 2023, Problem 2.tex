@@ -1,6 +1,6 @@
 \begin{center}
     \begin{tikzpicture}[scale=1.2, dot/.style={circle, fill, inner sep=0.3pt, outer sep=0pt}]
-
+    % MAIN Problem Picture 
     % Definisikan titik-titik A, B, C
     \tkzDefPoint(0,0){B}
     \tkzDefPoint(2,0){C}
@@ -9,7 +9,6 @@
     \tkzDrawSegments(B,C C,A A,B)
     \tkzLabelPoints(A,B,C)
     
-    % lingkaran luar (circumcircle)
     \tkzDefTriangleCenter[circum](A,B,C)\tkzGetPoint{O}
     \tkzDrawCircle[thin](O,A)
     \tkzDrawPoint(O)
@@ -23,9 +22,24 @@
     \tkzLabelPoints(E)
     \tkzDrawSegment(A,E)
 
+    \tkzInterLL(Aperp,A)(B,S) \tkzGetPoint{D}
+    \tkzLabelPoints(D)
+
     \tkzDefLine[parallel=through D](B,C) \tkzGetPoint{Dpar}
-    
-    
+    \tkzInterLL(Dpar,D)(B,E) \tkzGetPoint{L}
+    \tkzLabelPoints(L)
+    \tkzDrawSegment(L,D)
+
+    \tkzDefTriangleCenter[circum](B,D,L)\tkzGetPoint{O2}
+    \tkzDrawCircle[thin, red](O2,B)
+
+    \tkzInterCC[common=B](O2,B)(O,A) \tkzGetFirstPoint{P}
+    \tkzDrawPoint[red](P)
+    \tkzLabelPoints(P)
+
+    % additional for solving
+    \tkzDefMidArc(O,B,C) \tkzGetPoint{M}
+    \tkzLabelPoints(M)
 
     \end{tikzpicture}
 \end{center}
