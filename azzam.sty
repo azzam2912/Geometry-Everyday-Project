@@ -60,6 +60,7 @@
 
 % Receive Arguments
 \DeclareOption{wota}{\azzamsecthmtrue\azzammdthmtrue\azzamcolorsectrue}
+\DeclareOption{hagavi}{\azzamsecthmtrue\azzammdthmtrue\azzamcolorsectrue}
 \DeclareOption{stargen}{\azzamstargentrue\azzamsecthmtrue\azzammdthmtrue\azzamcolorsectrue}
 \DeclareOption{nostargen}{\azzamstargenfalse}
 \DeclareOption{fancy}{\azzamfancytrue}
@@ -116,8 +117,14 @@
 \DeclareMathOperator*{\argmax}{arg max}
 \newenvironment{soln}{\begin{proof}[Solution]}{\end{proof}}
 \newenvironment{subproof}[1][Proof]{\begin{proof}[#1] \renewcommand{\qedsymbol}{$\blacksquare$}}{\end{proof}}
+\newenvironment{parlist}{\begin{inparaenum}[(i)]}{\end{inparaenum}}
+\newenvironment{gobble}{\setbox\z@\vbox\bgroup}{\egroup}
+\newenvironment{bukti}{\begin{proof}[Bukti]}{\end{proof}}
+\newenvironment{buktilemma}{\begin{proof}[Bukti Lemma]}{\end{proof}}
 \newcommand{\cycsum}{\sum_{\mathrm{cyc}}}
 \newcommand{\symsum}{\sum_{\mathrm{sym}}}
+\newcommand{\cycprod}{\prod_{\mathrm{cyc}}}
+\newcommand{\symprod}{\prod_{\mathrm{sym}}}
 \newcommand{\dangle}{\measuredangle}
 \newcommand{\arc}[1]{\wideparen{#1}}
 \newcommand{\CC}{\mathbb C}
@@ -233,7 +240,7 @@
 		\author{\small Azzam Labib Hakim \textbar Instagram: @haxuv\_world \textbar Threads: @azzam\_29\_12}
 	\fi
 	\ifazzamstargen
-		\author{\small Star Generation +62 817 769 318 \textbar Instagram: @stargeneration\_id \textbar\textbar Azzam L. H. (IG: @azzam\_29\_12)}
+		\author{\small Star Generation +62 817 769 318 \textbar Instagram: @stargeneration\_id\\ \small\textbar\textbar Azzam L. H. (IG: @azzam\_29\_12)}
 	\fi
 	
 	%%fakesection Hyperref Customization
