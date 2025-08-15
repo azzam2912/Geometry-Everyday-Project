@@ -1,0 +1,52 @@
+\begin{center}
+
+\begin{tikzpicture}[scale=1.5]
+    % 1. Define the main triangle ABC with an obtuse angle at B
+    \tkzDefPoint(-0.65, 2.5){A}
+    \tkzDefPoint(0,0){B}
+    \tkzDefPoint(4,0){C}
+
+    % 2. Construct the incircle of triangle ABC
+    \tkzInCenter(A,B,C)\tkzGetPoint{I}
+    \tkzDefPointBy[projection=onto B--C](I)\tkzGetPoint{D} % Tangency point on BC
+    \tkzDefPointBy[projection=onto C--A](I)\tkzGetPoint{E} % Tangency point on CA
+    \tkzDrawCircle[cyan](I,D)
+
+    % 3. Find point P as the intersection of lines ED and AB
+    \tkzInterLL(E,D)(A,B)\tkzGetPoint{P}
+
+    % 4. Construct the incircle of triangle AEP
+    \tkzInCenter(A,E,P)\tkzGetPoint{I1}
+    \tkzDefPointBy[projection=onto P--E](I1)\tkzGetPoint{D1} % Tangency point on PE
+    \tkzDefPointBy[projection=onto A--P](I1)\tkzGetPoint{E1} % Tangency point on AP
+    \tkzDrawCircle[orange](I1,D1)
+
+    % 5. Find point P1 as the intersection of lines E1D1 and AE
+    \tkzInterLL(E1,D1)(A,E)\tkzGetPoint{P1}
+    
+    % 6. Draw the circle passing through P, C, E, B
+    \tkzCircumCenter(P,C,E)\tkzGetPoint{O_circ}
+    \tkzDrawCircle[gray](O_circ,P)
+
+    % 7. Draw the main geometric figures
+    \tkzDrawPolygon[thick](A,B,C)
+    \tkzDrawSegment[thin](E,P)
+    \tkzDrawSegment[thin](E1,P1)
+    \tkzDrawSegment[thick](B,P)
+    \tkzDrawSegments[red, thick](C,P E,E1)
+    
+    % 8. Draw the final lines to be proven parallel
+    \tkzDrawSegment[blue, thick](B,E)
+    \tkzDrawSegment[blue, thick](P,P1)
+
+    % 9. Draw and label all points
+    \tkzDrawPoints[fill=black, size=3](A,B,C,D,E,P,D1,E1,P1)
+    \tkzLabelPoints[below left](A,B,P,E1)
+    \tkzLabelPoints[below right](C)
+    \tkzLabelPoints[below right](D, D1)
+    \tkzLabelPoints[right](E, P1)
+    %\tkzLabelPoints[above right](I, I1)
+
+\end{tikzpicture}
+
+\end{center}

@@ -1,0 +1,20 @@
+\textbf{\textit{Soal.}} \input{Problems/36 Singapore MO Open 2025, Problem 1}
+
+\begin{proof}[\textbf{Solusi. }] (Wednesday, 15 August 2025)
+    \input{Tikzlatex/36 Singapore MO Open 2025, Problem 1.tex}
+    Dari properti garis singgung lingkaran, jelas bahwa $CD=CE$, dan $PE_1=PD_1$ sehingga $\dangle CDE = \dangle DEC$ dan $\dangle PE_1D_1 = \dangle E_1D_1P$. 
+    Oleh karena itu, dari fakta $EBPC$ siklis, didapat
+    \begin{align*}
+        \dangle BDP = \dangle CDE = \dangle PEC = \dangle PBC = \dangle PBD \implies BP = PD.
+    \end{align*}
+    Karena $\dangle DPB = \dangle D_1PE_1$ maka $\triangle DPB \sim \triangle D_1PE_1$ sehingga $BD \parallel E_1D_1$. Dari fakta ini, diperoleh
+    \begin{align*}
+        \dangle PE_1P_1 = \dangle PBC = \dangle PEC = \dangle PEP_1 \implies PE_1EP_1 \text{ siklis}.
+    \end{align*}
+    Sekarang perhatikan karena $\dangle APE = \dangle BCA$ dan $\dangle PAE = \dangle BAC$ 
+    maka $\triangle PAE \sim \triangle BAC$ maka rasio segmen-segmen yang bersinggungannya juga memiliki rasio yang sama dengan rasio sisi-sisi bersesuaian dari dua segitiga tersebut.
+    Oleh karena itu, $AE:AE_1 = AC:AP$ sehingga $EE_1 \parallel CP$. Dari fakta ini, diperoleh
+    \begin{align*}
+        \dangle EBE_1 = \dangle EBP = \dangle ECP = \dangle AEE_1 = \dangle P_1EE_1 = \dangle P_1PE_1 \implies BE \parallel PP_1
+    \end{align*}
+\end{proof}
