@@ -28,6 +28,10 @@
     \tkzCircumCenter(P,C,E)\tkzGetPoint{O_circ}
     \tkzDrawCircle[gray](O_circ,P)
 
+    % Draw the circle passing through E, E1, P
+    \tkzCircumCenter(P,E1,E)\tkzGetPoint{O_circ_1}
+    \tkzDrawCircle[gray, dashed](O_circ_1,E)
+
     % 7. Draw the main geometric figures
     \tkzDrawPolygon[thick](A,B,C)
     \tkzDrawSegment[thin](E,P)
