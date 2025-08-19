@@ -1,5 +1,5 @@
 \begin{center}
-    \begin{tikzpicture}[scale=1.2, dot/.style={circle, fill, inner sep=0.3pt, outer sep=0pt}]
+    \begin{tikzpicture}[scale=1.5, dot/.style={circle, fill, inner sep=0.3pt, outer sep=0pt}]
     % MAIN Problem Picture 
     % Definisikan titik-titik A, B, C
     \tkzDefPoint(0,0){B}
@@ -7,15 +7,14 @@
     \tkzDefPoint(0.5,1.7){A}
 
     \tkzDrawSegments(B,C C,A A,B)
-    \tkzLabelPoints(A,B,C)
+    \tkzLabelPoints[above](A)
+    \tkzLabelPoints(B,C)
     
     \tkzDefTriangleCenter[circum](A,B,C)\tkzGetPoint{O}
     \tkzDrawCircle[thin](O,A)
-    \tkzDrawPoint(O)
-    \tkzLabelPoints(O)
-    
+ 
     \tkzDefMidArc(O,C,B) \tkzGetPoint{S}
-    \tkzLabelPoints(S)
+    \tkzLabelPoints[above](S)
 
     \tkzDefLine[perpendicular=through A](B,C) \tkzGetPoint{Aperp}
     \tkzInterLC(Aperp,A)(O,A) \tkzGetPoints{E0}{E}
@@ -24,10 +23,11 @@
 
     \tkzInterLL(Aperp,A)(B,S) \tkzGetPoint{D}
     \tkzLabelPoints(D)
+    \tkzDrawPoint(D)
 
     \tkzDefLine[parallel=through D](B,C) \tkzGetPoint{Dpar}
     \tkzInterLL(Dpar,D)(B,E) \tkzGetPoint{L}
-    \tkzLabelPoints(L)
+    \tkzLabelPoints[left](L)
     \tkzDrawSegment(L,D)
 
     \tkzDefTriangleCenter[circum](B,D,L)\tkzGetPoint{O2}
@@ -35,11 +35,29 @@
 
     \tkzInterCC[common=B](O2,B)(O,A) \tkzGetFirstPoint{P}
     \tkzDrawPoint[red](P)
-    \tkzLabelPoints(P)
+    \tkzLabelPoints[above](P)
+
+    \tkzDefMidArc(O,B,C) \tkzGetPoint{F}
+    \tkzLabelPoints(F)
+
+    \tkzDrawSegments(E,L B,S A,F)
 
     % additional for solving
-    \tkzDefMidArc(O,B,C) \tkzGetPoint{M}
-    \tkzLabelPoints(M)
+    \tkzInterLL(A,F)(B,S) \tkzGetPoint{Q}
+    \tkzLabelPoints[right](Q)
+    \tkzDrawPoints(Q)
+
+    \tkzDrawSegments[red](P,Q)
+
+    \tkzDefTriangleCenter[circum](P,Q,B)\tkzGetPoint{O3}
+    \tkzDrawCircle[dashed, blue](O3,B)
+
+    % intersection of (BPQ) with AF
+    \tkzInterLC(A,F)(O3,B) \tkzGetPoints{H}{H0}
+    \tkzLabelPoints[right](H)
+    \tkzDrawPoints(H)
+
+    \tkzDrawSegments[dotted, thick, blue](H,P)
 
     \end{tikzpicture}
 \end{center}
