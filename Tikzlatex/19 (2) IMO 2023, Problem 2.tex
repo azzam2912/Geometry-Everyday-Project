@@ -7,15 +7,14 @@
     \tkzDefPoint(0.5,1.7){A}
 
     \tkzDrawSegments(B,C C,A A,B)
-    \tkzLabelPoints[above left](A)
+    \tkzLabelPoints[above](A)
     \tkzLabelPoints(B,C)
     
     \tkzDefTriangleCenter[circum](A,B,C)\tkzGetPoint{O}
     \tkzDrawCircle[thin](O,A)
  
     \tkzDefMidArc(O,C,B) \tkzGetPoint{S}
-    \tkzDrawPoint(S)
-    \tkzLabelPoints[above right](S)
+    \tkzLabelPoints[above](S)
 
     \tkzDefLine[perpendicular=through A](B,C) \tkzGetPoint{Aperp}
     \tkzInterLC(Aperp,A)(O,A) \tkzGetPoints{E0}{E}
@@ -36,7 +35,7 @@
 
     \tkzInterCC[common=B](O2,B)(O,A) \tkzGetFirstPoint{P}
     \tkzDrawPoint[red](P)
-    \tkzLabelPoints[below](P)
+    \tkzLabelPoints[above](P)
 
     \tkzDefMidArc(O,B,C) \tkzGetPoint{F}
     \tkzLabelPoints(F)
@@ -45,8 +44,8 @@
 
     % additional for solving
     \tkzInterLL(A,F)(B,S) \tkzGetPoint{Q}
-    \tkzLabelPoints[below right](Q)
-    \tkzDrawPoints[green](Q)
+    \tkzLabelPoints[right](Q)
+    \tkzDrawPoints(Q)
 
     \tkzDrawSegments[red](P,Q)
 
@@ -58,24 +57,7 @@
     \tkzLabelPoints[right](H)
     \tkzDrawPoints(H)
 
-    % intersection of PD with (ABC)
-    \tkzInterLC(P,D)(O,A) \tkzGetPoints{I0}{I}
-    \tkzLabelPoints[right](I)
-    \tkzDrawPoints(I)
-
-    % intersection of AE and IS
-    \tkzInterLL(A,E)(I,S) \tkzGetPoint{X}
-    \tkzLabelPoints[right](X)
-    \tkzDrawPoints(X)
-
-    % intersection of AS and I
-    \tkzInterLL(A,S)(I,P) \tkzGetPoint{Y}
-    \tkzLabelPoints[above](Y)
-    \tkzDrawPoints(Y)
-
-    \tkzDrawSegments(A,X S,Y Y,P A,I)
-    \tkzDrawSegments[thick, blue](I,E I,P)
-    \tkzDrawSegments[thick, green](X,I A,H)
+    \tkzDrawSegments[dotted, thick, blue](H,P)
 
     \end{tikzpicture}
 \end{center}
