@@ -30,8 +30,9 @@
     \tkzLabelPoints[left](L)
     \tkzDrawSegment(L,D)
 
+    % circumcircle BDL
     \tkzDefTriangleCenter[circum](B,D,L)\tkzGetPoint{O2}
-    \tkzDrawCircle[thin, red](O2,B)
+    \tkzDrawCircle[red](O2,B)
 
     \tkzInterCC[common=B](O2,B)(O,A) \tkzGetFirstPoint{P}
     \tkzDrawPoint[red](P)
@@ -47,10 +48,12 @@
     \tkzLabelPoints[right](Q)
     \tkzDrawPoints(Q)
 
-    \tkzDrawSegments[red](P,Q)
+    % segment PQ
+    \tkzDrawSegments[thick, red](P,Q)
 
+    % cicumcircle P,Q,B
     \tkzDefTriangleCenter[circum](P,Q,B)\tkzGetPoint{O3}
-    \tkzDrawCircle[dashed, blue](O3,B)
+    \tkzDrawCircle[blue](O3,B)
 
     % intersection of (BPQ) with AF = intersection of PD with AH
     \tkzInterLL(A,F)(P,D) \tkzGetPoint{H}
@@ -58,6 +61,17 @@
     \tkzDrawPoints(H)
 
     \tkzDrawSegments[dotted, thick, blue](H,P)
+
+    % cicrcumcircle A,P,H
+    \tkzDefTriangleCenter[circum](P,A,H)\tkzGetPoint{O4}
+    \tkzDrawCircle[purple](O4,H)
+
+    % intersection of (BPD) with AE = intersection of (BDL) and (APH)
+    \tkzInterCC[common=P](O4,H)(O2,B) \tkzGetFirstPoint{G}
+    \tkzLabelPoints(G)
+    \tkzDrawPoints(G)
+
+    \tkzDrawSegments[red](P,F P,A P,B S,F Q,O A,S P,S)
 
     \end{tikzpicture}
 \end{center}
