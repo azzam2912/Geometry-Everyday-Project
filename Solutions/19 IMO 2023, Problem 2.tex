@@ -4,19 +4,19 @@
     Misalkan $I \neq P$ adalah perpotongan $PD$ dengan $\Omega$. Misalkan pula $F$ adalah perpotongan kedua dari garis bagi dalam $\angle BAC$ dengan $\Omega$. Definisikan $H$ sebagai perpotongan $PI$ dengan $AF$. Terakhir, definisikan $Q$ sebagai perpotongan $AF$ dengan $BS$. Akan dibuktikan bahwa garis $PQ$ meyinggung $\omega$ di $P$. 
 
     \input{Tikzlatex/19 IMO 2023, Problem 2.tex}
-    \begin{lemma}
+    \begin{lemmarev}
         $EI \parallel BC$ 
         \begin{proof}[\textbf{Bukti 1.}] Dengan Rheim Theorem, kita punya $\dangle IEL = \dangle IEB = \dangle IPB = \dangle DPB = \dangle DLB = \dangle DLE$ yang jelas membuktikan bahwa $EI \parallel LD \parallel BC$.
         \end{proof}
         \begin{proof}[\textbf{Bukti 2.}] Karena $BC \parallel LD$ maka $\dangle EBC = \dangle BLD = \dangle BPD = \dangle BPI$ sehingga panjang busur $BEI$ sama dengan panjang busur $EIC$ yang menyebabkan $BE=IC$. Dari sini jelas bahwa $BEIC$ adalah trapesium sama kaki sehingga $EI \parallel BC$.
         \end{proof}
-    \end{lemma}
+    \end{lemmarev}
 
     Karena $AE \perp BC$ maka $\dangle IEA = 90^\circ$ hal ini menunjukkan bahwa $IA$ adalah diameter $\Omega$. Jelas dari fakta tersebut bahwa $\dangle APH = \dangle API = 90^\circ$. Oleh karena itu $\triangle APH$ siku-siku di $P$. 
 
     Sekarang, observasi bahwa $F$ merupakan titik tengah busur $BC$ yang tidak mengandung $A$. Oleh karena itu, $FS$ merupakan garis sumbu $BC$ dan juga merupakan diameter $\Omega$ sehingga $BC \perp SF \implies SF \parallel AE$. Oleh karena itu, didapat $AS=EF=FI$ yang kembali menyebabkan $AF \parallel SI$. Lebih jauh lagi, hal ini menyebabkan pula $AS \perp AF$ dan $DI \perp IF$ yang berarti $ASIF$ adalah sebuah persegi panjang.
 
-    \begin{lemma}\label{lemmaimo2023}
+    \begin{lemmarev}\label{lemmaimo2023}
         $AQ=QH$
         \begin{proof}[\textbf{Bukti 1.}] Misalkan $IS$ berpotongan dengan $AE$ di $X$. Definisikan $M = \operatorname{mid}(BC)$ yang juga dilalui $SF$. Karena $EX \parallel MS$ maka $\dfrac{IX}{IS} = \dfrac{IE}{IM} = 2$. Selanjutnya, karena $AF \parallel SI \implies AH \parallel IX$ maka dari homothety yang berpusat di $D$ dan mengirim $AH$ ke $XI$ maka $\dfrac{AQ}{QH} = \dfrac{XS}{SI}= 1$ atau $AQ=QH$.
         \end{proof}
@@ -25,7 +25,7 @@
              (A,H,Q,P_\infty)\stackrel{S}{=} (Y,H;D,I) = -1  \implies AQ=QH
         \end{align*}
         \end{proof}
-    \end{lemma}
+    \end{lemmarev}
 
     Sadari bahwa $PQHB$ siklis karena $\angle PBQ = \angle PBS = \angle PIS = \angle PHQ$. Selanjutnya, karena $AQ=QH$ dan $\triangle APH$ siku-siku di $P$, maka $\dangle DPQ = \dangle HPQ = \dangle QHP = \dangle QBP = \dangle QBP$, sehingga dari \textit{alternate segment theorem} didapatkan bahwa $QP$ menyinggung $\omega$ di $Q$. Terbukti.
 \end{proof} 
@@ -34,7 +34,7 @@
     Misalkan $F$ adalah perpotongan kedua dari garis bagi dalam $\angle BAC$ dengan $\Omega$. Definisikan $Q$ sebagai perpotongan $AF$ dengan $BS$. Terakhir, Definisikan $H$ sebagai perpotongan kedua dari lingkaran $(PQB)$ dengan $AF$. Akan dibuktikan bahwa garis $PQ$ meyinggung $\omega$ di $P$. 
 
     \input{Tikzlatex/19 (2) IMO 2023, Problem 2.tex}
-    \begin{lemma}
+    \begin{lemmarev}
         $P,D,H$ segaris. 
         \begin{proof}[\textbf{Bukti.}] Perhatikan dari fakta $LD \parallel BC$, $PQHB$ siklis, dan $F$ titik tengah busur $BC$, serta $SF$ diameter (sehingga $SF \perp BC \implies SF \parallel AE$), kita punya
             \begin{align*}
@@ -56,8 +56,8 @@
             \end{align*}
             yang membuktikan bahwa $P,D,H$ segaris.
         \end{proof}
-    \end{lemma}
-    \begin{lemma}
+    \end{lemmarev}
+    \begin{lemmarev}
         $AH$ diameter lingkaran $(APH)$.
         \begin{proof}[\textbf{Bukti.}] Dari $PQHB$ siklis, kita punya
             \begin{align*}
@@ -69,6 +69,6 @@
             \end{align*}
             Padahal, karena $SF$ diameter $\Omega$ maka $\dangle SFP + \dangle PSF = 90^\circ \implies \dangle AHP + \dangle PAH = 90^\circ$ yang mengakibatkan $AH$ diameter lingkaran $AHP$. Terbukti.
         \end{proof}
-    \end{lemma}
+    \end{lemmarev}
     Selanjutnya dari Lemma~\ref{lemmaimo2023} didapat bahwa $Q$ pusat lingkaran $(APH)$. Oleh karena itu, $\dangle HPQ = \dangle QHP = \dangle QBP = \dangle QBP$, sehingga dari \textit{alternate segment theorem} terbukti bahwa $QP$ menyinggung $\omega$ di $Q$.
 \end{proof} 
