@@ -1,0 +1,107 @@
+\usetikzlibrary{decorations.markings, arrows.meta} % Untuk tanda segmen yang sama panjang
+
+% Definisi untuk tanda segmen yang sama panjang (seperti di sketsa)
+\tikzset{
+    seg mark/.style={
+        decoration={markings, mark=at position 0.5 with {\draw[#1] (-2pt,-2pt) -- (2pt,2pt) (2pt,-2pt) -- (-2pt,2pt);}},
+        postaction={decorate}
+    },
+    seg mark half/.style={
+        decoration={markings, mark=at position 0.5 with {\draw[#1] (0pt,-2pt) -- (0pt,2pt);}},
+        postaction={decorate}
+    },
+    seg mark double/.style={
+        decoration={markings, mark=at position 0.5 with {\draw[#1] (-2pt,-2pt) -- (-2pt,2pt) (2pt,-2pt) -- (2pt,2pt);}},
+        postaction={decorate}
+    },
+    seg mark triple/.style={
+        decoration={markings, mark=at position 0.5 with {\draw[#1] (-4pt,-2pt) -- (-2pt,2pt) (0pt,-2pt) -- (0pt,2pt) (2pt,-2pt) -- (4pt,2pt);}},
+        postaction={decorate}
+    },
+}
+
+\begin{center}
+\begin{tikzpicture}[scale=1.5]
+    % 1. Definisikan segitiga sama kaki ABC (AB=AC)
+    \tkzDefPoint(0,0){B}
+    \tkzDefPoint(4,0){C}
+    \tkzDefPoint(2,4){A} % Titik A di tengah-tengah atas BC
+    
+    % Gambar segitiga ABC
+    \tkzDrawPolygon(A,B,C)
+
+    % 2. D adalah titik tengah AC, E adalah titik tengah BC
+    \tkzDefMidPoint(A,C)\tkzGetPoint{D}
+    \tkzDefMidPoint(B,C)\tkzGetPoint{E}
+    
+    % 3. M adalah titik tengah DE
+    \tkzDefMidPoint(D,E)\tkzGetPoint{M}
+    
+    % 4. F adalah perpotongan AM dan BC
+    \tkzInterLL(A,M)(B,C)\tkzGetPoint{F}
+
+    % 5. G adalah perpotongan BA dan DF
+    \tkzInterLL(D,F)(B,A)\tkzGetPoint{G}
+
+    % 6. Constructing N as intersection AE dan CM and T as FM and AB
+    \tkzInterLL(C,M)(E,A)\tkzGetPoint{N}
+    \tkzInterLL(F,N)(B,A)\tkzGetPoint{T}
+    
+    % --- GAMBAR OBJEK UTAMA ---
+    
+    % Garis-garis yang menghubungkan titik-titik konstruksi
+    \tkzDrawSegments(A,D D,E A,M D,F M,F)
+    \tkzDrawSegment[red](F,G)
+    \tkzDrawSegment[teal](F,T)
+    \tkzDrawSegment[teal](A,E)
+    \tkzDrawSegment[teal](C,N)
+    
+    % Gambar lingkaran luar ADM (yang akan disentuh oleh DF)
+    \tkzDefCircumCenter(A,D,M)\tkzGetPoint{O_ADM}
+    \tkzDrawCircle[blue](O_ADM,A) % Gambar lingkaran luar ADM
+    
+    % --- ELEMEN-ELEMEN DARI SKETSA (jika perlu) ---
+    % Garis-garis tambahan dari sketsa tangan
+    % % N pada AB
+    % \tkzDefPointOnLine[pos=0.6](A,B){N}
+    % \tkzDrawSegments(C,N B,D)
+    
+    % % Titik G (di luar segitiga)
+    % \tkzDefPointWith[linear, K=1.5](C,A)\tkzGetPoint{G}
+    % \tkzDrawSegments(B,G C,G)
+    
+    % --- TANDA SEGMEN SAMA PANJANG ---
+    %\tkzDrawSegments[seg mark half=black](A,B A,C) % AB=AC
+    \tkzDrawSegments[seg mark=black](A,D D,C) % D midpoint AC
+    \tkzDrawSegments[seg mark half=black](B,E E,C) % E midpoint BC
+    \tkzDrawSegments[seg mark triple=black](D,M M,E) % M midpoint DE
+    \tkzDrawSegments[seg mark double=black](A,G B,A) % A midpoint GB
+
+    % Sudut
+    \pic [fill=blue!20, angle eccentricity=1.5] {angle = F--D--C};
+    \pic [fill=blue!20, angle eccentricity=1.5] {angle = B--A--F};
+    \pic [draw=red, ->, angle radius=20pt] {angle = A--F--T};
+    \pic [draw=red, ->, angle radius=20pt] {angle = F--A--D};
+    \pic [draw=red, ->, angle radius=20pt] {angle = A--G--F};
+    \pic [draw=red, ->, angle radius=20pt] {angle = M--D--F};
+
+    % --- LABEL TITIK ---
+    \tkzDrawPoints[size=4, fill=black](A,B,C,D,E,M,F,G,N,T)
+    \tkzLabelPoints[above](A)
+    \tkzLabelPoints[below left](B)
+    \tkzLabelPoints[below right](C)
+    \tkzLabelPoints[right](D)
+    \tkzLabelPoints[below](E,F)
+    \tkzLabelPoints[left](M,N,T)
+    \tkzLabelPoints[left](N)
+    \tkzLabelPoints[above right](G)
+
+    % --- ANGKA DARI SKETSA (jika perlu) ---
+    % \tkzLabelSegment[below](B,E){3} % Contoh angka
+    % \tkzLabelSegment[below](E,F){1}
+    % \tkzLabelSegment[below](F,C){2}
+    % \tkzLabelSegment[left](N,M){2}
+    % \tkzLabelSegment[right](D,M){2}
+
+\end{tikzpicture}
+\end{center}
