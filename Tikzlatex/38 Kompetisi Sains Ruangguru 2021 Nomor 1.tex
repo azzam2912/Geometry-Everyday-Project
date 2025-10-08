@@ -60,18 +60,7 @@
     \tkzDefCircumCenter(A,D,M)\tkzGetPoint{O_ADM}
     \tkzDrawCircle[blue](O_ADM,A) % Gambar lingkaran luar ADM
     
-    % --- ELEMEN-ELEMEN DARI SKETSA (jika perlu) ---
-    % Garis-garis tambahan dari sketsa tangan
-    % % N pada AB
-    % \tkzDefPointOnLine[pos=0.6](A,B){N}
-    % \tkzDrawSegments(C,N B,D)
-    
-    % % Titik G (di luar segitiga)
-    % \tkzDefPointWith[linear, K=1.5](C,A)\tkzGetPoint{G}
-    % \tkzDrawSegments(B,G C,G)
-    
     % --- TANDA SEGMEN SAMA PANJANG ---
-    %\tkzDrawSegments[seg mark half=black](A,B A,C) % AB=AC
     \tkzDrawSegments[seg mark=black](A,D D,C) % D midpoint AC
     \tkzDrawSegments[seg mark half=black](B,E E,C) % E midpoint BC
     \tkzDrawSegments[seg mark triple=black](D,M M,E) % M midpoint DE
@@ -93,15 +82,6 @@
     \tkzLabelPoints[right](D)
     \tkzLabelPoints[below](E,F)
     \tkzLabelPoints[left](M,N,T)
-    \tkzLabelPoints[left](N)
     \tkzLabelPoints[above right](G)
-
-    % --- ANGKA DARI SKETSA (jika perlu) ---
-    % \tkzLabelSegment[below](B,E){3} % Contoh angka
-    % \tkzLabelSegment[below](E,F){1}
-    % \tkzLabelSegment[below](F,C){2}
-    % \tkzLabelSegment[left](N,M){2}
-    % \tkzLabelSegment[right](D,M){2}
-
 \end{tikzpicture}
 \end{center}

@@ -30,27 +30,20 @@
     % Gambar segitiga ABC
     \tkzDrawPolygon(A,B,C)
 
-    % 2. D adalah titik tengah AC, E adalah titik tengah BC, K titik tengah AB
+    % 2. D adalah titik tengah AC, E adalah titik tengah BC
     \tkzDefMidPoint(A,C)\tkzGetPoint{D}
     \tkzDefMidPoint(B,C)\tkzGetPoint{E}
-    \tkzDefMidPoint(B,A)\tkzGetPoint{K}
-    \tkzDefMidPoint(K,D)\tkzGetPoint{J}
     
     % 3. M adalah titik tengah DE
     \tkzDefMidPoint(D,E)\tkzGetPoint{M}
     
     % 4. F adalah perpotongan AM dan BC
     \tkzInterLL(A,M)(B,C)\tkzGetPoint{F}
-
-    % 6. L as the intersection of AF and DK
-     \tkzInterLL(D,K)(F,A)\tkzGetPoint{L}
     
-    % --- solusi ---
-    \tkzDefPointBy[projection=onto B--C](D)\tkzGetPoint{D_1}
-    \tkzDefPointBy[projection=onto B--C](L)\tkzGetPoint{L_1}
+    % --- GAMBAR OBJEK UTAMA ---
     
     % Garis-garis yang menghubungkan titik-titik konstruksi
-    \tkzDrawSegments(A,D D,E A,M D,F M,F D,K)
+    \tkzDrawSegments(A,D D,E A,M D,F M,F)
     
     % Gambar lingkaran luar ADM (yang akan disentuh oleh DF)
     \tkzDefCircumCenter(A,D,M)\tkzGetPoint{O_ADM}
@@ -58,24 +51,22 @@
     
     % --- TANDA SEGMEN SAMA PANJANG ---
     \tkzDrawSegments[seg mark=black](A,D D,C) % D midpoint AC
-    \tkzDrawSegments[seg mark=black](A,K K,B) % D midpoint AC
     \tkzDrawSegments[seg mark half=black](B,E E,C) % E midpoint BC
     \tkzDrawSegments[seg mark triple=black](D,M M,E) % M midpoint DE
-    \tkzDrawSegments[seg mark double=black](D,D_1 L,L_1 A,J J,E)
+
+    % Sudut
+    \pic [fill=blue!20, angle eccentricity=1.5] {angle = F--D--C};
+    \pic [fill=blue!20, angle eccentricity=1.5] {angle = B--A--F};
+    \pic [draw=red, ->, angle radius=20pt] {angle = F--A--D};
+    \pic [draw=red, ->, angle radius=20pt] {angle = M--D--F};
 
     % --- LABEL TITIK ---
-    \tkzDrawPoints[size=4, fill=black](A,B,C,D,E,M,F,K,L,D_1,L_1)
+    \tkzDrawPoints[size=4, fill=black](A,B,C,D,E,M,F)
     \tkzLabelPoints[above](A)
     \tkzLabelPoints[below left](B)
     \tkzLabelPoints[below right](C)
     \tkzLabelPoints[right](D)
     \tkzLabelPoints[below](E,F)
-    \tkzLabelPoints[right](M)
-    \tkzLabelPoints[left](K)
-    \tkzLabelPoints[above right](L)
-    \tkzLabelPoint[below](L_1){$L_1$}
-    \tkzLabelPoint[below](D_1){$D_1$}
-        
-    
+    \tkzLabelPoints[left](M)
 \end{tikzpicture}
 \end{center}
