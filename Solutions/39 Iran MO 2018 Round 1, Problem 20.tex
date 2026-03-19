@@ -1,0 +1,63 @@
+\textbf{\textit{Soal.}} \input{Problems/39 Iran MO 2018 Round 1, Problem 20.tex}
+\begin{proof}[\textbf{Solusi. }] (Thursday, 19 March 2026) 
+    \input{Tikzlatex/39 Iran MO 2018 Round 1, Problem 20.tex}
+
+    WLOG $AD < DC$. Misalkan garis $PE$ memotong $AB$ dan lingkaran $(ABCD)$ untuk kedua kalinya berturut-turut di $L$ dan $I$. Misalkan pula garis $PF$ memotong $BC$ dan lingkaran $(ABCD)$ untuk kedua kalinya berturut-turut di $K$ dan $J$. Lalu, misalkan $AK$ memotong $PL$ di $G$, dan misalkan $LC$ memotong $PF$ di $M$.
+
+    Perhatikan bahwa
+    \begin{align*}
+        \angle APC = \angle ADC = 180\dg - \angle CBA = \angle BIP + \angle PJB - \angle JBI = \angle LPK
+    \end{align*}
+    yang berarti
+    \begin{align*}
+        \angle APL = \angle APC - \angle LPC = \angle LPK - \angle LPC = \angle CPK \implies \arc{CK} = \arc{AL} \implies CK = AL.
+    \end{align*}
+    Selanjutnya
+    \begin{align*}
+        \angle JEP = 180\dg - \angle EPJ - \angle PJE = 180\dg - \angle IPF - \angle FIP = \angle PFI
+    \end{align*}
+    sehingga
+    \begin{align*}
+        \angle BEA + \angle CFB &= (180\dg - \angle DCB - \angle ADC) + (180\dg - \angle ADC - \angle BAD)\\
+        &= 360^\circ - 2\angle ADC - (\angle DCB + \angle BAD)\\
+        &= 360\dg  - 2\angle LPK - 180\dg\\
+        \angle BEA + \angle CFB &= (180\dg - \angle LPK - 90\dg) + (180\dg - \angle LPK - 90\dg)
+    \end{align*}
+    \begin{align*}
+        (\angle JEP + \angle LEA) + (\angle PFI - \angle KFC)  &= \angle JEP + \angle PFI\\
+        \angle LEA - \angle KFC &= 0\\
+        \angle LEA &= \angle KFC
+    \end{align*}
+
+    Karena $AL = KC$ maka $LGKM$ adalah trapesium sama kaki yang jelas menunjukkan $AK \parallel CL$. Dari sini kita punya
+    $\angle AGE = \angle CLP = 180\dg - \angle PKC = \angle CKF$.
+
+    Karena $\angle GEA T= \angle KFC$ dan $\angle AGE = \angle CKF$ maka $\triangle AGE \sim \triangle CKF$.
+
+    Di sisi lain, $\angle ALE = 180\dg - \angle PLA = 180\dg - \angle PKA = \angle AKF = \angle CMF$. Berarti didapat $\triangle ALE \sim \triangle CMF$.
+
+    Dari dua hal tersebut, didapat $\angle GLA = \angle KMC$ dan $\angle AGL = \angle CKM$ sehingga didapat $\triangle AGL \sim \triangle CKM$.
+
+    Namun, ingat bahwa $AI \perp GL$ dan $CJ \perp KM$. Hal ini mengakibatkan
+    \begin{align*}
+        \dfrac{GI}{IL} = \dfrac{GI}{IA} \times \dfrac{IA}{IL} = \dfrac{KJ}{JC} \times \dfrac{JC}{JM} = \dfrac{KJ}{JM} \implies GK \parallel IJ \parallel LM
+    \end{align*}
+
+    Sekarang sadari karena $\angle PED = \angle PFD$ maka $DPFE$ siklis. Ini berarti
+    \begin{align*}
+        \angle KAD = 180\dg - \angle DPK = 180\dg - \angle DPF = \angle FED \implies AK \parallel EF
+    \end{align*}
+
+    Dari fakta-faktar tersebut, didapat $IJ \parallel EF$. Akan tetapi, kita punya
+    \begin{align*}
+        \angle JEI = \angle JEP = \angle PFI = \angle JFI 
+    \end{align*}
+    yang menunjukkan $IJFE$ siklis. Dua hal tersebut dapat disimpulkan bahwa $IJFE$ adalah trapesium sama kaki yang berarti $\angle FEI = \angle JME$. Oleh karena itu,
+    \begin{align*}
+        \angle CBP = \angle CLP = \angle  FEI = \angle JFE = \angle PKA = \angle PBA.
+    \end{align*}
+    Dari sini dapat disimpulkan bahwa
+    \begin{align*}
+        \angle PDF = \angle PDC = \angle PBC = \frac{1}{2}\angle ABC = \frac{1}{2} \times 110\dg = \boxed{55 \dg}.
+    \end{align*}
+\end{proof}
