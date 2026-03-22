@@ -1,0 +1,30 @@
+\textbf{\textit{Soal.}} \input{Problems/41 OSS Pradipta Dirgantara 2026.tex}
+\begin{proof}[\textbf{Solusi. }] (Sunday, 22 March 2026) 
+    \input{Tikzlatex/41 OSS Pradipta Dirgantara 2026.tex}
+
+    Misalkan $G$ titik pada sinar $DM$ sedemikian sehingga $MG = MF$ dan $M$ berada di antara $D$ dan $G$.
+
+\textbf{Bukti $CF$ menyinggung $(AEF)$ di $F$}\\
+Perhatikan bahwa $\triangle ABC$ siku-siku di $C$. Karena $F$ titik tengah $AB$ maka jelas bahwa $BF=AF=CF$. Selain itu, jelas bahwa $\angle FAC = \angle ACF = 75\dg$ sehingga $\angle CFA = 30\dg$ dan $\angle BFC = 150\dg$ dengan $\sin CFA = \sin BFC = \frac{1}{2}$. Oleh karena itu, dengan ditambah fakta $CB = CE$ didapat
+\begin{align*}
+    [ABC] &= [CFA] + [CFB]\\
+    \frac{1}{2} \times CA \times CB &= \frac{1}{2} \times AF \times FC \times \sin \angle CFA + \frac{1}{2} \times BF \times FC \times \sin \angle BFC\\
+     CA \times CB &= AF \times FC \times \frac{1}{2} + BF \times FC \times \frac{1}{2} \\
+     CA \times CE &= CF^2
+\end{align*}
+yang menunjukkan bahwa $CF$ menyinggung $(AEF)$ di $F$ dari \textit{Power of a Point}.\\
+\newline
+\textbf{Bukti $MG$ menyinggung $(AEF)$ di $G$}\\
+Dikarenakan $CB = CE \implies \angle DBM = \angle MEC = 45\dg$ dan $\angle MCE = \angle FCA = 75\dg$ maka $\angle CME = 60\dg$.
+Lalu, karena $BD = CA$, $BC = CE$, dan $AF=FB$, dengan Teorema Menelaus pada segitga $EMC$ dan garis transversal $AB$ diperoleh
+\begin{align*}
+    \dfrac{AF}{FB} \times \dfrac{BM}{ME} \times \dfrac{EC}{CA} &= 1\\
+    1 \times \dfrac{BM}{ME} \times \dfrac{EC}{BD} &= 1\\
+    \dfrac{BM}{ME} &= \dfrac{BD}{EC}.
+\end{align*}
+dan $\angle DBM = \angle MEC$ maka $\triangle BDM \sim \triangle ECM$. Sehingga didapat $\angle EMG = \angle BMD = \angle CME = 60\dg$. 
+
+Oleh karena itu $MF = MG$, $\angle EMG = \angle CME$, dan fakta bahwa $MF$ menyinggung $(AEF)$ di $F$, akan mengakibatkan $MG$ menyinggung $(AEF)$ di $G$.
+
+Dari kedua kasus tersebut, terbukti bahwa $CM$ dan $DM$ menyinggung lingkaran luar segitiga $AEF$.
+\end{proof}
