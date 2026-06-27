@@ -1,0 +1,43 @@
+\begin{center}
+    \begin{tikzpicture}[scale=3, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        \tkzDefPoint(75:1){A}
+        \tkzDefPoint(210:1){B}
+        \tkzDefPoint(-30:1){C}
+
+        \tkzDefMidPoint(B,C)\tkzGetPoint{M}
+        \tkzDefPointBy[projection=onto A--M](C)\tkzGetPoint{P}
+
+        % Lingkaran luar ABP; Q perpotongan keduanya dengan BC (B sudah pada lingkaran)
+        \tkzDefTriangleCenter[circum](A,B,P)\tkzGetPoint{Oabp}
+        \tkzInterLC[common=B](B,C)(Oabp,B)\tkzGetFirstPoint{Q}
+
+        \tkzDefMidPoint(A,Q)\tkzGetPoint{N}
+        \tkzDefPointBy[projection=onto B--C](A)\tkzGetPoint{D}
+
+        \tkzDrawPolygon(A,B,C)
+        \tkzDrawSegment(A,M)
+        \tkzDrawSegments(B,N N,C C,P)
+        \tkzDrawCircle[dashed,red](Oabp,A)
+        \tkzDrawSegment(B,Q)
+        \tkzDrawSegment[blue](Q,A)
+        \tkzDrawSegment[blue](A,D)
+        \tkzDrawSegment[blue](M,N)
+        \tkzDefTriangleCenter[circum](C,P,D)\tkzGetPoint{Ocpd}
+        \tkzDrawCircle[dashed](Ocpd,C)
+
+        \tkzMarkRightAngle[green,size=0.18](A,D,C)
+        \tkzMarkRightAngle[green,size=0.18](A,P,C)
+
+        \tkzDrawPoints(A,B,C,M,P,Q,N,D)
+        \tkzLabelPoint[above right](A){$A$}
+        \tkzLabelPoint[below left](B){$B$}
+        \tkzLabelPoint[below left](C){$C$}
+        \tkzLabelPoint[below](M){$M$}
+        \tkzLabelPoint[above left](P){$P$}
+        \tkzLabelPoint[below left](Q){$Q$}
+        \tkzLabelPoint[above left](N){$N$}
+        \tkzLabelPoint[below right](D){$D$}
+
+    \end{tikzpicture}
+\end{center}

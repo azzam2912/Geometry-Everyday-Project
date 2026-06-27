@@ -1,0 +1,55 @@
+\begin{center}
+    \begin{tikzpicture}[scale=3.5, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        \tkzDefPoint(105:1){A}
+        \tkzDefPoint(210:1){B}
+        \tkzDefPoint(-30:1){C}
+        % D = (3/4)A + (1/4)B ; E = (4/7)A + (3/7)C  (dihitung numerik)
+        \tkzDefPoint(-0.41062,0.599445){D}
+        \tkzDefPoint(0.223257,0.337672){E}
+
+        \tkzDefMidPoint(B,D)\tkzGetPoint{M}
+        \tkzDefMidPoint(C,E)\tkzGetPoint{N}
+        \tkzDefLine[orthogonal=through M](B,D)\tkzGetPoint{mp}
+        \tkzDefLine[orthogonal=through N](E,C)\tkzGetPoint{np}
+        \tkzInterLL(M,mp)(N,np)\tkzGetPoint{P}
+
+        \tkzDefTriangleCenter[circum](A,B,C)\tkzGetPoint{Oabc}
+        \tkzDefPoint(60:1){X}
+        \tkzDefTriangleCenter[circum](A,D,E)\tkzGetPoint{Oade}
+        % Y perpotongan kedua lingkaran ade dengan garis AX (A pada lingkaran)
+        \tkzInterLC[common=A](A,X)(Oade,A)\tkzGetFirstPoint{Y}
+        % G perpotongan kedua lingkaran ade dan abc (A titik sekutu)
+        \tkzInterCC[common=A](Oade,A)(Oabc,A)\tkzGetFirstPoint{G}
+        \tkzDefTriangleCenter[circum](A,M,N)\tkzGetPoint{Oamn}
+        \tkzInterLL(D,E)(B,C)\tkzGetPoint{F}
+        \tkzDefMidPoint(X,Y)\tkzGetPoint{K}
+
+        \tkzDrawPolygon(A,B,C)
+        \tkzDrawSegments[blue](D,P P,B C,P P,E)
+        \tkzDrawSegments[green](M,P P,N)
+        \tkzDrawCircle(Oabc,A)
+        \tkzDrawCircle(Oade,A)
+        \tkzDrawCircle[dashed,red](Oamn,A)
+        \tkzDrawSegment(A,X)
+        \tkzDrawSegments[blue](D,E E,F F,C)
+        \tkzDrawSegments[orange](D,G G,E M,G G,N B,G G,C)
+        \tkzDrawSegments[red](A,P P,K)
+
+        \tkzDrawPoints(A,B,C,D,E,M,N,P,X,Y,G,F,K)
+        \tkzLabelPoint[above left](A){$A$}
+        \tkzLabelPoint[below left](B){$B$}
+        \tkzLabelPoint[below right](C){$C$}
+        \tkzLabelPoint[left](D){$D$}
+        \tkzLabelPoint[right](E){$E$}
+        \tkzLabelPoint[above left](M){$M$}
+        \tkzLabelPoint[right](N){$N$}
+        \tkzLabelPoint[below](P){$P$}
+        \tkzLabelPoint[above right](X){$X$}
+        \tkzLabelPoint[below left](Y){$Y$}
+        \tkzLabelPoint[above right](G){$G$}
+        \tkzLabelPoint[above right](F){$F$}
+        \tkzLabelPoint[above](K){$K$}
+
+    \end{tikzpicture}
+\end{center}

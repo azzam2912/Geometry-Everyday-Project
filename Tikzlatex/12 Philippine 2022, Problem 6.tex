@@ -1,0 +1,63 @@
+\begin{center}
+    \begin{tikzpicture}[scale=3.5, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        \tkzDefPoint(105:1){A}
+        \tkzDefPoint(-150:1){B}
+        \tkzDefPoint(-30:1){C}
+
+        % Pusat singgung luar di hadapan A, dan kaki D pada BC
+        \tkzDefTriangleCenter[ex](C,A,B)\tkzGetPoint{Ia}
+        \tkzDefPointBy[projection=onto B--C](Ia)\tkzGetPoint{D}
+
+        % X perpotongan kedua AD dengan lingkaran luar
+        \tkzDefTriangleCenter[circum](A,B,C)\tkzGetPoint{Oabc}
+        \tkzInterLC[common=A](A,D)(Oabc,A)\tkzGetFirstPoint{X}
+
+        % Lingkaran (BXD), incenter, dan E
+        \tkzDefTriangleCenter[circum](B,X,D)\tkzGetPoint{Obxd}
+        \tkzInCenter(B,X,D)\tkzGetPoint{Ib}
+        \tkzInterLC[common=X](X,Ib)(Obxd,X)\tkzGetFirstPoint{E}
+
+        % Lingkaran (CXD), incenter, dan F
+        \tkzDefTriangleCenter[circum](C,X,D)\tkzGetPoint{Ocxd}
+        \tkzInCenter(C,X,D)\tkzGetPoint{Ic}
+        \tkzInterLC[common=X](X,Ic)(Ocxd,X)\tkzGetFirstPoint{F}
+
+        % Incenter ABC dan kaki N
+        \tkzInCenter(A,B,C)\tkzGetPoint{I}
+        \tkzDefPointBy[projection=onto B--C](I)\tkzGetPoint{N}
+
+        \tkzDefPointBy[projection=onto B--C](E)\tkzGetPoint{E1}
+        \tkzDefPointBy[projection=onto B--C](F)\tkzGetPoint{F1}
+
+        \tkzDrawPolygon(A,B,C)
+        \tkzDrawCircle(Oabc,A)
+        \tkzDrawSegments(A,X B,X C,X)
+        \tkzDrawCircle[blue](Obxd,B)
+        \tkzDrawSegment[blue](X,E)
+        \tkzDrawCircle[blue](Ocxd,C)
+        \tkzDrawSegment[blue](X,F)
+        \tkzDrawSegment[green](E,F)
+        \tkzDrawSegment[orange](I,N)
+        \tkzDrawSegment[red](B,I)
+        \tkzDrawSegment[orange](C,I)
+        \tkzDrawSegment[orange](D,E)
+        \tkzDrawSegment[red](D,F)
+        \tkzDrawSegment[orange](E,E1)
+        \tkzDrawSegment[red](F,F1)
+
+        \tkzDrawPoints(A,B,C,D,X,E,F,I,N,E1,F1)
+        \tkzLabelPoint[above right](A){$A$}
+        \tkzLabelPoint[below left](B){$B$}
+        \tkzLabelPoint[below right](C){$C$}
+        \tkzLabelPoint[below left](D){$D$}
+        \tkzLabelPoint[below left](X){$X$}
+        \tkzLabelPoint[above](E){$E$}
+        \tkzLabelPoint[above](F){$F$}
+        \tkzLabelPoint[above left](I){$I$}
+        \tkzLabelPoint[below left](N){$N$}
+        \tkzLabelPoint[below left](E1){$E_1$}
+        \tkzLabelPoint[below right](F1){$F_1$}
+
+    \end{tikzpicture}
+\end{center}
