@@ -1,0 +1,27 @@
+\begin{center}
+    \begin{tikzpicture}[scale=2, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        \tkzDefPoint(1.2813,1.5356){A}
+        \tkzDefPoint(-0.54866,0){B}
+        \tkzDefPoint(3.47454,0){C}
+        \tkzDefPoint(0.20654,0){D}
+        \tkzDefPoint(0.723,0){E}
+        % F refleksi E terhadap garis AC
+        \tkzDefPointBy[reflection=over A--C](E)\tkzGetPoint{F}
+
+        \tkzDrawPolygon(A,B,C)
+        \tkzDrawSegments(A,D A,E)
+        \tkzDrawSegments[dashed](A,F C,F)
+
+        \tkzMarkRightAngle[blue,size=0.25](D,A,C)
+
+        \tkzDrawPoints(A,B,C,D,E,F)
+        \tkzLabelPoint[above](A){$A$}
+        \tkzLabelPoint[below left](B){$B$}
+        \tkzLabelPoint[below right](C){$C$}
+        \tkzLabelPoint[below](D){$D$}
+        \tkzLabelPoint[below](E){$E$}
+        \tkzLabelPoint[above right](F){$F$}
+
+    \end{tikzpicture}
+\end{center}

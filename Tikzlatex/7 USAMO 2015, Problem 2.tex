@@ -1,0 +1,53 @@
+\begin{center}
+    \begin{tikzpicture}[scale=3, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        \tkzDefPoint(90:1){A}
+        \tkzDefPoint(-90:1){B}
+        \tkzDefPoint(148:1){P}
+        \tkzDefPoint(32:1){Q}
+        \tkzDefTriangleCenter[circum](A,B,P)\tkzGetPoint{O}
+
+        \tkzDefPoint(-130:1){S}
+        \tkzInterLL(A,S)(P,Q)\tkzGetPoint{X}
+        \tkzDefLine[orthogonal=through X](A,S)\tkzGetPoint{xtp}
+        \tkzInterLC(X,xtp)(O,A)\tkzGetFirstPoint{T}
+
+        \tkzDefPointBy[projection=onto A--T](S)\tkzGetPoint{Y}
+        \tkzDefPointBy[projection=onto S--T](A)\tkzGetPoint{L}
+        \tkzDefMidPoint(S,T)\tkzGetPoint{M}
+        \tkzInterLL(A,L)(X,T)\tkzGetPoint{H}
+        \tkzInterLL(P,Q)(S,T)\tkzGetPoint{Z}
+        \tkzDefMidPoint(A,O)\tkzGetPoint{K}
+
+        \tkzDrawSegments(A,P P,B B,Q Q,A)
+        \tkzDrawSegment(A,B)
+        \tkzDrawSegment(P,Q)
+        \tkzDrawCircle[blue](O,A)
+        \tkzDrawSegment[red](X,T)
+        \tkzDrawSegments[green](A,S S,T T,A)
+        \tkzMarkRightAngle[size=0.12](S,X,T)
+        \tkzDrawSegment[red](A,L)
+        \tkzDrawSegment[red](S,Y)
+        \tkzDefTriangleCenter[circum](X,Y,M)\tkzGetPoint{Oxym}\tkzDrawCircle[gray](Oxym,X)
+        \tkzDefTriangleCenter[circum](X,Y,S)\tkzGetPoint{Oxys}\tkzDrawCircle[gray](Oxys,X)
+        \tkzDrawSegments[blue](P,Z S,Z)
+        \tkzDefTriangleCenter[circum](P,Q,M)\tkzGetPoint{Opqm}\tkzDrawCircle[dashed,red](Opqm,P)
+
+        \tkzDrawPoints(A,B,P,Q,O,S,T,X,Y,L,M,H,Z,K)
+        \tkzLabelPoint[above](A){$A$}
+        \tkzLabelPoint[below](B){$B$}
+        \tkzLabelPoint[right](Q){$Q$}
+        \tkzLabelPoint[left](P){$P$}
+        \tkzLabelPoint[right](O){$O$}
+        \tkzLabelPoint[below left](S){$S$}
+        \tkzLabelPoint[below right](T){$T$}
+        \tkzLabelPoint[above left](X){$X$}
+        \tkzLabelPoint[above right](Y){$Y$}
+        \tkzLabelPoint[below right](L){$L$}
+        \tkzLabelPoint[below right](M){$M$}
+        \tkzLabelPoint[left](H){$H$}
+        \tkzLabelPoint[right](Z){$Z$}
+        \tkzLabelPoint[below left](K){$K$}
+
+    \end{tikzpicture}
+\end{center}

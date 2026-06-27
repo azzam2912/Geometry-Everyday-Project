@@ -1,0 +1,47 @@
+\begin{center}
+    \begin{tikzpicture}[scale=0.8, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        \tkzDefPoint(0,0){B}
+        \tkzDefPoint(1,6){A}
+        \tkzDefPoint(8,1){C}
+
+        % Garis L tegak lurus AB melalui B
+        \tkzDefLine[orthogonal=through B](A,B)\tkzGetPoint{Ldir}
+        % Kaki tegak lurus A ke BC
+        \tkzDefPointBy[projection=onto B--C](A)\tkzGetPoint{Af}
+        % D perpotongan L dengan tegak lurus dari A ke BC
+        \tkzInterLL(B,Ldir)(A,Af)\tkzGetPoint{D}
+        % Garis berat tegak (perpendicular bisector) BC
+        \tkzDefMidPoint(B,C)\tkzGetPoint{M}
+        \tkzDefLine[orthogonal=through M](B,C)\tkzGetPoint{pb}
+        \tkzInterLL(B,D)(M,pb)\tkzGetPoint{P}
+        % E kaki tegak lurus D ke AC
+        \tkzDefPointBy[projection=onto A--C](D)\tkzGetPoint{E}
+        \tkzInterLL(B,E)(M,pb)\tkzGetPoint{N}
+        \tkzInterLL(B,C)(A,D)\tkzGetPoint{T}
+
+        \tkzDrawPolygon(A,B,C)
+        \tkzDrawSegment[red](A,D)
+        \tkzDrawSegments[green!50!black](M,P P,N)
+        \tkzDrawSegments[magenta](B,P P,E P,C)
+        \tkzDrawSegment(B,E)
+        \tkzDrawSegment(N,C)
+
+        \tkzMarkRightAngle[size=0.4](A,B,D)
+        \tkzMarkRightAngle[size=0.4](A,Af,C)
+        \tkzMarkRightAngle[size=0.4](D,E,A)
+        \tkzMarkRightAngle[size=0.4](P,M,B)
+
+        \tkzDrawPoints(A,B,C,D,P,E,M,N,T)
+        \tkzLabelPoint[above left](A){$A$}
+        \tkzLabelPoint[below left](B){$B$}
+        \tkzLabelPoint[below right](C){$C$}
+        \tkzLabelPoint[below left](D){$D$}
+        \tkzLabelPoint[below left](P){$P$}
+        \tkzLabelPoint[above right](E){$E$}
+        \tkzLabelPoint[below left](M){$M$}
+        \tkzLabelPoint[above left](N){$N$}
+        \tkzLabelPoint[above right](T){$T$}
+
+    \end{tikzpicture}
+\end{center}

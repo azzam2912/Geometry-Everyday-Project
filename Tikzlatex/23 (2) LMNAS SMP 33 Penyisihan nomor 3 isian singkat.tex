@@ -1,0 +1,31 @@
+\begin{center}
+    \begin{tikzpicture}[scale=0.45, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        \tkzDefPoint(0,8){B}
+        \tkzDefPoint(-9.534,0){A}
+        \tkzDefPoint(9.534,0){C}
+        \tkzDefPoint(-3.3111,2.2649){D}
+
+        \tkzDrawPolygon(A,B,C)
+        \tkzDrawSegments(A,D D,B D,C)
+
+        % Tanda sudut
+        \tkzMarkAngle[red,size=1.2](C,D,B)
+        \tkzMarkAngle[blue,size=1.2](B,C,D)
+        \tkzMarkAngle[blue,size=1.2](D,A,B)
+
+        % Label sudut
+        \tkzDefPoint(-1.8111,2.9649){l70}\tkzLabelPoint(l70){\textcolor{red}{$70^\circ$}}
+        \tkzDefPoint(7.534,0.8){lx}\tkzLabelPoint(lx){\textcolor{blue}{$x$}}
+        \tkzDefPoint(-3.8111,2.4649){l140}\tkzLabelPoint(l140){\textcolor{blue}{$140^\circ$}}
+        \tkzDefPoint(-3.2111,1.2649){l150}\tkzLabelPoint(l150){\textcolor{orange}{$150^\circ$}}
+        \tkzDefPoint(-8.034,1.0){l20}\tkzLabelPoint(l20){\textcolor{blue}{$20^\circ$}}
+
+        \tkzDrawPoints(A,B,C,D)
+        \tkzLabelPoint[below left](A){$A$}
+        \tkzLabelPoint[above](B){$B$}
+        \tkzLabelPoint[below right](C){$C$}
+        \tkzLabelPoint[above left](D){$D$}
+
+    \end{tikzpicture}
+\end{center}

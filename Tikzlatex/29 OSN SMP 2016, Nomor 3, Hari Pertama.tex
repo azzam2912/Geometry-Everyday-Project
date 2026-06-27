@@ -1,0 +1,40 @@
+\begin{center}
+    \begin{tikzpicture}[scale=1.2, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        \tkzDefPoint(2,3){A}
+        \tkzDefPoint(0,0){B}
+        \tkzDefPoint(4,0){C}
+        \tkzDefPoint(1,0){D}
+        \tkzDefPoint(3,0){E}
+        % A' sehingga A A' B E jajargenjang: A' = A - (E-B)
+        \tkzDefPoint(-1,3){Ap}
+
+        \tkzDrawPolygon(A,B,C)
+        \tkzDrawSegments(A,D A,E)
+        \tkzDrawSegments(Ap,B Ap,D Ap,A)
+        \tkzDefTriangleCenter[circum](Ap,A,B)\tkzGetPoint{Oab}
+        \tkzDrawCircle[dashed,purple](Oab,A)
+
+        % Tanda ruas sama panjang BD = EC
+        \tkzMarkSegment[mark=s|,size=0.12](B,D)
+        \tkzMarkSegment[mark=s|,size=0.12](E,C)
+
+        % Tanda sudut
+        \tkzMarkAngle[red,size=0.45](E,A,C)
+        \tkzMarkAngle[red,size=0.45](B,A,D)
+        \tkzMarkAngle[red,size=0.45](B,Ap,D)
+        \tkzMarkAngle[blue,size=0.3](Ap,A,B)
+        \tkzMarkAngle[blue,size=0.3](C,B,A)
+        \tkzMarkAngle[blue,size=0.3](Ap,D,B)
+        \tkzMarkAngle[blue,size=0.3](A,C,B)
+
+        \tkzDrawPoints(A,B,C,D,E,Ap)
+        \tkzLabelPoint[above](A){$A$}
+        \tkzLabelPoint[above](Ap){$A'$}
+        \tkzLabelPoint[below left](B){$B$}
+        \tkzLabelPoint[below right](C){$C$}
+        \tkzLabelPoint[below](D){$D$}
+        \tkzLabelPoint[below](E){$E$}
+
+    \end{tikzpicture}
+\end{center}

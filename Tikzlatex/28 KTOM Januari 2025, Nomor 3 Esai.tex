@@ -1,0 +1,54 @@
+\begin{center}
+    \begin{tikzpicture}[scale=5, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        \tkzDefPoint(0,0){A}
+        \tkzDefPoint(1,0){B}
+        \tkzDefPoint(1,1){C}
+        \tkzDefPoint(0,1){D}
+        \tkzDefPoint(0.5,0.5){O}
+        \tkzDefPoint(0.7,1){E}
+
+        % F kaki tegak lurus B ke AE; G kaki tegak lurus A ke EB
+        \tkzDefPointBy[projection=onto A--E](B)\tkzGetPoint{F}
+        \tkzDefPointBy[projection=onto E--B](A)\tkzGetPoint{G}
+        \tkzInterLL(D,F)(C,G)\tkzGetPoint{H}
+        \tkzInterLL(A,G)(B,F)\tkzGetPoint{T}
+
+        \tkzDrawPolygon(A,B,C,D)
+        \tkzDrawSegment(A,E)
+        \tkzDrawSegment(B,F)
+        \tkzDrawSegment(A,G)
+        \tkzDrawSegment(D,F)
+        \tkzDrawSegment(C,G)
+        \tkzDrawSegment(E,B)
+        \tkzDrawSegments(F,H H,G)
+        \tkzDrawSegments(A,H H,B)
+        \tkzDrawSegments[red](D,B A,C O,E O,F)
+        \tkzDrawSegments[dotted,red](F,C G,D)
+
+        \tkzDefTriangleCenter[circum](A,B,G)\tkzGetPoint{Oabg}\tkzDrawCircle(Oabg,A)
+        \tkzDefTriangleCenter[circum](D,F,E)\tkzGetPoint{Odfe}\tkzDrawCircle[dashed,blue](Odfe,D)
+        \tkzDefTriangleCenter[circum](E,C,G)\tkzGetPoint{Oecg}\tkzDrawCircle[dashed,blue](Oecg,E)
+        \tkzDefTriangleCenter[circum](D,A,E)\tkzGetPoint{Odae}\tkzDrawCircle[dotted,purple](Odae,D)
+        \tkzDefTriangleCenter[circum](B,C,E)\tkzGetPoint{Obce}\tkzDrawCircle[dotted,purple](Obce,B)
+
+        \tkzMarkRightAngle[size=0.05](B,F,A)
+        \tkzMarkRightAngle[size=0.05](A,G,E)
+        \tkzMarkRightAngle[size=0.05](C,D,A)
+        \tkzMarkRightAngle[size=0.05](B,C,D)
+        \tkzMarkRightAngle[red,size=0.05](C,O,D)
+
+        \tkzDrawPoints(A,B,C,D,E,F,G,H,O,T)
+        \tkzLabelPoint[below left](A){$A$}
+        \tkzLabelPoint[below right](B){$B$}
+        \tkzLabelPoint[above right](C){$C$}
+        \tkzLabelPoint[above left](D){$D$}
+        \tkzLabelPoint[above](E){$E$}
+        \tkzLabelPoint[above](F){$F$}
+        \tkzLabelPoint[above right](G){$G$}
+        \tkzLabelPoint[below](H){$H$}
+        \tkzLabelPoint[below](O){$O$}
+        \tkzLabelPoint[below](T){$T$}
+
+    \end{tikzpicture}
+\end{center}

@@ -1,0 +1,43 @@
+\begin{center}
+    \begin{tikzpicture}[scale=3, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        \tkzDefPoint(75:1){A}
+        \tkzDefPoint(210:1){B}
+        \tkzDefPoint(-30:1){C}
+        \tkzDefMidPoint(B,C)\tkzGetPoint{M}
+        \tkzDefPointBy[projection=onto A--M](C)\tkzGetPoint{P}
+        % A' refleksi A terhadap M
+        \tkzDefPointBy[symmetry=center M](A)\tkzGetPoint{A1}
+
+        \tkzDefTriangleCenter[circum](A,B,P)\tkzGetPoint{Oc}
+        \tkzInterLC[common=B](B,C)(Oc,B)\tkzGetFirstPoint{Q}
+        \tkzDefMidPoint(A,Q)\tkzGetPoint{N}
+        \tkzDefTriangleCenter[circum](A1,C,P)\tkzGetPoint{Od}
+
+        \tkzDrawPolygon(A,B,C)
+        \tkzDrawSegments(A,M M,A1)
+        \tkzDrawSegments(B,A1 A1,C)
+        \tkzDrawSegments(B,N N,C C,P)
+        \tkzDrawCircle(Oc,A)
+        \tkzDrawCircle[dashed,orange](Od,A1)
+        \tkzDrawSegment(B,Q)
+        \tkzDrawSegment[blue](Q,A)
+        \tkzDrawSegment[blue](A,A1)
+        \tkzDrawSegment[red](A1,Q)
+        \tkzDrawSegment[red](N,M)
+
+        \tkzMarkRightAngle[green,size=0.16](C,Q,A1)
+        \tkzMarkRightAngle[green,size=0.16](A,P,C)
+
+        \tkzDrawPoints(A,B,C,M,P,Q,N,A1)
+        \tkzLabelPoint[above right](A){$A$}
+        \tkzLabelPoint[below left](B){$B$}
+        \tkzLabelPoint[right](C){$C$}
+        \tkzLabelPoint[below right](M){$M$}
+        \tkzLabelPoint[above left](P){$P$}
+        \tkzLabelPoint[below left](Q){$Q$}
+        \tkzLabelPoint[above left](N){$N$}
+        \tkzLabelPoint[below right](A1){$A'$}
+
+    \end{tikzpicture}
+\end{center}
