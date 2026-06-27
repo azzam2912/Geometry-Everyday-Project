@@ -9,7 +9,7 @@
     % lingkaran luar (circumcircle)
     \tkzDefTriangleCenter[circum](A,B,C)\tkzGetPoint{O}
     \tkzDrawCircle[thin](O,A)
-    \tkzDrawPoint(O)
+    \tkzDrawPoint[fill=black, size=3](O)
     \tkzLabelPoints(O)
     
     % Definisikan titik A', B', C'
@@ -28,7 +28,7 @@
 
     \tkzInterCC(ABBp,A)(ACCp,A) 
     \tkzGetPoints{A2}{A1}
-    \tkzDrawPoints(A1)
+    \tkzDrawPoints[fill=black, size=3](A1)
     \tkzLabelPoint[below](A1){$A_1$}
     
     \tkzDefTriangleCenter[circum](B,C,Cp)
@@ -38,7 +38,7 @@
     
     \tkzInterCC(BCCp,B)(BAAp,B)
     \tkzGetPoints{B2}{B1}
-    \tkzDrawPoints(B1)
+    \tkzDrawPoints[fill=black, size=3](B1)
     \tkzLabelPoint[below](B1){$B_1$}
     
     \tkzDefTriangleCenter[circum](C,A,Ap)
@@ -48,7 +48,7 @@
     
     \tkzInterCC(CAAp,C)(CBBp,C)
     \tkzGetPoints{C2}{C1}
-    \tkzDrawPoints(C1)
+    \tkzDrawPoints[fill=black, size=3](C1)
     \tkzLabelPoint[below](C1){$C_1$}
 
     \tkzDrawCircles[thin, red](ABBp,A ACCp,A)
@@ -87,7 +87,7 @@
     \tkzInterLL(C,Ac)(B,Ab)
     \tkzGetPoint{Ha}
     \tkzLabelPoint(Ha){$H_A$}
-    \tkzDrawPoints(A,B,C,Ap,Bp,Cp)
+    \tkzDrawPoints[fill=black, size=3](A,B,C,Ap,Bp,Cp)
     \tkzLabelPoints[above](A)
     \tkzLabelPoints[below](B,C)
     \tkzLabelPoint[right](Ap){$A'$}

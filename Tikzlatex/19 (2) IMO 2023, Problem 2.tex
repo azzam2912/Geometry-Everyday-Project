@@ -23,7 +23,7 @@
 
     \tkzInterLL(Aperp,A)(B,S) \tkzGetPoint{D}
     \tkzLabelPoints(D)
-    \tkzDrawPoint(D)
+    \tkzDrawPoint[fill=black, size=3](D)
 
     \tkzDefLine[parallel=through D](B,C) \tkzGetPoint{Dpar}
     \tkzInterLL(Dpar,D)(B,E) \tkzGetPoint{L}
@@ -35,7 +35,7 @@
     \tkzDrawCircle[red](O2,B)
 
     \tkzInterCC[common=B](O2,B)(O,A) \tkzGetFirstPoint{P}
-    \tkzDrawPoint[red](P)
+    \tkzDrawPoint[red, size=3](P)
     \tkzLabelPoints[above](P)
 
     \tkzDefMidArc(O,B,C) \tkzGetPoint{F}
@@ -46,7 +46,7 @@
     % additional for solving
     \tkzInterLL(A,F)(B,S) \tkzGetPoint{Q}
     \tkzLabelPoints[right](Q)
-    \tkzDrawPoints(Q)
+    \tkzDrawPoints[fill=black, size=3](Q)
 
     % segment PQ
     \tkzDrawSegments[thick, red](P,Q)
@@ -58,7 +58,7 @@
     % intersection of (BPQ) with AF = intersection of PD with AH
     \tkzInterLL(A,F)(P,D) \tkzGetPoint{H}
     \tkzLabelPoints[right](H)
-    \tkzDrawPoints(H)
+    \tkzDrawPoints[fill=black, size=3](H)
 
     \tkzDrawSegments[dotted, thick, blue](H,P)
 
@@ -69,7 +69,7 @@
     % intersection of (BPD) with AE = intersection of (BDL) and (APH)
     \tkzInterCC[common=P](O4,H)(O2,B) \tkzGetFirstPoint{G}
     \tkzLabelPoints(G)
-    \tkzDrawPoints(G)
+    \tkzDrawPoints[fill=black, size=3](G)
 
     \tkzDrawSegments[red](P,F P,A P,B S,F Q,O A,S P,S)
 

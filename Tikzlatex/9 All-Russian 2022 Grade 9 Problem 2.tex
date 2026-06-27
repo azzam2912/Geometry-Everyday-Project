@@ -54,13 +54,13 @@
         \tkzInterLL(I,M)(Ob,Oc)\tkzGetPoint{K}
 
         % Tanda sudut siku-siku
-        \tkzMarkRightAngle[size=0.15,green!60!black](Ob,I,C)
-        \tkzMarkRightAngle[size=0.15,red](Oc,I,B)
-        \tkzMarkRightAngle[size=0.15](M,Mb,B)
-        \tkzMarkRightAngle[size=0.15](M,Mc,C)
+        \tkzMarkRightAngle[green!60!black, size=0.0469](Ob,I,C)
+        \tkzMarkRightAngle[red, size=0.0469](Oc,I,B)
+        \tkzMarkRightAngle[size=0.0469](M,Mb,B)
+        \tkzMarkRightAngle[size=0.0469](M,Mc,C)
 
         % Titik dan label
-        \tkzDrawPoints(A,B,C,I,M,J,Mb,Ob,Mc,Oc,K)
+        \tkzDrawPoints[fill=black, size=3](A,B,C,I,M,J,Mb,Ob,Mc,Oc,K)
         \tkzLabelPoint[above left](A){$A$}
         \tkzLabelPoint[left](B){$B$}
         \tkzLabelPoint[right](C){$C$}

@@ -14,7 +14,7 @@
     \tkzDrawCircle[thin](O,A)
  
     \tkzDefMidArc(O,C,B) \tkzGetPoint{S}
-    \tkzDrawPoint(S)
+    \tkzDrawPoint[fill=black, size=3](S)
     \tkzLabelPoints[above right](S)
 
     \tkzDefLine[perpendicular=through A](B,C) \tkzGetPoint{Aperp}
@@ -24,7 +24,7 @@
 
     \tkzInterLL(Aperp,A)(B,S) \tkzGetPoint{D}
     \tkzLabelPoints(D)
-    \tkzDrawPoint(D)
+    \tkzDrawPoint[fill=black, size=3](D)
 
     \tkzDefLine[parallel=through D](B,C) \tkzGetPoint{Dpar}
     \tkzInterLL(Dpar,D)(B,E) \tkzGetPoint{L}
@@ -35,7 +35,7 @@
     \tkzDrawCircle[thin, red](O2,B)
 
     \tkzInterCC[common=B](O2,B)(O,A) \tkzGetFirstPoint{P}
-    \tkzDrawPoint[red](P)
+    \tkzDrawPoint[red, size=3](P)
     \tkzLabelPoints[below](P)
 
     \tkzDefMidArc(O,B,C) \tkzGetPoint{F}
@@ -46,7 +46,7 @@
     % additional for solving
     \tkzInterLL(A,F)(B,S) \tkzGetPoint{Q}
     \tkzLabelPoints[below right](Q)
-    \tkzDrawPoints[green](Q)
+    \tkzDrawPoints[green, size=3](Q)
 
     \tkzDrawSegments[red](P,Q)
 
@@ -56,22 +56,22 @@
     % intersection of (BPQ) with AF = intersection of PD with AH
     \tkzInterLL(A,F)(P,D) \tkzGetPoint{H}
     \tkzLabelPoints[right](H)
-    \tkzDrawPoints(H)
+    \tkzDrawPoints[fill=black, size=3](H)
 
     % intersection of PD with (ABC)
     \tkzInterLC(P,D)(O,A) \tkzGetPoints{I0}{I}
     \tkzLabelPoints[right](I)
-    \tkzDrawPoints(I)
+    \tkzDrawPoints[fill=black, size=3](I)
 
     % intersection of AE and IS
     \tkzInterLL(A,E)(I,S) \tkzGetPoint{X}
     \tkzLabelPoints[right](X)
-    \tkzDrawPoints(X)
+    \tkzDrawPoints[fill=black, size=3](X)
 
     % intersection of AS and I
     \tkzInterLL(A,S)(I,P) \tkzGetPoint{Y}
     \tkzLabelPoints[above](Y)
-    \tkzDrawPoints(Y)
+    \tkzDrawPoints[fill=black, size=3](Y)
 
     \tkzDrawSegments(A,X S,Y Y,P A,I)
     \tkzDrawSegments[thick, blue](I,E I,P)
