@@ -1,0 +1,48 @@
+\begin{center}
+    \begin{tikzpicture}[scale=3, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        % Titik-titik utama segitiga ABC
+        \tkzDefPoint(110:1){A}
+        \tkzDefPoint(210:1){B}
+        \tkzDefPoint(-30:1){C}
+
+        % Titik tengah sisi-sisi
+        \tkzDefMidPoint(B,C)\tkzGetPoint{D}
+        \tkzDefMidPoint(C,A)\tkzGetPoint{E}
+        \tkzDefMidPoint(A,B)\tkzGetPoint{F}
+
+        % Kaki tegak lurus dari D ke AB dan AC
+        \tkzDefPointBy[projection=onto A--B](D)\tkzGetPoint{X}
+        \tkzDefPointBy[projection=onto A--C](D)\tkzGetPoint{Y}
+
+        % Garis melalui F sejajar XY, lalu dipotong dengan YD untuk mendapat P
+        \tkzDefLine[parallel=through F](X,Y)\tkzGetPoint{Fp}
+        \tkzInterLL(F,Fp)(Y,D)\tkzGetPoint{P}
+
+        % Penggambaran
+        \tkzDrawPolygon(A,B,C)
+        \tkzDrawSegment[red](E,P)
+        \tkzDrawSegments[purple](X,D D,Y Y,P P,A A,D)
+        \tkzDrawSegments(F,D D,E E,F F,P)
+        \tkzDrawSegment(X,Y)
+
+        % Lingkaran luar AXY dan APD
+        \tkzDefTriangleCenter[circum](A,X,Y)\tkzGetPoint{Oaxy}
+        \tkzDrawCircle(Oaxy,A)
+        \tkzDefTriangleCenter[circum](A,P,D)\tkzGetPoint{Oapd}
+        \tkzDrawCircle[dashed,purple](Oapd,A)
+
+        % Titik dan label
+        \tkzDrawPoints(A,B,C,D,E,F,P,X,Y)
+        \tkzLabelPoint[above left](A){$A$}
+        \tkzLabelPoint[below left](B){$B$}
+        \tkzLabelPoint[below right](C){$C$}
+        \tkzLabelPoint[below](D){$D$}
+        \tkzLabelPoint[below left](E){$E$}
+        \tkzLabelPoint[above left](F){$F$}
+        \tkzLabelPoint[right](P){$P$}
+        \tkzLabelPoint[above right](X){$X$}
+        \tkzLabelPoint[above](Y){$Y$}
+
+    \end{tikzpicture}
+\end{center}

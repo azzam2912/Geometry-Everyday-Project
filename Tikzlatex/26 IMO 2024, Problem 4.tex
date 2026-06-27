@@ -1,0 +1,66 @@
+\begin{center}
+    \begin{tikzpicture}[scale=3, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        % Titik-titik utama segitiga ABC dan P pada lingkaran luar
+        \tkzDefPoint(75:1){A}
+        \tkzDefPoint(340:1){B}
+        \tkzDefPoint(200:1){C}
+        \tkzDefPoint(270:1){P}
+
+        % Incenter dan lingkaran dalam
+        \tkzInCenter(A,B,C)\tkzGetPoint{I}
+        \tkzDefPointBy[projection=onto B--C](I)\tkzGetPoint{Td}
+        \tkzDrawCircle[blue](I,Td)
+
+        % Kaki singgung pada CA dan AB
+        \tkzDefPointBy[projection=onto C--A](I)\tkzGetPoint{EE}
+        \tkzDefPointBy[projection=onto A--B](I)\tkzGetPoint{FF}
+
+        % D refleksi A terhadap I; U,V refleksi titik singgung terhadap I
+        \tkzDefPointBy[symmetry=center I](A)\tkzGetPoint{D}
+        \tkzDefPointBy[symmetry=center I](EE)\tkzGetPoint{U}
+        \tkzDefPointBy[symmetry=center I](FF)\tkzGetPoint{V}
+
+        % Perpotongan-perpotongan
+        \tkzInterLL(U,D)(A,B)\tkzGetPoint{E}
+        \tkzInterLL(V,D)(A,C)\tkzGetPoint{F}
+        \tkzInterLL(U,D)(B,C)\tkzGetPoint{X}
+        \tkzInterLL(V,D)(B,C)\tkzGetPoint{Y}
+
+        % Titik tengah AB dan AC
+        \tkzDefMidPoint(A,B)\tkzGetPoint{K}
+        \tkzDefMidPoint(A,C)\tkzGetPoint{L}
+
+        % Penggambaran
+        \tkzDrawPolygon(A,B,C)
+        \tkzDrawPolygon[green!60!black](A,E,D,F)
+        \tkzDrawSegments[red](B,D D,C)
+        \tkzDrawSegment[gray](K,L)
+        \tkzDrawSegments[red](K,I I,L)
+        \tkzDrawSegment[gray](A,P)
+        \tkzDrawSegments(Y,P P,X)
+        \tkzDrawSegments[gray](B,P P,C)
+
+        % Lingkaran luar BXP dan CYP
+        \tkzDefTriangleCenter[circum](B,X,P)\tkzGetPoint{Obxp}
+        \tkzDrawCircle[gray,dashed](Obxp,B)
+        \tkzDefTriangleCenter[circum](C,Y,P)\tkzGetPoint{Ocyp}
+        \tkzDrawCircle[gray,dashed](Ocyp,C)
+
+        % Titik dan label
+        \tkzDrawPoints(A,B,C,P,I,D,K,L,X,Y,E,F)
+        \tkzLabelPoint[above](A){$A$}
+        \tkzLabelPoint[right](B){$B$}
+        \tkzLabelPoint[left](C){$C$}
+        \tkzLabelPoint[below](P){$P$}
+        \tkzLabelPoint[below right](I){$I$}
+        \tkzLabelPoint[below left](D){$D$}
+        \tkzLabelPoint[above left](K){$K$}
+        \tkzLabelPoint[above right](L){$L$}
+        \tkzLabelPoint[below right](X){$X$}
+        \tkzLabelPoint[below](Y){$Y$}
+        \tkzLabelPoint[above right](E){$E$}
+        \tkzLabelPoint[above left](F){$F$}
+
+    \end{tikzpicture}
+\end{center}

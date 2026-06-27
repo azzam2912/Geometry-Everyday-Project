@@ -1,0 +1,45 @@
+\begin{center}
+    \begin{tikzpicture}[scale=2.2, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        % Titik-titik utama segitiga ABC
+        \tkzDefPoint(0,0){B}
+        \tkzDefPoint(60:1.2){A}
+        \tkzDefPoint(0:1.5){C}
+
+        % P dan Q pada sisi BC
+        \tkzDefPoint(0.96,0){P}
+        \tkzDefPoint(0.24,0){Q}
+
+        % M refleksi A terhadap P; N refleksi A terhadap Q
+        \tkzDefPointBy[symmetry=center P](A)\tkzGetPoint{M}
+        \tkzDefPointBy[symmetry=center Q](A)\tkzGetPoint{N}
+
+        % T perpotongan BM dan CN
+        \tkzInterLL(B,M)(C,N)\tkzGetPoint{T}
+
+        % Lingkaran luar ABC
+        \tkzDefTriangleCenter[circum](A,B,C)\tkzGetPoint{O}
+        \tkzDrawCircle[dashed](O,A)
+
+        % Segmen-segmen
+        \tkzDrawPolygon(A,B,C)
+        \tkzDrawSegments(A,N A,M B,M C,N C,M)
+        \tkzDrawSegments[blue](T,P C,T P,M T,M P,C)
+
+        % Lingkaran luar PCM
+        \tkzDefTriangleCenter[circum](P,C,M)\tkzGetPoint{Opcm}
+        \tkzDrawCircle[dashed,gray](Opcm,P)
+
+        % Titik dan label
+        \tkzDrawPoints(A,B,C,P,Q,M,N,T)
+        \tkzLabelPoint[above](A){$A$}
+        \tkzLabelPoint[left](B){$B$}
+        \tkzLabelPoint[right](C){$C$}
+        \tkzLabelPoint[above right](P){$P$}
+        \tkzLabelPoint[above left](Q){$Q$}
+        \tkzLabelPoint[below](M){$M$}
+        \tkzLabelPoint[below](N){$N$}
+        \tkzLabelPoint[below right](T){$T$}
+
+    \end{tikzpicture}
+\end{center}

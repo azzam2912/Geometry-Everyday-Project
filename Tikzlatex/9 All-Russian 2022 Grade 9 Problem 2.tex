@@ -1,0 +1,77 @@
+\begin{center}
+    \begin{tikzpicture}[scale=3.2, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        % Titik-titik utama segitiga ABC
+        \tkzDefPoint(125:1){A}
+        \tkzDefPoint(210:1){B}
+        \tkzDefPoint(-30:1){C}
+
+        % Lingkaran luar dan pusatnya
+        \tkzDefTriangleCenter[circum](A,B,C)\tkzGetPoint{O}
+        \tkzDrawCircle(O,A)
+
+        % Incenter
+        \tkzInCenter(A,B,C)\tkzGetPoint{I}
+
+        % M titik tengah busur BC (perpotongan kedua AI dengan lingkaran luar)
+        \tkzInterLC[common=A](A,I)(O,A)\tkzGetFirstPoint{M}
+
+        % J refleksi I terhadap M
+        \tkzDefPointBy[symmetry=center M](I)\tkzGetPoint{J}
+
+        % Lingkaran (BIC)
+        \tkzDefTriangleCenter[circum](B,I,C)\tkzGetPoint{Obic}
+        \tkzDrawCircle[blue](Obic,B)
+
+        \tkzDrawSegment(A,J)
+        \tkzDrawSegments[blue](B,I C,I)
+
+        % Konstruksi Ob: titik potong tegak lurus IC di I dan tegak lurus IB di titik tengah IB
+        \tkzDefMidPoint(I,B)\tkzGetPoint{Mb}
+        \tkzDefLine[orthogonal=through I](I,C)\tkzGetPoint{icp}
+        \tkzDefLine[orthogonal=through Mb](I,B)\tkzGetPoint{mbp}
+        \tkzInterLL(I,icp)(Mb,mbp)\tkzGetPoint{Ob}
+        \tkzDefPointBy[projection=onto I--M](Ob)\tkzGetPoint{Mbb}
+        \tkzDefPointBy[symmetry=center Mbb](I)\tkzGetPoint{Mbbb}
+        \tkzDefTriangleCenter[circum](I,B,Mbbb)\tkzGetPoint{Oibm}
+        \tkzDrawCircle[red](Oibm,I)
+
+        % Konstruksi Oc: simetris dengan menukar B dan C
+        \tkzDefMidPoint(I,C)\tkzGetPoint{Mc}
+        \tkzDefLine[orthogonal=through I](I,B)\tkzGetPoint{ibp}
+        \tkzDefLine[orthogonal=through Mc](I,C)\tkzGetPoint{mcp}
+        \tkzInterLL(I,ibp)(Mc,mcp)\tkzGetPoint{Oc}
+        \tkzDefPointBy[projection=onto I--M](Oc)\tkzGetPoint{Mcc}
+        \tkzDefPointBy[symmetry=center Mcc](I)\tkzGetPoint{Mccc}
+        \tkzDefTriangleCenter[circum](I,C,Mccc)\tkzGetPoint{Oicm}
+        \tkzDrawCircle[red](Oicm,I)
+
+        \tkzDrawSegments[purple](Mb,M Mc,M)
+        \tkzDrawSegments[green!60!black](I,Ob Ob,M M,Oc Oc,I)
+        \tkzDrawSegment[green!60!black](Ob,Oc)
+
+        % K perpotongan IM dan ObOc
+        \tkzInterLL(I,M)(Ob,Oc)\tkzGetPoint{K}
+
+        % Tanda sudut siku-siku
+        \tkzMarkRightAngle[green!60!black](Ob,I,C)
+        \tkzMarkRightAngle[red](Oc,I,B)
+        \tkzMarkRightAngle(M,Mb,B)
+        \tkzMarkRightAngle(M,Mc,C)
+
+        % Titik dan label
+        \tkzDrawPoints(A,B,C,I,M,J,Mb,Ob,Mc,Oc,K)
+        \tkzLabelPoint[above left](A){$A$}
+        \tkzLabelPoint[left](B){$B$}
+        \tkzLabelPoint[right](C){$C$}
+        \tkzLabelPoint[above right](I){$I$}
+        \tkzLabelPoint[below right](M){$M$}
+        \tkzLabelPoint[below](J){$J$}
+        \tkzLabelPoint[above left](Mb){$M_b$}
+        \tkzLabelPoint[above right](Ob){$O_b$}
+        \tkzLabelPoint[above right](Mc){$M_c$}
+        \tkzLabelPoint[below right](Oc){$O_c$}
+        \tkzLabelPoint[below left](K){$K$}
+
+    \end{tikzpicture}
+\end{center}

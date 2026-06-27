@@ -1,0 +1,55 @@
+\begin{center}
+    \begin{tikzpicture}[scale=3, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        % Titik-titik utama segitiga ABC
+        \tkzDefPoint(140:1){A}
+        \tkzDefPoint(210:1){B}
+        \tkzDefPoint(330:1){C}
+
+        % P incenter; A1,B1,C1 kaki tegak lurus (titik singgung lingkaran dalam)
+        \tkzInCenter(A,B,C)\tkzGetPoint{P}
+        \tkzDefPointBy[projection=onto B--C](P)\tkzGetPoint{A1}
+        \tkzDefPointBy[projection=onto C--A](P)\tkzGetPoint{B1}
+        \tkzDefPointBy[projection=onto A--B](P)\tkzGetPoint{C1}
+
+        % Perpotongan-perpotongan
+        \tkzInterLL(B,C)(B1,C1)\tkzGetPoint{T}
+        \tkzInterLL(B,P)(B1,C1)\tkzGetPoint{Q}
+        \tkzInterLL(C,P)(B1,C1)\tkzGetPoint{R}
+        \tkzInterLL(B,R)(C,Q)\tkzGetPoint{H}
+        \tkzDefMidPoint(B,C)\tkzGetPoint{M}
+
+        % Penggambaran
+        \tkzDrawPolygon[thick](A,B,C)
+        \tkzDrawSegments[orange](C,H H,B B,T T,Q)
+        \tkzDrawSegment[orange](H,A1)
+        \tkzDrawSegment[orange](A,P)
+        \tkzDrawSegment[orange](B,Q)
+        \tkzDrawSegment[orange](C,R)
+        \tkzDrawSegment[blue](A1,P)
+        \tkzDrawSegments[blue](B1,P P,C1)
+
+        % Lingkaran luar BCR dan BRP, serta segitiga TPH
+        \tkzDefTriangleCenter[circum](B,C,R)\tkzGetPoint{Obcr}
+        \tkzDrawCircle[magenta](Obcr,B)
+        \tkzDefTriangleCenter[circum](B,R,P)\tkzGetPoint{Obrp}
+        \tkzDrawCircle[magenta](Obrp,B)
+        \tkzDrawPolygon[magenta,thick](T,P,H)
+
+        % Titik dan label
+        \tkzDrawPoints(A,B,C,P,A1,B1,C1,T,Q,R,H,M)
+        \tkzLabelPoint[above](A){$A$}
+        \tkzLabelPoint[below left](B){$B$}
+        \tkzLabelPoint[below right](C){$C$}
+        \tkzLabelPoint[right](P){$P$}
+        \tkzLabelPoint[below](A1){$A_1$}
+        \tkzLabelPoint[above](B1){$B_1$}
+        \tkzLabelPoint[above left](C1){$C_1$}
+        \tkzLabelPoint[below left](T){$T$}
+        \tkzLabelPoint[above](Q){$Q$}
+        \tkzLabelPoint[above left](R){$R$}
+        \tkzLabelPoint[above](H){$H$}
+        \tkzLabelPoint[below](M){$M$}
+
+    \end{tikzpicture}
+\end{center}
