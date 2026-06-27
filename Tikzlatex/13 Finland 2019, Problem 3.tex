@@ -1,0 +1,48 @@
+\begin{center}
+    \begin{tikzpicture}[scale=2.5, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        \tkzDefPoint(-150:1){A}
+        \tkzDefPoint(-30:1){B}
+        \tkzDefPoint(60:1){F}
+
+        % Kaki-kaki tegak lurus
+        \tkzDefPointBy[projection=onto A--F](B)\tkzGetPoint{D}
+        \tkzDefPointBy[projection=onto B--F](A)\tkzGetPoint{C}
+        \tkzDefPointBy[projection=onto A--B](F)\tkzGetPoint{H}
+
+        % Lingkaran luar ABC
+        \tkzDefTriangleCenter[circum](A,B,C)\tkzGetPoint{O}
+
+        % E perpotongan AC dan BD
+        \tkzInterLL(A,C)(B,D)\tkzGetPoint{E}
+
+        % I,G perpotongan garis HF dengan lingkaran luar
+        \tkzInterLC(H,F)(O,A)\tkzGetPoints{I}{G}
+
+        % Lingkaran luar EBC
+        \tkzDefTriangleCenter[circum](E,B,C)\tkzGetPoint{O2}
+
+        \tkzDrawPolygon(A,B,F)
+        \tkzDrawSegment(B,D)
+        \tkzDrawSegment(A,C)
+        \tkzDrawCircle(O,A)
+        \tkzDrawSegment(F,I)
+        \tkzDrawCircle(O2,E)
+
+        \tkzMarkRightAngle[red,size=0.18](A,C,B)
+        \tkzMarkRightAngle[red,size=0.18](A,D,B)
+        \tkzMarkRightAngle[red,size=0.18](E,H,B)
+
+        \tkzDrawPoints(A,B,F,D,C,H,E,I,G)
+        \tkzLabelPoint[below left](A){$A$}
+        \tkzLabelPoint[below right](B){$B$}
+        \tkzLabelPoint[above right](F){$F$}
+        \tkzLabelPoint[above left](D){$D$}
+        \tkzLabelPoint[above right](C){$C$}
+        \tkzLabelPoint[below left](H){$H$}
+        \tkzLabelPoint[left](E){$E$}
+        \tkzLabelPoint[below right](I){$I$}
+        \tkzLabelPoint[above right](G){$G$}
+
+    \end{tikzpicture}
+\end{center}

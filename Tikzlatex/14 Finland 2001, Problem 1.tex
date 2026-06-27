@@ -1,0 +1,28 @@
+\begin{center}
+    \begin{tikzpicture}[scale=1.2, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        \tkzDefPoint(0,0){C}
+        \tkzDefPoint(0,4){B}
+        \tkzDefPoint(3.0619678,0){A}
+
+        % F kaki tegak lurus dari C ke AB; M titik tengah AB
+        \tkzDefPointBy[projection=onto A--B](C)\tkzGetPoint{F}
+        \tkzDefMidPoint(A,B)\tkzGetPoint{M}
+        % garis tegak lurus AB melalui M, lalu dipotong dengan BC
+        \tkzDefLine[orthogonal=through M](B,A)\tkzGetPoint{lp}
+        \tkzInterLL(B,C)(M,lp)\tkzGetPoint{D}
+
+        \tkzDrawPolygon(A,B,C)
+        \tkzDrawSegments[red](B,D D,A B,F)
+        \tkzDrawSegment(C,F)
+        \tkzMarkRightAngle[blue,size=0.3](C,F,A)
+
+        \tkzDrawPoints(A,B,C,F,D)
+        \tkzLabelPoint[below right](A){$A$}
+        \tkzLabelPoint[above](B){$B$}
+        \tkzLabelPoint[below left](C){$C$}
+        \tkzLabelPoint[above right](F){$F$}
+        \tkzLabelPoint[left](D){$D$}
+
+    \end{tikzpicture}
+\end{center}

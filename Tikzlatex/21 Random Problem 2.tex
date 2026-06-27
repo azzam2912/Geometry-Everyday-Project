@@ -1,0 +1,21 @@
+\begin{center}
+    \begin{tikzpicture}[scale=0.8, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        \tkzDefPoint(0,0){B}
+        \tkzDefPoint(1,-3){C}
+        \tkzDefPoint(8.92055,-1.82546){A}
+        \tkzDefPoint(1.07595,-0.22018){D}
+        \tkzDefPoint(3.0417,-2.69723){E}
+
+        \tkzDrawPolygon(A,B,C)
+        \tkzDrawSegments[red](C,D D,E E,B)
+
+        \tkzDrawPoints(A,B,C,D,E)
+        \tkzLabelPoint[above right](A){$A$}
+        \tkzLabelPoint[below left](B){$B$}
+        \tkzLabelPoint[below left](C){$C$}
+        \tkzLabelPoint[above](D){$D$}
+        \tkzLabelPoint[below](E){$E$}
+
+    \end{tikzpicture}
+\end{center}

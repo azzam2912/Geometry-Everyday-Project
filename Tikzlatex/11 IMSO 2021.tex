@@ -1,0 +1,19 @@
+\begin{center}
+    \begin{tikzpicture}[scale=2.5, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        \tkzDefPoint(0,0){B}
+        \tkzDefPoint(135:1){A}
+        \tkzDefPoint(0:1){C}
+        % D hasil rotasi B terhadap C sebesar -105 derajat
+        \tkzDefPointBy[rotation=center C angle -105](B)\tkzGetPoint{D}
+
+        \tkzDrawPolygon(A,B,C,D)
+
+        \tkzDrawPoints(A,B,C,D)
+        \tkzLabelPoint[above left](A){$A$}
+        \tkzLabelPoint[below left](B){$B$}
+        \tkzLabelPoint[below right](C){$C$}
+        \tkzLabelPoint[above right](D){$D$}
+
+    \end{tikzpicture}
+\end{center}

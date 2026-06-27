@@ -1,0 +1,45 @@
+\begin{center}
+    \begin{tikzpicture}[scale=3, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        \tkzDefPoint(0,0){C}
+        \tkzDefPoint(1,0){B}
+        \tkzDefPoint(0.5,2){A}
+
+        \tkzInCenter(A,B,C)\tkzGetPoint{I}
+
+        % Titik singgung lingkaran dalam
+        \tkzDefPointBy[projection=onto B--C](I)\tkzGetPoint{Q}
+        \tkzDefPointBy[projection=onto A--B](I)\tkzGetPoint{P}
+
+        % R perpotongan kedua garis PC dengan lingkaran dalam (P pada lingkaran)
+        \tkzInterLC[common=P](P,C)(I,P)\tkzGetFirstPoint{R}
+
+        % S refleksi C terhadap P
+        \tkzDefPointBy[symmetry=center P](C)\tkzGetPoint{S}
+
+        \tkzDrawPolygon(A,B,C)
+        \tkzDrawCircle(I,P)
+        \tkzDrawSegment(C,P)
+        \tkzDrawSegment(Q,R)
+        \tkzDrawSegments(P,S S,B P,Q)
+        \tkzDefTriangleCenter[circum](R,Q,B)\tkzGetPoint{Orqb}
+        \tkzDrawCircle[dashed](Orqb,R)
+
+        % Label panjang ruas
+        \tkzDefMidPoint(P,Q)\tkzGetPoint{mPQ}\tkzLabelPoint[below right](mPQ){$4$}
+        \tkzDefMidPoint(B,S)\tkzGetPoint{mBS}\tkzLabelPoint[below right](mBS){$8$}
+        \tkzDefMidPoint(P,R)\tkzGetPoint{mPR}\tkzLabelPoint[above left](mPR){$5$}
+        \tkzDefMidPoint(C,R)\tkzGetPoint{mCR}\tkzLabelPoint[above left](mCR){$x$}
+        \tkzDefMidPoint(P,S)\tkzGetPoint{mPS}\tkzLabelPoint[above left](mPS){$x+5$}
+
+        \tkzDrawPoints(A,B,C,P,Q,R,S)
+        \tkzLabelPoint[below left](C){$C$}
+        \tkzLabelPoint[below right](B){$B$}
+        \tkzLabelPoint[above](A){$A$}
+        \tkzLabelPoint[below right](P){$P$}
+        \tkzLabelPoint[below right](Q){$Q$}
+        \tkzLabelPoint[above](R){$R$}
+        \tkzLabelPoint[above](S){$S$}
+
+    \end{tikzpicture}
+\end{center}
