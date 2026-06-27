@@ -1,0 +1,68 @@
+\begin{center}
+    \begin{tikzpicture}[scale=4, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        \tkzDefPoint(125:1){A}
+        \tkzDefPoint(-150:1){B}
+        \tkzDefPoint(-30:1){C}
+        \tkzDefTriangleCenter[circum](A,B,C)\tkzGetPoint{O}
+
+        % P pada lingkaran luar, Q titik antipodalnya
+        \tkzDefPoint(187:1){P}
+        \tkzDefPointBy[symmetry=center O](P)\tkzGetPoint{Q}
+
+        % Kaki-kaki tegak lurus
+        \tkzDefPointBy[projection=onto A--B](P)\tkzGetPoint{X}
+        \tkzDefPointBy[projection=onto A--C](Q)\tkzGetPoint{Y}
+        \tkzDefPointBy[projection=onto P--Q](A)\tkzGetPoint{Z}
+
+        \tkzDefTriangleCenter[circum](X,Y,Z)\tkzGetPoint{O1}
+
+        \tkzDefMidPoint(X,Z)\tkzGetPoint{K}
+        \tkzDefMidPoint(Z,Y)\tkzGetPoint{L}
+        \tkzInterLL(O1,K)(A,B)\tkzGetPoint{M}
+        \tkzInterLL(O1,K)(A,P)\tkzGetPoint{Op}
+        \tkzInterLL(O1,L)(A,C)\tkzGetPoint{N}
+        \tkzInterLL(O1,L)(A,Q)\tkzGetPoint{Oq}
+
+        \tkzDrawPolygon(A,B,C)
+        \tkzDrawCircle(O,A)
+        \tkzDrawSegment(P,Q)
+        \tkzDrawSegment[blue](P,X)
+        \tkzDrawSegment[blue](Q,Y)
+        \tkzDrawSegment[blue](A,Z)
+        \tkzDrawPolygon[red](X,Y,Z)
+        \tkzDrawCircle[blue](O1,X)
+        \tkzDrawSegments[green](O1,Op O1,Oq O1,X O1,Y O1,Z)
+        \tkzDrawSegments[blue](A,P A,Q)
+        \tkzDrawSegments[green](P,B Q,C)
+        \tkzDefTriangleCenter[circum](K,L,O1)\tkzGetPoint{Oklo}\tkzDrawCircle[purple](Oklo,K)
+        \tkzDefTriangleCenter[circum](M,N,O1)\tkzGetPoint{Omno}\tkzDrawCircle[dashed,red](Omno,M)
+        \tkzDefTriangleCenter[circum](P,X,Z)\tkzGetPoint{Opxz}\tkzDrawCircle[purple](Opxz,P)
+        \tkzDefTriangleCenter[circum](Q,Y,Z)\tkzGetPoint{Oqyz}\tkzDrawCircle[purple](Oqyz,Q)
+
+        \tkzMarkRightAngle[size=0.1](A,Z,Q)
+        \tkzMarkRightAngle[size=0.1](P,X,B)
+        \tkzMarkRightAngle[size=0.1](Q,Y,C)
+        \tkzMarkRightAngle[size=0.1](Op,K,X)
+        \tkzMarkRightAngle[size=0.1](Oq,L,Y)
+
+        \tkzDrawPoints(A,B,C,O,P,Q,X,Y,Z,O1,K,L,M,N,Op,Oq)
+        \tkzLabelPoint[above left](A){$A$}
+        \tkzLabelPoint[below left](B){$B$}
+        \tkzLabelPoint[below right](C){$C$}
+        \tkzLabelPoint[above left](O){$O$}
+        \tkzLabelPoint[left](P){$P$}
+        \tkzLabelPoint[right](Q){$Q$}
+        \tkzLabelPoint[below right](X){$X$}
+        \tkzLabelPoint[above](Y){$Y$}
+        \tkzLabelPoint[below](Z){$Z$}
+        \tkzLabelPoint[below](O1){$O_1$}
+        \tkzLabelPoint[above left](K){$K$}
+        \tkzLabelPoint[above right](L){$L$}
+        \tkzLabelPoint[above left](M){$M$}
+        \tkzLabelPoint[above right](N){$N$}
+        \tkzLabelPoint[above left](Op){$O_P$}
+        \tkzLabelPoint[above right](Oq){$O_Q$}
+
+    \end{tikzpicture}
+\end{center}

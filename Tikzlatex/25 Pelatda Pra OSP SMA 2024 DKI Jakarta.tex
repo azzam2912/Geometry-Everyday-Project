@@ -1,0 +1,39 @@
+\begin{center}
+    \begin{tikzpicture}[scale=1.1, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+
+        \tkzDefPoint(-3,0){A}
+        \tkzDefPoint(3,0){B}
+        \tkzDefPoint(-1,5){C}
+
+        \tkzDefPointBy[projection=onto A--B](C)\tkzGetPoint{D}
+        \tkzDefTriangleCenter[circum](A,B,C)\tkzGetPoint{O}
+        % S antipode dari C
+        \tkzDefPointBy[symmetry=center O](C)\tkzGetPoint{S}
+        % E pada AC dengan AE=AD; F pada BC dengan BF=BD
+        \tkzDefPointBy[homothety=center A ratio 0.371390](C)\tkzGetPoint{E}
+        \tkzDefPointBy[homothety=center B ratio 0.624695](C)\tkzGetPoint{F}
+
+        \tkzDrawPolygon(A,B,C)
+        \tkzDrawSegment(C,D)
+        \tkzDrawSegment(C,S)
+        \tkzDrawSegments(E,D D,F)
+        \tkzDrawSegments(A,S S,B)
+        \tkzDrawSegments[dashed,red](E,S S,F)
+        \tkzDrawCircle(O,A)
+
+        \tkzMarkRightAngle[purple,size=0.4](B,D,C)
+        \tkzMarkRightAngle[blue,size=0.4](S,A,C)
+        \tkzMarkRightAngle[blue,size=0.4](C,B,S)
+
+        \tkzDrawPoints(A,B,C,D,O,E,F,S)
+        \tkzLabelPoint[below left](A){$A$}
+        \tkzLabelPoint[below right](B){$B$}
+        \tkzLabelPoint[above](C){$C$}
+        \tkzLabelPoint[below](D){$D$}
+        \tkzLabelPoint[above right](O){$O$}
+        \tkzLabelPoint[above left](E){$E$}
+        \tkzLabelPoint[above right](F){$F$}
+        \tkzLabelPoint[below right](S){$S$}
+
+    \end{tikzpicture}
+\end{center}

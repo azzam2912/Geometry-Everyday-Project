@@ -1,0 +1,52 @@
+\begin{center}
+    \begin{tikzpicture}[scale=0.75, dot/.style={circle, fill, inner sep=0.5pt, outer sep=0pt}]
+        \clip(-9,-1) rectangle (9,6);
+
+        \tkzDefPoint(-3,0){A}
+        \tkzDefPoint(3,0){B}
+        \tkzDefPoint(-3,5){la}
+        \tkzDefPoint(3,5){lb}
+        \tkzDefMidPoint(A,B)\tkzGetPoint{M}
+        \tkzDefPoint(-1,5){C}
+
+        \tkzDefPointBy[projection=onto A--C](M)\tkzGetPoint{G}
+        \tkzDefPointBy[projection=onto B--C](M)\tkzGetPoint{H}
+        \tkzInterLL(A,la)(M,G)\tkzGetPoint{E}
+        \tkzInterLL(B,lb)(M,H)\tkzGetPoint{F}
+        \tkzInterLL(C,M)(E,F)\tkzGetPoint{D}
+
+        \tkzDrawPolygon(A,B,C)
+        \tkzDrawPolygon[blue](E,F,M)
+        \tkzDrawSegment(G,H)
+        \tkzDrawSegments[red](A,D D,B)
+        \tkzDrawSegment(C,M)
+        \tkzDrawSegment(A,la)
+        \tkzDrawSegment(B,lb)
+        \tkzDrawSegment(A,F)
+
+        \tkzDefTriangleCenter[circum](E,F,G)\tkzGetPoint{O1}\tkzDrawCircle[dashed](O1,E)
+        \tkzDefTriangleCenter[circum](F,H,D)\tkzGetPoint{O2}\tkzDrawCircle[dashed,purple](O2,F)
+        \tkzDefTriangleCenter[circum](E,G,D)\tkzGetPoint{O3}\tkzDrawCircle[dashed,purple](O3,E)
+        \tkzDefTriangleCenter[circum](A,E,D)\tkzGetPoint{O4}\tkzDrawCircle[dotted,red](O4,A)
+        \tkzDefTriangleCenter[circum](B,F,D)\tkzGetPoint{O5}\tkzDrawCircle[dotted,red](O5,B)
+
+        % Label ruas
+        \tkzDefMidPoint(A,la)\tkzGetPoint{mAla}\tkzLabelPoint[left](mAla){$\ell_1$}
+        \tkzDefMidPoint(B,lb)\tkzGetPoint{mBlb}\tkzLabelPoint[above right](mBlb){$\ell_2$}
+        \tkzDefMidPoint(E,F)\tkzGetPoint{mEF}\tkzLabelPoint[above right](mEF){\textcolor{blue}{$\frac{64}{3}$}}
+        \tkzDefMidPoint(M,F)\tkzGetPoint{mMF}\tkzLabelPoint[below right](mMF){\textcolor{blue}{$16$}}
+        \tkzDefMidPoint(B,D)\tkzGetPoint{mBD}\tkzLabelPoint[below](mBD){\textcolor{red}{$12$}}
+
+        \tkzDrawPoints(A,B,C,M,D,E,F,G,H)
+        \tkzLabelPoint[below left](A){$A$}
+        \tkzLabelPoint[below right](B){$B$}
+        \tkzLabelPoint[above](C){$C$}
+        \tkzLabelPoint[below](M){$M$}
+        \tkzLabelPoint[above right](D){$D$}
+        \tkzLabelPoint[left](E){$E$}
+        \tkzLabelPoint[right](F){$F$}
+        \tkzLabelPoint[below right](G){$G$}
+        \tkzLabelPoint[right](H){$H$}
+
+    \end{tikzpicture}
+\end{center}
