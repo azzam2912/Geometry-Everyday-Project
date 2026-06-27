@@ -7,6 +7,7 @@ main-*.asy
 *.fls
 *.toc
 *.eps
-.DS_Storemain.pdf
+.DS_Store
+main.pdf
 main-problems.pdf
 main-solutions.pdf
