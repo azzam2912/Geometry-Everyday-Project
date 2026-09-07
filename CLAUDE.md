@@ -37,7 +37,7 @@ pdflatex --shell-escape main-solutions.tex
 
 The `--shell-escape` flag is required because `settings.tex` loads the `asymptote` package, which calls out to the `asy` binary to render geometric figures. Run `pdflatex` twice if the table of contents is out of date.
 
-Auxiliary files (`.aux`, `.log`, `.out`, `.fls`, `.fdb_latexmk`, `.toc`, `.eps`, `main-*.asy`, `.pre`) are gitignored.
+Auxiliary files (`.aux`, `.log`, `.out`, `.fls`, `.fdb_latexmk`, `.toc`, `.eps`, `main-*.asy`, `.pre`, and the rest of the extensions `bash-scripts/clean.sh` knows about) are gitignored.
 
 ### The `bash-scripts/` helpers
 
@@ -45,15 +45,14 @@ For a full rebuild, prefer the scripts over bare `pdflatex` calls. Run them from
 
 | Script | Use |
 |--------|-----|
-| `bash bash-scripts/run.sh` | the everyday case: builds all three documents in parallel, renames the PDFs, then cleans up |
-| `bash bash-scripts/build.sh` | `main.tex` only (pdflatex, then `asy` on each extracted figure, then pdflatex twice) |
-| `bash bash-scripts/build-problems.sh` / `build-solutions.sh` | same for the problems-only and solutions-only documents |
-| `bash bash-scripts/rename.sh` | `main.pdf` and friends into `Geometry Everyday Project*.pdf` |
-| `bash bash-scripts/delete.sh` | delete leftover build artifacts and per-figure `.asy`/`.pdf` files |
+| `bash bash-scripts/compile.sh` | the everyday case: builds all three documents in parallel (pdflatex → asy → pdflatex ×2 each) and renames the PDFs to their published names. `--serial` builds one at a time; `--no-rename` skips the rename. |
+| `bash bash-scripts/compile-one.sh DOC [DOC ...]` | build a single entry point (`all` / `problems` / `solutions`, or any other `.tex` path). `--rename` publishes the PDF; `--keep-asy` keeps the extracted per-figure `main-N.asy`/`.pdf` files for debugging one diagram. This is what `compile.sh` calls under the hood. |
+| `bash bash-scripts/clean.sh` | delete leftover build artifacts and per-figure `.asy`/`.pdf` files. `--dir FOLDER` scopes it to one folder, `-n`/`--dry-run` previews, `--pdf` also wipes the published PDFs (off by default, since those are tracked). |
+| `bash bash-scripts/watch.sh NAME_OR_PATH` | live preview: watches one `.tex` (an entry point or a fragment under `Problems/`, `Solutions/`, `Tikzlatex/`, `Asymptote/`), rebuilds on save, and reopens the PDF in Skim (or the system viewer). `--doc DOC` overrides which entry point it compiles; `--no-open` skips opening a viewer. |
 
-The build scripts loop `asy` over figures `1..50`. If the project ever grows past 50 extracted Asymptote figures, bump that bound in all three build scripts, otherwise the later diagrams silently render as blanks.
+Every script supports `-h`/`--help` with fuller usage and examples. The figure-rendering step globs `main-N.asy` files rather than looping a fixed range, so it never misses a diagram and there is no bound to bump as the project grows.
 
-**Compile before you commit.** Editing a `.tex` and not checking that it still builds is an incomplete task. A single malformed `tkz-euclide` coordinate can take down the whole document, so at minimum run the entry point that includes the file you touched.
+**Compile before you commit.** Editing a `.tex` and not checking that it still builds is an incomplete task. A single malformed `tkz-euclide` coordinate can take down the whole document, so at minimum run the entry point that includes the file you touched, e.g. `bash bash-scripts/compile-one.sh solutions`.
 
 ## Project Architecture
 
