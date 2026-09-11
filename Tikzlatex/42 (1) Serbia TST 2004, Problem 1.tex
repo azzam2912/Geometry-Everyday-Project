@@ -60,13 +60,15 @@
     % Draw AQ and BQ to show angle AQB
     \draw[thick, dashed] (A)--(Q)--(B);
 
-    % Mark right angles at M and N (angle in semicircle)
-    % \siku{A}{M}{B}
-    % \siku{A}{N}{B}
-    % \siku{A}{Q}{B}
+    % --- LINGKARAN MJDP ---
+    % Pusat di titik tengah JP = (3.5, 1), diameter = length(JP) = sqrt(3^2 + 2^2) = sqrt(13)
+    \coordinate (CenterMJDP) at (3.5, 1);
+    \draw[blue, thick, dashed] (CenterMJDP) circle ({sqrt(13)/2});
 
-    % Draw all points
-    % \foreach \s in {A,B,C,D,P,M,N,Q,I,J,O,K,L,R}
-    %     \filldraw (\s) circle (1.5pt);
+    % --- LINGKARAN INCP ---
+    % Pusat di titik tengah IP = (1, 1.5), diameter = length(IP) = sqrt(2^2 + 3^2) = sqrt(13)
+    \coordinate (CenterINCP) at (1, 1.5);
+    \draw[teal, thick, dashed] (CenterINCP) circle ({sqrt(13)/2});
+
 \end{tikzpicture}
 \end{center}
