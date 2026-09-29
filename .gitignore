@@ -44,3 +44,8 @@ test-*.pdf
 main.pdf
 main-problems.pdf
 main-solutions.pdf
+
+# Fast single-entry preview wrapper (bash-scripts/test-newest.sh).
+# The PDF is already covered by test-*.pdf above; listed here to be explicit.
+test-newest.tex
+test-newest.pdf
